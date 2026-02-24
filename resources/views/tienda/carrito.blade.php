@@ -5,6 +5,17 @@
     <h4>Carrito</h4>
     <a href="{{ route('tienda.catalogo') }}" class="btn btn-secondary">Seguir comprando</a>
  </div>
+<div id="cart-empty" class="alert alert-info d-none">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <strong>Tu carrito está vacío.</strong>
+            <div class="small">Explora el catálogo y agrega productos para empezar tu compra.</div>
+        </div>
+        <div>
+            <a href="{{ route('tienda.catalogo') }}" class="btn btn-primary btn-sm">Ir al catálogo</a>
+        </div>
+    </div>
+</div>
 <div class="table-responsive">
     <table class="table" id="cart-table">
         <thead>
@@ -43,6 +54,12 @@ async function loadCart(){
     const res = await fetch('{{ route('tienda.carrito.json') }}',{credentials:'include'});
     const data = await res.json();
     currentItems = data.items || [];
+    const emptyAlert = document.getElementById('cart-empty');
+    if(!currentItems.length){
+        emptyAlert.classList.remove('d-none');
+    }else{
+        emptyAlert.classList.add('d-none');
+    }
     (currentItems).forEach((i)=>{
         const tr=document.createElement('tr');
         tr.innerHTML = `

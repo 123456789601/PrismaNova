@@ -15,11 +15,12 @@
         <p><strong>Impuesto:</strong> {{ number_format($venta->impuesto,2) }}</p>
         <p><strong>Total:</strong> {{ number_format($venta->total,2) }}</p>
         <p><strong>Método de pago:</strong> {{ $venta->metodoPago->nombre ?? $venta->metodo_pago }}</p>
-        <p><strong>Estado:</strong> {{ $venta->estado }}</p>
+        <p><strong>Estado:</strong> {{ ucfirst($venta->estado) }}</p>
     </div>
 </div>
 <div class="d-flex gap-2 mb-2">
-    <a href="{{ route('ventas.factura',$venta) }}" class="btn btn-primary">Exportar Factura A</a>
+    <a href="{{ route('ventas.factura',$venta) }}?print=1" target="_blank" class="btn btn-primary">Descargar PDF</a>
+    <a href="{{ route('ventas.factura',$venta) }}" class="btn btn-outline-primary">Ver factura</a>
     <a href="{{ route('ventas.index') }}" class="btn btn-outline-secondary d-lg-none">Volver</a>
  </div>
 <div class="table-responsive">

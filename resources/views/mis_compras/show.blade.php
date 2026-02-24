@@ -3,7 +3,11 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4>Venta #{{ $venta->id_venta }}</h4>
-    <a href="{{ route('mis-compras.index') }}" class="btn btn-secondary">Volver</a>
+    <div class="d-flex gap-2">
+        <a href="{{ route('mis-compras.factura',$venta) }}?print=1" target="_blank" class="btn btn-primary">Descargar PDF</a>
+        <a href="{{ route('mis-compras.factura',$venta) }}" class="btn btn-outline-primary">Ver factura</a>
+        <a href="{{ route('mis-compras.index') }}" class="btn btn-secondary">Volver</a>
+    </div>
 </div>
 <div class="card mb-3">
     <div class="card-body">
@@ -13,7 +17,7 @@
         <p><strong>Impuesto:</strong> {{ number_format($venta->impuesto,2) }}</p>
         <p><strong>Total:</strong> {{ number_format($venta->total,2) }}</p>
         <p><strong>Método de pago:</strong> {{ $venta->metodoPago->nombre ?? $venta->metodo_pago }}</p>
-        <p><strong>Estado:</strong> {{ $venta->estado }}</p>
+        <p><strong>Estado:</strong> {{ ucfirst($venta->estado) }}</p>
     </div>
 </div>
 <div class="table-responsive">

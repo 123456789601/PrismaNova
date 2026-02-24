@@ -14,6 +14,14 @@
     </style>
     <script>
         function imprimir(){ window.print(); }
+        (function(){
+            try {
+                var auto = "{{ request('print') }}";
+                if (auto === '1') {
+                    document.addEventListener('DOMContentLoaded', function(){ window.print(); });
+                }
+            } catch(e){}
+        })();
     </script>
     </head>
 <body class="bg-white">

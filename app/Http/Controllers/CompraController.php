@@ -11,14 +11,32 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
+/**
+ * Class CompraController
+ * 
+ * Gestiona el proceso de compras de productos a proveedores.
+ * Controla el registro de compras, actualización de stock e historial.
+ */
 class CompraController extends Controller
 {
+    /**
+     * Muestra el historial de compras realizadas.
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $compras = Compra::with(['proveedor','usuario'])->orderBy('id_compra','desc')->paginate(10);
         return view('compras.index', compact('compras'));
     }
 
+    /**
+     * Muestra el formulario para registrar una nueva compra.
+     * 
+     * Carga proveedores y productos activos para la selección.
+     *
+     * @return \Illuminate\View\View
+     */
     public function create()
     {
         $proveedores = Proveedor::where('estado','activo')->orderBy('nombre_empresa')->get();
@@ -26,12 +44,27 @@ class CompraController extends Controller
         return view('compras.create', compact('proveedores','productos'));
     }
 
+    /**
+     * Muestra los detalles de una compra específica.
+     *
+     * @param Compra $compra
+     * @return \Illuminate\View\View
+     */
     public function show(Compra $compra)
     {
         $compra->load(['proveedor','usuario','detalles.producto']);
         return view('compras.show', compact('compra'));
     }
 
+    /**
+     * Registra una nueva compra en el sistema.
+     * 
+     * Crea la cabecera de la compra, sus detalles y actualiza el stock de los productos.
+     * Todo se realiza dentro de una transacción para garantizar consistencia.
+     *
+     * @param StoreCompraRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(StoreCompraRequest $request)
     {
         $data = $request->validated();
@@ -78,6 +111,15 @@ class CompraController extends Controller
         return redirect()->route('compras.index')->with('success', 'Compra registrada');
     }
 
+    /**
+     * Anula una compra existente.
+     * 
+     * Revierte el stock agregado por la compra y cambia su estado a 'anulada'.
+     * Valida que no se genere stock negativo al revertir.
+     *
+     * @param Compra $compra
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function anular(Compra $compra)
     {
         if ($compra->estado === 'anulada') {

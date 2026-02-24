@@ -4,13 +4,31 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class StoreProductoRequest
+ * 
+ * Validación de datos para el almacenamiento de un nuevo producto.
+ * Asegura la integridad de los datos del producto, incluyendo unicidad de código de barras.
+ */
 class StoreProductoRequest extends FormRequest
 {
+    /**
+     * Determina si el usuario está autorizado para hacer esta solicitud.
+     * 
+     * @return bool
+     */
     public function authorize()
     {
         return true;
     }
 
+    /**
+     * Obtiene las reglas de validación que se aplican a la solicitud.
+     * 
+     * Valida campos obligatorios y formatos (imagen, numéricos, fechas).
+     *
+     * @return array
+     */
     public function rules()
     {
         return [

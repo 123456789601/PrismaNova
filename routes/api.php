@@ -24,4 +24,6 @@ Route::middleware(['web','auth'])->group(function () {
     Route::delete('/productos/{producto}', [ProductApiController::class,'destroy'])->middleware('role:admin,cajero,bodeguero');
 
     Route::post('/ventas', [VentaApiController::class,'store'])->middleware('role:admin,cajero,cliente');
+    Route::get('/ventas', [VentaApiController::class,'index'])->middleware('role:admin,cajero');
+    Route::get('/ventas/export', [VentaApiController::class,'exportCsv'])->middleware('role:admin,cajero');
 });

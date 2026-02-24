@@ -25,9 +25,10 @@
             <td>{{ $v->id_venta }}</td>
             <td>{{ $v->fecha }}</td>
             <td>{{ number_format($v->total,2) }}</td>
-            <td>{{ $v->estado }}</td>
+            <td>{{ ucfirst($v->estado) }}</td>
             <td class="text-end">
                 <a href="{{ route('mis-compras.show',$v) }}" class="btn btn-sm btn-primary">Ver</a>
+                <a href="{{ route('mis-compras.factura',$v) }}" class="btn btn-sm btn-outline-primary">Factura</a>
             </td>
         </tr>
         @empty

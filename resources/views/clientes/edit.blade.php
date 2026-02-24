@@ -15,7 +15,7 @@
         </div>
         <div class="col-md-6">
             <label class="form-label">Documento</label>
-            <input class="form-control" name="documento" value="{{ old('documento',$cliente->documento) }}" required>
+            <input type="text" inputmode="numeric" pattern="\d*" class="form-control" name="documento" value="{{ old('documento',$cliente->documento) }}" required>
         </div>
         <div class="col-md-6">
             <label class="form-label">Teléfono</label>

@@ -18,11 +18,12 @@ class UpdatePerfilRequest extends FormRequest
         return [
             'nombre' => 'required|string|max:100',
             'apellido' => 'required|string|max:100',
-            'documento' => 'required|string|max:50|unique:usuarios,documento,' . $id . ',id_usuario',
+            'documento' => 'required|digits_between:1,50|unique:usuarios,documento,' . $id . ',id_usuario',
             'email' => 'required|email|max:150|unique:usuarios,email,' . $id . ',id_usuario',
             'password' => 'nullable|string|min:6|confirmed',
             'telefono' => 'nullable|string|max:20',
             'direccion' => 'nullable|string|max:200',
+            'tema' => 'nullable|in:light,dark',
         ];
     }
 }

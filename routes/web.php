@@ -42,6 +42,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/perfil', [PerfilController::class,'show'])->name('perfil');
     Route::put('/perfil', [PerfilController::class,'update'])->name('perfil.update');
+    Route::post('/perfil/tema', [PerfilController::class,'updateTheme'])->name('perfil.tema.update');
     Route::prefix('api')->group(function () {
         Route::get('productos', [ProductApiController::class,'index']);
         Route::get('productos/{producto}', [ProductApiController::class,'show']);
@@ -78,6 +79,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:admin'])->group(function () {
         Route::get('reportes/sync-logs', [ReporteController::class,'syncLogs'])->name('reportes.sync');
         Route::post('reportes/sync-now', [ReporteController::class,'syncRun'])->name('reportes.sync.run');
+        Route::get('reportes/export/ventas', [ReporteController::class,'exportVentasCsv'])->name('reportes.export.ventas');
     });
     Route::middleware(['role:cliente'])->group(function () {
         Route::prefix('tienda')->group(function () {
@@ -88,6 +90,7 @@ Route::middleware(['auth'])->group(function () {
         });
         Route::get('mis-compras', [MisComprasController::class,'index'])->name('mis-compras.index');
         Route::get('mis-compras/{venta}', [MisComprasController::class,'show'])->name('mis-compras.show');
+        Route::get('mis-compras/{venta}/factura', [MisComprasController::class,'factura'])->name('mis-compras.factura');
         Route::get('tienda', [TiendaController::class,'catalogo'])->name('tienda.catalogo');
         Route::get('carrito', [TiendaController::class,'carrito'])->name('tienda.carrito');
     });

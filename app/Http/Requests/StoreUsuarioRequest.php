@@ -16,7 +16,7 @@ class StoreUsuarioRequest extends FormRequest
         return [
             'nombre' => 'required|string|max:100',
             'apellido' => 'required|string|max:100',
-            'documento' => 'required|string|max:50|unique:usuarios,documento',
+            'documento' => 'required|digits_between:1,50|unique:usuarios,documento',
             'email' => 'required|email|max:150|unique:usuarios,email',
             'password' => 'required|string|min:6|confirmed',
             'rol' => 'required|in:admin,cajero,bodeguero,cliente',

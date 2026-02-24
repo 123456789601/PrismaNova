@@ -31,5 +31,43 @@ class UsuarioAdminSeeder extends Seeder
             // No usamos 'rol_id'; el sistema funciona con la columna 'rol'
             DB::table('usuarios')->insert($data);
         }
+        if (!DB::table('usuarios')->where('email','cajero@prismanova.local')->exists()) {
+            $data = [
+                'nombre' => 'Cajero',
+                'apellido' => 'Demo',
+                'email' => 'cajero@prismanova.local',
+                'password' => Hash::make('cajero123'),
+                'rol' => 'cajero',
+                'estado' => 'activo',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+            if (Schema::hasColumn('usuarios','documento')) {
+                $data['documento'] = 'CAJERO-0001';
+            }
+            if (Schema::hasColumn('usuarios','username')) {
+                $data['username'] = 'cajero';
+            }
+            DB::table('usuarios')->insert($data);
+        }
+        if (!DB::table('usuarios')->where('email','cliente@prismanova.local')->exists()) {
+            $data = [
+                'nombre' => 'Cliente',
+                'apellido' => 'Demo',
+                'email' => 'cliente@prismanova.local',
+                'password' => Hash::make('cliente123'),
+                'rol' => 'cliente',
+                'estado' => 'activo',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+            if (Schema::hasColumn('usuarios','documento')) {
+                $data['documento'] = 'CLIENTE-0001';
+            }
+            if (Schema::hasColumn('usuarios','username')) {
+                $data['username'] = 'cliente';
+            }
+            DB::table('usuarios')->insert($data);
+        }
     }
 }
