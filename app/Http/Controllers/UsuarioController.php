@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Usuario;
+use App\Models\Rol;
 use App\Http\Requests\StoreUsuarioRequest;
 use App\Http\Requests\UpdateUsuarioRequest;
 use Illuminate\Support\Facades\Hash;
+
+use App\Models\Bitacora;
 
 /**
  * Class UsuarioController
@@ -33,7 +36,8 @@ class UsuarioController extends Controller
      */
     public function create()
     {
-        return view('usuarios.create');
+        $roles = Rol::all();
+        return view('usuarios.create', compact('roles'));
     }
 
     /**
@@ -59,7 +63,8 @@ class UsuarioController extends Controller
     {
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
-        Usuario::create($data);
+        $usuario = Usuario::create($data);
+        Bitacora::registrar('CREATE', 'usuarios', $usuario->id_usuario, 'Usuario creado: ' . $usuario->email);
         return redirect()->route('usuarios.index')->with('success','Usuario creado');
     }
 
@@ -71,7 +76,8 @@ class UsuarioController extends Controller
      */
     public function edit(Usuario $usuario)
     {
-        return view('usuarios.edit', compact('usuario'));
+        $roles = Rol::all();
+        return view('usuarios.edit', compact('usuario', 'roles'));
     }
 
     /**
@@ -95,6 +101,7 @@ class UsuarioController extends Controller
         }
         
         $usuario->update($data);
+        Bitacora::registrar('UPDATE', 'usuarios', $usuario->id_usuario, 'Usuario actualizado');
         return redirect()->route('usuarios.index')->with('success','Usuario actualizado');
     }
 
@@ -106,7 +113,13 @@ class UsuarioController extends Controller
      */
     public function destroy(Usuario $usuario)
     {
-        $usuario->delete();
-        return redirect()->route('usuarios.index')->with('success','Usuario eliminado');
+        try {
+            $id = $usuario->id_usuario;
+            $usuario->delete();
+            Bitacora::registrar('DELETE', 'usuarios', $id, 'Usuario eliminado');
+            return redirect()->route('usuarios.index')->with('success','Usuario eliminado');
+        } catch (\Exception $e) {
+            return redirect()->route('usuarios.index')->with('error','No se puede eliminar el usuario porque tiene registros asociados (ventas, compras, etc).');
+        }
     }
 }

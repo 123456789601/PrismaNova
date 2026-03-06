@@ -30,7 +30,13 @@ class RoleMiddleware
             return redirect()->route('login');
         }
         $user = Auth::user();
-        if (!in_array($user->rol, $roles, true)) {
+        // Convert user role and allowed roles to lowercase for comparison
+        $userRole = strtolower(trim($user->rol->nombre ?? ''));
+        $allowedRoles = array_map(function($role) {
+            return strtolower(trim($role));
+        }, $roles);
+
+        if (!in_array($userRole, $allowedRoles, true)) {
             abort(403);
         }
         return $next($request);

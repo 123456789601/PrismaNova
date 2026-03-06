@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreProductoRequest;
+use App\Http\Requests\UpdateProductoRequest;
 use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use App\Models\Bitacora;
 
 /**
  * Class ProductApiController
@@ -26,26 +29,25 @@ class ProductApiController extends Controller
      */
     public function index(Request $request)
     {
-        $q = Producto::query()->where('estado','activo');
-        
-        // Filtro de búsqueda general
-        if ($s = $request->query('search')) {
-            $q->where(function($w) use ($s){
-                $w->where('nombre','like',"%$s%")
-                  ->orWhere('descripcion','like',"%$s%")
-                  ->orWhere('codigo_barras','like',"%$s%");
-            });
+        try {
+            $q = Producto::query()->where('estado','activo')->where('stock', '>', 0);
+            
+            // Filtro de búsqueda general
+            if ($s = $request->query('search')) {
+                $q->where(function($w) use ($s){
+                    $w->where('nombre','like',"%$s%")
+                      ->orWhere('descripcion','like',"%$s%")
+                      ->orWhere('codigo_barras','like',"%$s%");
+                });
+            }
+            
+            $productos = $q->orderBy('id_producto','desc')->paginate(12);
+            
+            return response()->json($productos);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error loading products: ' . $e->getMessage());
+            return response()->json(['error' => 'Internal Server Error', 'message' => $e->getMessage()], 500);
         }
-        
-        $productos = $q->orderBy('id_producto','desc')->paginate(12);
-        
-        // Agregar URL completa de la imagen a cada producto
-        $productos->getCollection()->transform(function($p){
-            $p->imagen_url = $p->imagen ? asset('storage/'.$p->imagen) : null;
-            return $p;
-        });
-        
-        return response()->json($productos);
     }
 
     /**
@@ -69,51 +71,44 @@ class ProductApiController extends Controller
      * @param Request $request Datos del producto.
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(StoreProductoRequest $request)
     {
-        $this->authorizeAction($request);
-        
-        $data = $request->validate([
-            'codigo_barras' => 'nullable|string|max:50|unique:productos,codigo_barras',
-            'nombre' => 'required|string|max:150',
-            'descripcion' => 'nullable|string',
-            'id_categoria' => 'required|exists:categorias,id_categoria',
-            'id_proveedor' => 'nullable|exists:proveedores,id_proveedor',
-            'precio_compra' => 'required|numeric|min:0',
-            'precio_venta' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'stock_minimo' => 'nullable|integer|min:0',
-            'fecha_vencimiento' => 'nullable|date',
-            'estado' => 'required|in:activo,inactivo',
-            'imagen' => 'nullable|image|max:2048',
-        ]);
-        
-        DB::beginTransaction();
         try {
-            // Normalizar campos opcionales que pueden venir vacíos
-            if (empty($data['id_proveedor'])) {
-                $data['id_proveedor'] = null;
+            // $this->authorizeAction($request);
+            
+            $data = $request->validated();
+            
+            DB::beginTransaction();
+            try {
+                // Normalizar campos opcionales que pueden venir vacíos
+                if (empty($data['id_proveedor'])) {
+                    $data['id_proveedor'] = null;
+                }
+                if (empty($data['fecha_vencimiento'])) {
+                    $data['fecha_vencimiento'] = null;
+                }
+                
+                // Procesar subida de imagen
+                if ($request->hasFile('imagen')) {
+                    $path = $request->file('imagen')->store('products','public');
+                    $data['imagen'] = $path;
+                }
+                
+                $producto = Producto::create($data);
+                
+                DB::commit();
+                
+                $producto->imagen_url = $producto->imagen ? asset('storage/'.$producto->imagen) : null;
+                return response()->json($producto, 201);
+                
+            } catch (\Throwable $e) {
+                DB::rollBack();
+                return response()->json(['error' => 'No se pudo crear: ' . $e->getMessage()], 422);
             }
-            if (empty($data['fecha_vencimiento'])) {
-                $data['fecha_vencimiento'] = null;
-            }
-            
-            // Procesar subida de imagen
-            if ($request->hasFile('imagen')) {
-                $path = $request->file('imagen')->store('products','public');
-                $data['imagen'] = $path;
-            }
-            
-            $producto = Producto::create($data);
-            
-            DB::commit();
-            
-            $producto->imagen_url = $producto->imagen ? asset('storage/'.$producto->imagen) : null;
-            return response()->json($producto, 201);
-            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Throwable $e) {
-            DB::rollBack();
-            return response()->json(['error' => 'No se pudo crear'], 422);
+             return response()->json(['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()], 500);
         }
     }
 
@@ -126,24 +121,11 @@ class ProductApiController extends Controller
      * @param Producto $producto Producto a editar.
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, Producto $producto)
+    public function update(UpdateProductoRequest $request, Producto $producto)
     {
         $this->authorizeAction($request);
         
-        $data = $request->validate([
-            'codigo_barras' => 'nullable|string|max:50|unique:productos,codigo_barras,' . $producto->id_producto . ',id_producto',
-            'nombre' => 'sometimes|required|string|max:150',
-            'descripcion' => 'nullable|string',
-            'id_categoria' => 'sometimes|exists:categorias,id_categoria',
-            'id_proveedor' => 'nullable|exists:proveedores,id_proveedor',
-            'precio_compra' => 'sometimes|numeric|min:0',
-            'precio_venta' => 'sometimes|numeric|min:0',
-            'stock' => 'sometimes|integer|min:0',
-            'stock_minimo' => 'nullable|integer|min:0',
-            'fecha_vencimiento' => 'nullable|date',
-            'estado' => 'sometimes|in:activo,inactivo',
-            'imagen' => 'nullable|image|max:2048',
-        ]);
+        $data = $request->validated();
         
         DB::beginTransaction();
         try {
@@ -166,6 +148,8 @@ class ProductApiController extends Controller
             
             $producto->update($data);
             
+            Bitacora::registrar('UPDATE', 'productos', $producto->id_producto, 'Producto actualizado via API');
+
             DB::commit();
             
             $producto->imagen_url = $producto->imagen ? asset('storage/'.$producto->imagen) : null;
@@ -193,7 +177,9 @@ class ProductApiController extends Controller
             Storage::disk('public')->delete($producto->imagen);
         }
         
+        $id = $producto->id_producto;
         $producto->delete();
+        Bitacora::registrar('DELETE', 'productos', $id, 'Producto eliminado via API');
         
         return response()->json(['deleted' => true]);
     }
@@ -208,7 +194,7 @@ class ProductApiController extends Controller
      */
     protected function authorizeAction(Request $request)
     {
-        $rol = optional($request->user())->rol;
+        $rol = optional(optional($request->user())->rol)->nombre;
         if (!in_array($rol, ['admin','cajero','bodeguero'])) {
             abort(403);
         }

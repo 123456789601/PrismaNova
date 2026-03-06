@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password;
 
 /**
  * Class RegistrationController
@@ -41,12 +42,25 @@ class RegistrationController extends Controller
     public function register(Request $request)
     {
         $data = $request->validate([
-            'nombre' => ['required','string','max:100'],
-            'apellido' => ['required','string','max:100'],
-            'documento' => ['required','string','max:50','unique:usuarios,documento'],
+            'nombre' => ['required','string','max:100', 'regex:/^[\pL\s]+$/u'],
+            'apellido' => ['required','string','max:100', 'regex:/^[\pL\s]+$/u'],
+            'documento' => ['required','string','max:50','regex:/^[0-9]+$/','unique:usuarios,documento'],
             'email' => ['required','email','max:150','unique:usuarios,email'],
-            'password' => ['required','string','min:6','confirmed'],
+            'password' => ['required', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
+        ], [
+            'nombre.regex' => 'El nombre no puede contener números ni caracteres especiales.',
+            'apellido.regex' => 'El apellido no puede contener números ni caracteres especiales.',
+            'documento.regex' => 'El documento solo puede contener números (sin espacios ni guiones).',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.letters' => 'La contraseña debe contener al menos una letra.',
+            'password.mixed' => 'La contraseña debe contener letras mayúsculas y minúsculas.',
+            'password.numbers' => 'La contraseña debe contener al menos un número.',
+            'password.symbols' => 'La contraseña debe contener al menos un símbolo.',
         ]);
+
+        // Obtener rol cliente
+        $rolCliente = \App\Models\Rol::where('nombre', 'cliente')->first();
+        $rolId = $rolCliente ? $rolCliente->id : null;
 
         // Crear usuario de sistema (login)
         $usuario = new Usuario([
@@ -55,7 +69,7 @@ class RegistrationController extends Controller
             'documento' => $data['documento'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'rol' => 'cliente',
+            'rol_id' => $rolId,
             'estado' => 'activo',
         ]);
 
@@ -64,16 +78,34 @@ class RegistrationController extends Controller
         }
         $usuario->save();
 
-        // Crear perfil de cliente asociado
-        Cliente::create([
-            'nombre' => $data['nombre'],
-            'apellido' => $data['apellido'],
-            'documento' => $data['documento'],
-            'telefono' => null,
-            'direccion' => null,
-            'email' => $data['email'],
-            'estado' => 'activo',
-        ]);
+        // Crear o actualizar perfil de cliente asociado
+        // Si ya existe un cliente con este email, lo usamos (o actualizamos) en lugar de fallar
+        $cliente = Cliente::where('email', $data['email'])->first();
+        
+        if (!$cliente) {
+            // Verificar si existe por documento para evitar duplicidad de documento
+            $clientePorDoc = Cliente::where('documento', $data['documento'])->first();
+            
+            if (!$clientePorDoc) {
+                Cliente::create([
+                    'nombre' => $data['nombre'],
+                    'apellido' => $data['apellido'],
+                    'documento' => $data['documento'],
+                    'telefono' => null,
+                    'direccion' => null,
+                    'email' => $data['email'],
+                    'estado' => 'activo',
+                ]);
+            } else {
+                // Si existe por documento pero no por email, actualizamos el email del cliente existente
+                // esto asume que el usuario verificó su email al registrarse (o lo hará)
+                $clientePorDoc->email = $data['email'];
+                $clientePorDoc->save();
+            }
+        } else {
+            // El cliente ya existe por email, no hacemos nada (preservamos sus datos actuales)
+            // Opcionalmente podríamos actualizar nombre/apellido si están vacíos en el registro existente
+        }
 
         // Autenticar automáticamente tras registro exitoso
         Auth::login($usuario);

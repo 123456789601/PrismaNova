@@ -1,147 +1,233 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Título dinámico de la página, por defecto PRISMANOVA -->
-    <title>@yield('title','PRISMANOVA')</title>
-    <!-- Bootstrap 5 CDN -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <!-- Token CSRF para peticiones AJAX seguras -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'PrismaNova') - Gestión Inteligente</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- NProgress -->
+    <link rel="stylesheet" href="https://unpkg.com/nprogress@0.2.0/nprogress.css" />
+    <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <script>
-        /**
-         * Script de inicialización del tema (claro/oscuro).
-         * Se ejecuta inmediatamente para evitar parpadeos (FOUC).
-         * Prioriza la configuración del usuario autenticado, luego localStorage, y finalmente 'light'.
-         */
-        (function () {
+        // Precargar tema
+        (function() {
             try {
-                var serverTheme = "{{ auth()->check() ? (auth()->user()->tema ?? '') : '' }}";
-                if (serverTheme === 'light' || serverTheme === 'dark') {
-                    localStorage.setItem('theme', serverTheme);
-                }
                 var stored = localStorage.getItem('theme') || 'light';
                 document.documentElement.setAttribute('data-bs-theme', stored);
-            } catch (e) {
-                document.documentElement.setAttribute('data-bs-theme', 'light');
-            }
+            } catch(e) {}
         })();
     </script>
-    <style>
-        /* Estilos globales y específicos del tema */
-        body{background:#f5f7fb}
-        .navbar{background:linear-gradient(90deg,#2a6f97,#00b4d8)}
-        .list-group-item-action.active,.list-group-item-action:active{background:#2a6f97;border-color:#2a6f97}
-        .card.shadow-sm{border-radius:10px}
-        [data-bs-theme="dark"] body{background:#121212;color:#f8f9fa}
-        [data-bs-theme="dark"] .navbar{background:linear-gradient(90deg,#000000,#343a40)}
-        [data-bs-theme="dark"] .bg-light{background-color:#1e1e1e!important}
-        [data-bs-theme="dark"] .card{background-color:#1e1e1e;color:#f8f9fa}
-        [data-bs-theme="dark"] .table{color:#f8f9fa}
-    </style>
 </head>
 <body>
-<!-- Barra de navegación principal -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="{{ route('dashboard') }}">PRISMANOVA</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-            </ul>
-            <div class="d-flex align-items-center">
-                <!-- Botón de cambio de tema -->
-                <button id="theme-toggle" type="button" class="btn btn-outline-light btn-sm me-2">Modo oscuro</button>
+    <!-- Formas de fondo -->
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+
+    <div class="d-flex position-relative">
+        <!-- Overlay para móvil -->
+        <div id="sidebar-overlay" class="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-none d-md-none" style="z-index: 999; backdrop-filter: blur(2px);" onclick="toggleSidebar()"></div>
+
+        <!-- Barra lateral (Solo para usuarios autenticados) -->
+        @auth
+            @include('partials.sidebar')
+        @endauth
+
+        <!-- Contenedor del contenido principal -->
+        <div class="main-content flex-grow-1 w-100 {{ auth()->check() ? '' : 'ms-0' }}" style="min-height: 100vh; overflow-x: hidden;">
+            <!-- Barra de navegación superior para móvil/tema -->
+            <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3 rounded-3 d-flex justify-content-between align-items-center p-3 d-md-none mx-3 mt-3 shadow-sm">
                 @auth
-                    <!-- Opciones para usuario autenticado -->
-                    <span class="navbar-text me-3">{{ auth()->user()->nombre }}</span>
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="btn btn-outline-light btn-sm">Salir</button>
-                    </form>
-                @else
-                    <!-- Opciones para visitantes (login/registro) -->
-                    <a href="{{ route('login') }}" class="btn btn-outline-light btn-sm me-2">Ingresar</a>
-                    <a href="{{ route('register') }}" class="btn btn-light btn-sm text-primary">Crear cuenta</a>
+                <button class="btn btn-outline-secondary border-0" type="button" onclick="toggleSidebar()">
+                    <i class="bi bi-list fs-4"></i>
+                </button>
                 @endauth
+                <span class="fw-bold fs-5">PrismaNova</span>
+                <button id="theme-toggle-mobile" class="btn btn-light rounded-circle border shadow-sm">
+                    <i class="bi bi-moon-stars-fill"></i>
+                </button>
+            </nav>
+            
+            <!-- Desktop Theme Toggle (Absolute) -->
+            <div class="position-absolute top-0 end-0 p-3 d-none d-md-block" style="z-index: 10;">
+                <button id="theme-toggle" class="btn btn-light rounded-circle border shadow-sm p-2 transform-hover">
+                    <i class="bi bi-moon-stars-fill"></i>
+                </button>
+            </div>
+
+            <div class="container-fluid px-3 px-md-4 pb-4">
+                @if(session('success'))
+                    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
+                
+                @if ($errors->any())
+                    <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
+                        <ul class="mb-0 ps-3">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
+
+                @yield('content')
             </div>
         </div>
     </div>
-    </nav>
-<!-- Contenedor principal de la aplicación -->
-<div class="container-fluid">
-    <div class="row">
-        @auth
-            <!-- Sidebar para usuarios autenticados -->
-            <aside class="col-md-2 bg-light min-vh-100 p-0">
-                @include('partials.sidebar')
-            </aside>
-            <!-- Contenido principal con margen para sidebar -->
-            <main class="col-md-10 p-4">
-        @else
-            <!-- Contenido principal ancho completo para visitantes -->
-            <main class="col-12 p-4">
-        @endauth
-            <!-- Mensajes flash de sesión (éxito/error) -->
-            @if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
-            @if(session('error'))<div class="alert alert-danger">{{ session('error') }}</div>@endif
-            
-            <!-- Inyección de contenido de las vistas hijas -->
-            @yield('content')
-        </main>
-    </div>
-</div>
- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
- <script>
-    /**
-     * Lógica para el cambio de tema en tiempo de ejecución.
-     * Guarda la preferencia en localStorage y en el servidor (si está autenticado).
-     */
-    (function () {
-        function storedTheme() {
-            try {
-                return localStorage.getItem('theme') || 'light';
-            } catch (e) {
-                return 'light';
+
+    <!-- Scripts de Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    @yield('scripts')
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if(sidebar) {
+                sidebar.classList.toggle('show');
+                if(overlay) {
+                    if(sidebar.classList.contains('show')) {
+                        overlay.classList.remove('d-none');
+                        overlay.classList.add('d-block');
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        overlay.classList.remove('d-block');
+                        overlay.classList.add('d-none');
+                        document.body.style.overflow = '';
+                    }
+                }
             }
         }
+    </script>
+</body>
+    <script>
+        // Función para aplicar tema (Global)
         function applyTheme(theme) {
             document.documentElement.setAttribute('data-bs-theme', theme);
             try {
                 localStorage.setItem('theme', theme);
             } catch (e) {}
-            var btn = document.getElementById('theme-toggle');
-            if (btn) {
-                btn.textContent = theme === 'dark' ? 'Modo claro' : 'Modo oscuro';
-            }
+            
+            // Actualizar botones
+            const btns = document.querySelectorAll('#theme-toggle, #theme-toggle-mobile');
+            btns.forEach(btn => {
+                var icon = btn.querySelector('i');
+                if (icon) {
+                    if (theme === 'dark') {
+                        icon.classList.remove('bi-moon-stars-fill');
+                        icon.classList.add('bi-sun-fill');
+                        btn.classList.replace('btn-light', 'btn-dark');
+                        btn.classList.add('text-warning');
+                    } else {
+                        icon.classList.remove('bi-sun-fill');
+                        icon.classList.add('bi-moon-stars-fill');
+                        btn.classList.replace('btn-dark', 'btn-light');
+                        btn.classList.remove('text-warning');
+                        btn.classList.add('text-secondary');
+                    }
+                }
+            });
+
+            // Enviar preferencia al servidor
             try {
                 var token = document.querySelector('meta[name=csrf-token]').content;
-                var isAuth = !!document.querySelector('span.navbar-text');
-                if (isAuth) {
-                    // Sincronización asíncrona con el servidor
-                    fetch('/perfil/tema', {
-                        method:'POST',
-                        headers:{'Content-Type':'application/json','X-CSRF-TOKEN':token},
-                        credentials:'include',
-                        body: JSON.stringify({tema: theme})
-                    }).catch(function(){});
-                }
+                fetch('/perfil/tema', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': token
+                    },
+                    body: JSON.stringify({ tema: theme })
+                }).catch(function(){});
             } catch(e){}
         }
-        document.addEventListener('DOMContentLoaded', function () {
-            applyTheme(storedTheme());
-            var btn = document.getElementById('theme-toggle');
-            if (!btn) return;
-            btn.addEventListener('click', function () {
-                var current = document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light';
+
+        // Event listeners
+        document.querySelectorAll('#theme-toggle, #theme-toggle-mobile').forEach(btn => {
+            btn.addEventListener('click', function() {
+                var current = document.documentElement.getAttribute('data-bs-theme');
                 var next = current === 'dark' ? 'light' : 'dark';
                 applyTheme(next);
             });
         });
-    })();
- </script>
+        
+        // Inicializar estado
+        var currentTheme = document.documentElement.getAttribute('data-bs-theme');
+        if(currentTheme === 'dark') {
+             const btns = document.querySelectorAll('#theme-toggle, #theme-toggle-mobile');
+             btns.forEach(btn => {
+                var icon = btn.querySelector('i');
+                if(icon) {
+                    icon.classList.remove('bi-moon-stars-fill');
+                    icon.classList.add('bi-sun-fill');
+                    btn.classList.replace('btn-light', 'btn-dark');
+                    btn.classList.add('text-warning');
+                }
+             });
+        }
+
+        // NProgress & Transitions
+        NProgress.start();
+        window.addEventListener('load', () => NProgress.done());
+        
+        document.addEventListener('click', e => {
+            const link = e.target.closest('a');
+            if (link && link.href && link.href.startsWith(window.location.origin) && !link.hasAttribute('target') && !e.ctrlKey && !e.metaKey && !link.getAttribute('href').startsWith('#') && !link.getAttribute('href').startsWith('javascript')) {
+                NProgress.start();
+            }
+        });
+        
+        // Form Submit Loading Effects
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', (e) => {
+                if (!form.checkValidity()) {
+                    // Si el formulario no es válido, no mostramos loading y dejamos que el navegador/script maneje el error
+                    return;
+                }
+
+                const btn = form.querySelector('button[type="submit"]');
+                if(btn && !btn.classList.contains('no-loading') && btn.innerText.trim().length > 0) {
+                    const originalHTML = btn.innerHTML;
+                    btn.dataset.originalHtml = originalHTML;
+                    
+                    // Use setTimeout to allow the form submission to start before disabling
+                    setTimeout(() => {
+                        btn.disabled = true;
+                        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Cargando...';
+                    }, 0);
+
+                    // Re-enable after 10s in case of error/timeout
+                    setTimeout(() => {
+                        btn.disabled = false;
+                        btn.innerHTML = originalHTML;
+                        NProgress.done();
+                    }, 10000);
+                }
+                NProgress.start();
+            });
+        });
+    </script>
 </body>
 </html>

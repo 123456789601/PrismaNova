@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Proveedor;
+use App\Models\Bitacora;
 use App\Http\Requests\StoreProveedorRequest;
 use App\Http\Requests\UpdateProveedorRequest;
 
@@ -79,6 +80,7 @@ class ProveedorController extends Controller
     public function update(UpdateProveedorRequest $request, Proveedor $proveedor)
     {
         $proveedor->update($request->validated());
+        Bitacora::registrar('UPDATE', 'proveedores', $proveedor->id_proveedor, 'Proveedor actualizado');
         return redirect()->route('proveedores.index')->with('success','Proveedor actualizado');
     }
 
@@ -90,7 +92,17 @@ class ProveedorController extends Controller
      */
     public function destroy(Proveedor $proveedor)
     {
+        // Verificar integridad referencial
+        if ($proveedor->compras()->exists()) {
+            return back()->with('error', 'No se puede eliminar el proveedor porque tiene compras asociadas.');
+        }
+        if ($proveedor->productos()->exists()) {
+            return back()->with('error', 'No se puede eliminar el proveedor porque tiene productos asociados.');
+        }
+
+        $id = $proveedor->id_proveedor;
         $proveedor->delete();
+        Bitacora::registrar('DELETE', 'proveedores', $id, 'Proveedor eliminado');
         return redirect()->route('proveedores.index')->with('success','Proveedor eliminado');
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Proveedor;
 use App\Http\Requests\StoreProductoRequest;
 use App\Http\Requests\UpdateProductoRequest;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Bitacora;
 
 /**
  * Class ProductoController
@@ -25,16 +26,36 @@ class ProductoController extends Controller
     public function index()
     {
         $q = request('q');
+        $filtro = request('filtro');
         
         // Cargar productos con relaciones para optimizar consultas (Eager Loading)
-        $productos = Producto::with(['categoria','proveedor'])
-            ->when($q, function($w) use ($q){
+        $query = Producto::with(['categoria','proveedor']);
+            
+        if ($q) {
+            $query->where(function($w) use ($q){
                 $w->where('nombre','like',"%$q%")
                   ->orWhere('codigo_barras','like',"%$q%");
-            })
-            ->orderBy('id_producto','desc')->paginate(10);
+            });
+        }
+
+        if ($filtro === 'stock_bajo') {
+            $query->whereColumn('stock', '<=', 'stock_minimo');
+        }
+            
+        $productos = $query->orderBy('id_producto','desc')->paginate(10);
             
         return view('productos.index', compact('productos'));
+    }
+
+    /**
+     * Muestra la vista para imprimir la etiqueta de código de barras.
+     * 
+     * @param Producto $producto El producto del cual generar la etiqueta.
+     * @return \Illuminate\View\View
+     */
+    public function etiqueta(Producto $producto)
+    {
+        return view('productos.etiqueta', compact('producto'));
     }
 
     /**
@@ -74,36 +95,39 @@ class ProductoController extends Controller
      */
     public function store(StoreProductoRequest $request)
     {
-        $data = $request->validated();
-        
-        // Normalizar valores nulos para claves foráneas y fechas opcionales
-        if (empty($data['id_proveedor'])) {
-            $data['id_proveedor'] = null;
+        try {
+            $data = $request->validated();
+            
+            // Normalizar valores nulos para claves foráneas y fechas opcionales
+            if (empty($data['id_proveedor'])) {
+                $data['id_proveedor'] = null;
+            }
+            if (empty($data['fecha_vencimiento'])) {
+                $data['fecha_vencimiento'] = null;
+            }
+            
+            // Asignar estado por defecto si no viene en el request
+            if (empty($data['estado'])) {
+                $data['estado'] = 'activo';
+            }
+            
+            // Procesar imagen si se adjuntó
+            if ($request->hasFile('imagen')) {
+                $data['imagen'] = $request->file('imagen')->store('productos', 'public');
+            }
+            
+            $producto = Producto::create($data);
+            Bitacora::registrar('CREATE', 'productos', $producto->id_producto, 'Producto creado: ' . $producto->nombre);
+            
+            return redirect()->route('productos.index')->with('success','Producto creado');
+        } catch (\Exception $e) {
+            \Log::error('Error al crear producto: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error al crear producto: ' . $e->getMessage())->withInput();
         }
-        if (empty($data['fecha_vencimiento'])) {
-            $data['fecha_vencimiento'] = null;
-        }
-        
-        // Asignar estado por defecto si no viene en el request
-        if (empty($data['estado'])) {
-            $data['estado'] = 'activo';
-        }
-        
-        // Procesar imagen si se adjuntó
-        if ($request->hasFile('imagen')) {
-            $data['imagen'] = $request->file('imagen')->store('productos', 'public');
-        }
-        
-        Producto::create($data);
-        
-        return redirect()->route('productos.index')->with('success','Producto creado');
     }
 
     /**
-     * Muestra el formulario para editar un producto existente.
-     *
-     * @param Producto $producto
-     * @return \Illuminate\View\View Vista del formulario de edición.
+     * Muestra el formulario para editar un producto.
      */
     public function edit(Producto $producto)
     {
@@ -113,58 +137,110 @@ class ProductoController extends Controller
     }
 
     /**
-     * Actualiza un producto específico en la base de datos.
-     * 
-     * Utiliza UpdateProductoRequest para validación.
-     * Maneja el reemplazo de imágenes eliminando la anterior.
-     *
-     * @param UpdateProductoRequest $request Datos validados.
-     * @param Producto $producto Producto a actualizar.
-     * @return \Illuminate\Http\RedirectResponse
+     * Actualiza un producto existente.
      */
     public function update(UpdateProductoRequest $request, Producto $producto)
     {
-        $data = $request->validated();
-        
-        // Normalizar campos opcionales si existen en el array de datos
-        if (array_key_exists('id_proveedor', $data) && empty($data['id_proveedor'])) {
-            $data['id_proveedor'] = null;
-        }
-        if (array_key_exists('fecha_vencimiento', $data) && empty($data['fecha_vencimiento'])) {
-            $data['fecha_vencimiento'] = null;
-        }
-        
-        // Gestionar reemplazo de imagen
-        if ($request->hasFile('imagen')) {
-            // Eliminar imagen anterior si existe físicamente
-            if ($producto->imagen && Storage::disk('public')->exists($producto->imagen)) {
-                Storage::disk('public')->delete($producto->imagen);
+        try {
+            $data = $request->validated();
+            
+            // Normalizar valores nulos
+            if (empty($data['id_proveedor'])) {
+                $data['id_proveedor'] = null;
             }
-            $data['imagen'] = $request->file('imagen')->store('productos', 'public');
+            if (empty($data['fecha_vencimiento'])) {
+                $data['fecha_vencimiento'] = null;
+            }
+
+            if ($request->hasFile('imagen')) {
+                // Eliminar imagen anterior si existe
+                if ($producto->imagen) {
+                    Storage::disk('public')->delete($producto->imagen);
+                }
+                $data['imagen'] = $request->file('imagen')->store('productos', 'public');
+            }
+
+            // Limpiar formato de moneda en precios si vienen como string (e.g. "$ 1000")
+            // NOTA: No eliminar el punto decimal si ya es un formato válido (e.g. "10.50")
+            if (isset($data['precio_compra'])) {
+                $val = str_replace(['$', 'S/', ' '], '', (string)$data['precio_compra']);
+                // Si tiene coma como decimal, reemplazar por punto
+                if (strpos($val, ',') !== false && strpos($val, '.') === false) {
+                    $val = str_replace(',', '.', $val);
+                }
+                $data['precio_compra'] = (float) $val;
+            }
+            if (isset($data['precio_venta'])) {
+                $val = str_replace(['$', 'S/', ' '], '', (string)$data['precio_venta']);
+                // Si tiene coma como decimal, reemplazar por punto
+                if (strpos($val, ',') !== false && strpos($val, '.') === false) {
+                    $val = str_replace(',', '.', $val);
+                }
+                $data['precio_venta'] = (float) $val;
+            }
+
+            $producto->update($data);
+            Bitacora::registrar('UPDATE', 'productos', $producto->id_producto, 'Producto actualizado');
+
+            return redirect()->route('productos.index')->with('success','Producto actualizado');
+        } catch (\Exception $e) {
+            \Log::error('Error al actualizar producto: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error al actualizar producto: ' . $e->getMessage())->withInput();
         }
-        
-        $producto->update($data);
-        
-        return redirect()->route('productos.index')->with('success','Producto actualizado');
     }
 
     /**
-     * Elimina un producto de la base de datos.
-     * 
-     * También elimina la imagen asociada del almacenamiento.
-     *
-     * @param Producto $producto
-     * @return \Illuminate\Http\RedirectResponse
+     * Envía un producto a la papelera (Soft Delete).
      */
     public function destroy(Producto $producto)
     {
-        // Limpiar archivo de imagen antes de borrar registro
-        if ($producto->imagen && Storage::disk('public')->exists($producto->imagen)) {
-            Storage::disk('public')->delete($producto->imagen);
+        $producto->delete(); // Soft delete gracias al trait en el modelo
+        Bitacora::registrar('DELETE', 'productos', $producto->id_producto, 'Producto enviado a papelera');
+        return redirect()->route('productos.index')->with('success', 'Producto enviado a la papelera');
+    }
+
+    /**
+     * Muestra los productos en la papelera de reciclaje.
+     */
+    public function papelera()
+    {
+        $productos = Producto::onlyTrashed()->with(['categoria','proveedor'])->paginate(10);
+        return view('productos.papelera', compact('productos'));
+    }
+
+    /**
+     * Restaura un producto de la papelera.
+     */
+    public function restaurar($id)
+    {
+        $producto = Producto::onlyTrashed()->findOrFail($id);
+        $producto->restore();
+        Bitacora::registrar('RESTORE', 'productos', $id, 'Producto restaurado');
+        return redirect()->route('productos.papelera')->with('success', 'Producto restaurado correctamente');
+    }
+
+    /**
+     * Elimina permanentemente un producto de la papelera.
+     * Verifica que no tenga historial de ventas o compras para no romper la integridad.
+     */
+    public function forceDelete($id)
+    {
+        $producto = Producto::onlyTrashed()->findOrFail($id);
+        
+        // Verificar integridad referencial manualmente
+        if ($producto->detallesVenta()->exists() || $producto->detallesCompra()->exists()) {
+             return redirect()->route('productos.papelera')->with('error', 'No se puede eliminar permanentemente: El producto tiene historial de ventas o compras. Solo puede permanecer desactivado.');
         }
-        
-        $producto->delete();
-        
-        return redirect()->route('productos.index')->with('success','Producto eliminado');
+
+        try {
+            if ($producto->imagen) {
+                Storage::disk('public')->delete($producto->imagen);
+            }
+            $producto->forceDelete();
+            Bitacora::registrar('FORCE_DELETE', 'productos', $id, 'Producto eliminado permanentemente');
+            return redirect()->route('productos.papelera')->with('success', 'Producto eliminado permanentemente');
+        } catch (\Exception $e) {
+             return redirect()->route('productos.papelera')->with('error', 'Error al eliminar: ' . $e->getMessage());
+        }
     }
 }

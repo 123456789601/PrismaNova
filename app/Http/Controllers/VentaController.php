@@ -7,6 +7,8 @@ use App\Models\DetalleVenta;
 use App\Models\Cliente;
 use App\Models\Producto;
 use App\Models\MetodoPago;
+use App\Models\Bitacora;
+use App\Models\Caja;
 use App\Http\Requests\StoreVentaRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -50,10 +52,34 @@ class VentaController extends Controller
      */
     public function create()
     {
+        if (!Caja::where('estado', 'abierta')->exists()) {
+            return redirect()->route('caja.index')->with('error', 'Debe abrir una caja para realizar ventas.');
+        }
+
         $clientes = Cliente::where('estado','activo')->orderBy('nombre')->get();
         $productos = Producto::where('estado','activo')->orderBy('nombre')->get();
         $metodos = MetodoPago::where('estado','activo')->orderBy('nombre')->get();
         return view('ventas.create', compact('clientes','productos','metodos'));
+    }
+
+    /**
+     * Muestra la interfaz de Punto de Venta (POS).
+     *
+     * @return \Illuminate\View\View
+     */
+    public function pos()
+    {
+        if (!Caja::where('estado', 'abierta')->exists()) {
+            return redirect()->route('caja.index')->with('error', 'Debe abrir una caja para realizar ventas.');
+        }
+
+        $clientes = Cliente::where('estado','activo')->orderBy('nombre')->get();
+        // Cargar productos con relaciones si es necesario, e.g. categoría
+        $productos = Producto::with('categoria')->where('estado','activo')->orderBy('nombre')->get();
+        $categorias = \App\Models\Categoria::where('estado','activo')->orderBy('nombre')->get();
+        $metodos = MetodoPago::where('estado','activo')->orderBy('nombre')->get();
+        
+        return view('ventas.pos', compact('clientes','productos','categorias','metodos'));
     }
 
     /**
@@ -66,6 +92,34 @@ class VentaController extends Controller
     {
         $venta->load(['cliente','usuario','detalles.producto','metodoPago']);
         return view('ventas.show', compact('venta'));
+    }
+
+    /**
+     * Devuelve las últimas 10 ventas del usuario actual (JSON).
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function recent()
+    {
+        $ventas = Venta::with('cliente')
+            ->where('id_usuario', Auth::id())
+            ->orderBy('fecha', 'desc')
+            ->limit(10)
+            ->get();
+            
+        return response()->json($ventas);
+    }
+
+    /**
+     * Muestra una versión imprimible (ticket) de la venta.
+     * 
+     * @param Venta $venta
+     * @return \Illuminate\View\View
+     */
+    public function ticket(Venta $venta)
+    {
+        $venta->load(['cliente','usuario','detalles.producto','metodoPago']);
+        return view('ventas.ticket', compact('venta'));
     }
 
     /**
@@ -83,6 +137,10 @@ class VentaController extends Controller
      */
     public function store(StoreVentaRequest $request)
     {
+        if (!Caja::where('estado', 'abierta')->exists()) {
+            return redirect()->route('caja.index')->with('error', 'Debe abrir una caja para realizar ventas.');
+        }
+
         $data = $request->validated();
         $venta = null;
         try {
@@ -132,6 +190,17 @@ class VentaController extends Controller
                     $mp = MetodoPago::find($metodoPagoId);
                     $metodoPagoNombre = $mp->nombre ?? null;
                 }
+
+                $montoRecibido = $data['monto_recibido'] ?? null;
+                $cambio = null;
+                $referencia = $data['referencia_pago'] ?? null;
+                $ultimos = $data['ultimos_digitos'] ?? null;
+
+                if ($montoRecibido && $metodoPagoNombre === 'Efectivo') {
+                    $cambio = (float)$montoRecibido - $total;
+                    if ($cambio < 0) $cambio = 0; // O lanzar excepción si es menor
+                }
+
                 $venta = Venta::create([
                     'id_cliente' => $data['id_cliente'],
                     'id_usuario' => Auth::user()->id_usuario,
@@ -142,6 +211,10 @@ class VentaController extends Controller
                     'total' => $total,
                     'metodo_pago' => $metodoPagoNombre,
                     'metodo_pago_id' => $metodoPagoId,
+                    'monto_recibido' => $montoRecibido,
+                    'cambio' => $cambio,
+                    'referencia_pago' => $referencia,
+                    'ultimos_digitos' => $ultimos,
                     'estado' => 'completada',
                 ]);
 
@@ -158,6 +231,12 @@ class VentaController extends Controller
                 }
             });
         } catch (Exception $e) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error al registrar la venta: '.$e->getMessage()
+                ], 422);
+            }
             return back()->with('error', 'Error al registrar la venta: '.$e->getMessage())->withInput();
         }
         try {
@@ -174,6 +253,20 @@ class VentaController extends Controller
         } catch (Exception $e) {
             // silencioso: si falla el mail, no romper el flujo
         }
+        
+        if ($venta) {
+            Bitacora::registrar('CREATE', 'ventas', $venta->id_venta, 'Venta registrada. Total: ' . $venta->total);
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Venta registrada con éxito',
+                'venta_id' => $venta->id_venta,
+                'redirect' => route('ventas.show', $venta->id_venta)
+            ]);
+        }
+
         return redirect()->route('ventas.index')->with('success','Venta registrada');
     }
 
@@ -188,6 +281,9 @@ class VentaController extends Controller
     public function anular(Venta $venta)
     {
         if ($venta->estado === 'anulada') {
+            if (request()->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'La venta ya está anulada'], 422);
+            }
             return back()->with('error','La venta ya está anulada');
         }
         try {
@@ -200,9 +296,18 @@ class VentaController extends Controller
                 }
                 $venta->estado = 'anulada';
                 $venta->save();
+                
+                Bitacora::registrar('UPDATE', 'ventas', $venta->id_venta, 'Venta anulada');
             });
         } catch (Exception $e) {
+            if (request()->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'No se pudo anular: '.$e->getMessage()], 500);
+            }
             return back()->with('error','No se pudo anular: '.$e->getMessage());
+        }
+
+        if (request()->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Venta anulada correctamente']);
         }
         return back()->with('success','Venta anulada');
     }

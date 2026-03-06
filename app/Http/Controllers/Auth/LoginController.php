@@ -6,6 +6,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+
+use App\Models\Bitacora;
+
+use App\Rules\Recaptcha;
 
 /**
  * Class LoginController
@@ -35,19 +42,67 @@ class LoginController extends Controller
      */
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $rules = [
             'email' => ['required', 'email'],
             'password' => ['required'],
-        ]);
+        ];
+
+        if (config('services.recaptcha.site_key')) {
+            $rules['g-recaptcha-response'] = ['required', new Recaptcha];
+        }
+
+        $credentials = $request->validate($rules);
+        
+        // Remove recaptcha from credentials before attempting login
+        unset($credentials['g-recaptcha-response']);
+
+        $this->ensureIsNotRateLimited($request);
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            RateLimiter::clear($this->throttleKey($request));
             $request->session()->regenerate();
+            Bitacora::registrar('LOGIN', 'usuarios', Auth::id(), 'Inicio de sesión exitoso');
             return redirect()->intended(route('dashboard'));
         }
+
+        RateLimiter::hit($this->throttleKey($request));
 
         return back()->withErrors([
             'email' => 'Credenciales inválidas.',
         ])->onlyInput('email');
+    }
+
+    /**
+     * Ensure the login request is not rate limited.
+     *
+     * @return void
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function ensureIsNotRateLimited(Request $request)
+    {
+        if (! RateLimiter::tooManyAttempts($this->throttleKey($request), 5)) {
+            return;
+        }
+
+        $seconds = RateLimiter::availableIn($this->throttleKey($request));
+
+        throw ValidationException::withMessages([
+            'email' => trans('auth.throttle', [
+                'seconds' => $seconds,
+                'minutes' => ceil($seconds / 60),
+            ]),
+        ]);
+    }
+
+    /**
+     * Get the rate limiting throttle key for the request.
+     *
+     * @return string
+     */
+    protected function throttleKey(Request $request)
+    {
+        return Str::transliterate(Str::lower($request->input('email')).'|'.$request->ip());
     }
 
     /**
@@ -60,6 +115,11 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
+        $userId = Auth::id();
+        if ($userId) {
+            Bitacora::registrar('LOGOUT', 'usuarios', $userId, 'Cierre de sesión');
+        }
+        
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

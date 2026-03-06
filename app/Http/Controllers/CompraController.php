@@ -6,6 +6,7 @@ use App\Models\Compra;
 use App\Models\DetalleCompra;
 use App\Models\Proveedor;
 use App\Models\Producto;
+use App\Models\Bitacora;
 use App\Http\Requests\StoreCompraRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -68,8 +69,9 @@ class CompraController extends Controller
     public function store(StoreCompraRequest $request)
     {
         $data = $request->validated();
+        $compra = null;
         try {
-            DB::transaction(function () use ($data) {
+            DB::transaction(function () use ($data, &$compra) {
                 $subtotal = 0;
                 $detalles = [];
                 foreach ($data['id_producto'] as $i => $idProducto) {
@@ -105,6 +107,11 @@ class CompraController extends Controller
                     $producto->save();
                 }
             });
+            
+            if ($compra) {
+                Bitacora::registrar('CREATE', 'compras', $compra->id_compra, 'Compra registrada. Total: ' . $compra->total);
+            }
+
         } catch (Exception $e) {
             return back()->with('error', 'Error al registrar la compra: '.$e->getMessage())->withInput();
         }
@@ -139,6 +146,8 @@ class CompraController extends Controller
                 }
                 $compra->estado = 'anulada';
                 $compra->save();
+                
+                Bitacora::registrar('UPDATE', 'compras', $compra->id_compra, 'Compra anulada');
             });
         } catch (Exception $e) {
             return back()->with('error', 'No se pudo anular: '.$e->getMessage());

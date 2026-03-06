@@ -7,6 +7,7 @@ use App\Models\Compra;
 use App\Models\InventoryUsageSync;
 use App\Models\MetodoPago;
 use App\Models\Usuario;
+use App\Models\Producto;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Http\Request;
@@ -117,7 +118,9 @@ class ReporteController extends Controller
         
         // Cargar datos auxiliares para los filtros de la vista
         $metodosPago = MetodoPago::orderBy('nombre')->get();
-        $cajeros = Usuario::where('rol','cajero')->orderBy('nombre')->get();
+        $cajeros = Usuario::whereHas('rol', function($q) {
+            $q->where('nombre', 'cajero');
+        })->orderBy('nombre')->get();
         
         // Obtener fecha de última sincronización de inventario
         $ultimaSync = InventoryUsageSync::max('applied_at') ?? InventoryUsageSync::max('created_at');
@@ -241,5 +244,36 @@ class ReporteController extends Controller
             }
             fclose($out);
         }, 'ventas.csv', $headers);
+    }
+
+    /**
+     * Exporta el reporte de productos con stock bajo a CSV.
+     */
+    public function exportStockBajoCsv()
+    {
+        $productos = Producto::whereColumn('stock', '<=', 'stock_minimo')->get();
+        
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="stock_bajo.csv"',
+        ];
+        
+        return response()->streamDownload(function() use ($productos) {
+            $out = fopen('php://output', 'w');
+            fputs($out, chr(0xEF).chr(0xBB).chr(0xBF));
+            fputcsv($out, ['ID','Producto','Código Barras','Stock Actual','Stock Mínimo','Precio Venta']);
+            
+            foreach ($productos as $p) {
+                fputcsv($out, [
+                    $p->id_producto,
+                    $p->nombre,
+                    $p->codigo_barras,
+                    $p->stock,
+                    $p->stock_minimo,
+                    $p->precio_venta,
+                ]);
+            }
+            fclose($out);
+        }, 'stock_bajo.csv', $headers);
     }
 }

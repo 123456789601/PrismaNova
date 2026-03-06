@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegistrationController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ClienteController;
@@ -18,6 +20,10 @@ use App\Http\Controllers\MisComprasController;
 use App\Http\Controllers\TiendaController;
 use App\Http\Controllers\Api\ProductApiController;
 use App\Http\Controllers\Api\VentaApiController;
+use App\Http\Controllers\ConfiguracionController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\BackupController;
+use App\Http\Controllers\HealthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,11 +36,41 @@ use App\Http\Controllers\Api\VentaApiController;
 |
 */
 
-Route::get('/', function () { return auth()->check() ? redirect()->route('dashboard') : view('landing'); })->name('home');
+Route::get('/', function () { 
+    if (auth()->check()) {
+        return redirect()->route('dashboard');
+    }
+    try {
+        $productos = \App\Models\Producto::where('estado', 'activo')
+            ->where('stock', '>', 0)
+            ->inRandomOrder()
+            ->take(4)
+            ->get();
+            
+        $stats = [
+            'clientes' => \App\Models\Cliente::count(),
+            'ventas' => \App\Models\Venta::count(),
+            'productos_total' => \App\Models\Producto::count(),
+        ];
+    } catch (\Exception $e) {
+        $productos = collect(); // Colección vacía si falla la BD
+        $stats = ['clientes' => 0, 'ventas' => 0, 'productos_total' => 0];
+    }
+    return view('welcome', compact('productos', 'stats')); 
+})->name('home');
+Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
+Route::post('/contact/send', [ContactController::class, 'send'])->name('contact.send');
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login')->middleware('guest');
 Route::post('/login', [LoginController::class, 'login'])->name('login.attempt')->middleware('guest');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout.get')->middleware('auth');
+
+// Password Reset Routes
+Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+
 Route::get('/registro', [RegistrationController::class, 'show'])->name('register')->middleware('guest');
 Route::post('/registro', [RegistrationController::class, 'register'])->name('register.attempt')->middleware('guest');
 
@@ -43,17 +79,28 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/perfil', [PerfilController::class,'show'])->name('perfil');
     Route::put('/perfil', [PerfilController::class,'update'])->name('perfil.update');
     Route::post('/perfil/tema', [PerfilController::class,'updateTheme'])->name('perfil.tema.update');
-    Route::prefix('api')->group(function () {
-        Route::get('productos', [ProductApiController::class,'index']);
-        Route::get('productos/{producto}', [ProductApiController::class,'show']);
-        Route::post('productos', [ProductApiController::class,'store'])->middleware('role:admin,cajero,bodeguero');
-        Route::post('productos/{producto}', [ProductApiController::class,'update'])->middleware('role:admin,cajero,bodeguero');
-        Route::delete('productos/{producto}', [ProductApiController::class,'destroy'])->middleware('role:admin,cajero,bodeguero');
-        Route::post('ventas', [VentaApiController::class,'store'])->middleware('role:admin,cajero,cliente');
-    });
+    // Route::prefix('api')->group(function () {
+    //    Route::get('productos', [ProductApiController::class,'index']);
+    //    Route::get('productos/{producto}', [ProductApiController::class,'show']);
+    //    Route::post('productos', [ProductApiController::class,'store'])->middleware('role:admin,cajero,bodeguero');
+    //    Route::post('productos/{producto}', [ProductApiController::class,'update'])->middleware('role:admin,cajero,bodeguero');
+    //    Route::delete('productos/{producto}', [ProductApiController::class,'destroy'])->middleware('role:admin,cajero,bodeguero');
+    //    Route::post('ventas', [VentaApiController::class,'store'])->middleware('role:admin,cajero,cliente');
+    // });
     Route::middleware(['role:admin'])->group(function () {
+        Route::get('/admin/health', [HealthController::class, 'index'])->name('admin.health');
+        Route::post('/admin/health/optimize', [HealthController::class, 'optimize'])->name('admin.health.optimize');
+        Route::get('/admin/backup/download', [BackupController::class, 'download'])->name('admin.backup.download');
         Route::resource('usuarios', UsuarioController::class);
         Route::resource('cupones', \App\Http\Controllers\CuponController::class);
+        Route::get('bitacora', [\App\Http\Controllers\BitacoraController::class, 'index'])->name('bitacora.index');
+        
+        // Configuración del sistema
+        Route::get('configuracion', [ConfiguracionController::class, 'index'])->name('configuracion.index');
+        Route::put('configuracion', [ConfiguracionController::class, 'update'])->name('configuracion.update');
+        
+        // Mensajes de Contacto
+        Route::get('mensajes', [ContactController::class, 'adminIndex'])->name('admin.mensajes.index');
     });
     Route::middleware(['role:admin,cajero'])->group(function () {
         Route::resource('clientes', ClienteController::class);
@@ -61,15 +108,32 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:admin,bodeguero'])->group(function () {
         Route::resource('proveedores', ProveedorController::class);
         Route::resource('categorias', CategoriaController::class);
+        
+        // Rutas de papelera para productos (Eliminación suave)
+        Route::get('productos/papelera', [ProductoController::class, 'papelera'])->name('productos.papelera');
+        Route::get('productos/{producto}/etiqueta', [ProductoController::class, 'etiqueta'])->name('productos.etiqueta');
+        Route::put('productos/{id}/restaurar', [ProductoController::class, 'restaurar'])->name('productos.restaurar');
+        Route::delete('productos/{id}/force-delete', [ProductoController::class, 'forceDelete'])->name('productos.forceDelete');
+        
         Route::resource('productos', ProductoController::class);
         Route::resource('compras', CompraController::class)->only(['index','create','store','show']);
         Route::patch('compras/{compra}/anular', [CompraController::class, 'anular'])->name('compras.anular');
     });
     Route::middleware(['role:admin,cajero'])->group(function () {
+        Route::get('ventas/pos', [VentaController::class, 'pos'])->name('ventas.pos');
+        Route::get('ventas/recent', [VentaController::class, 'recent'])->name('ventas.recent');
+        
+        // Rutas para ventas suspendidas (API)
+        Route::get('ventas/suspendidas', [\App\Http\Controllers\VentaSuspendidaController::class, 'index'])->name('ventas.suspendidas.index');
+        Route::post('ventas/suspendidas', [\App\Http\Controllers\VentaSuspendidaController::class, 'store'])->name('ventas.suspendidas.store');
+        Route::delete('ventas/suspendidas/{id}', [\App\Http\Controllers\VentaSuspendidaController::class, 'destroy'])->name('ventas.suspendidas.destroy');
+
         Route::resource('ventas', VentaController::class)->only(['index','create','store','show']);
         Route::patch('ventas/{venta}/anular', [VentaController::class, 'anular'])->name('ventas.anular');
         Route::get('ventas/{venta}/factura', [VentaController::class, 'factura'])->name('ventas.factura');
+        Route::get('ventas/{venta}/ticket', [VentaController::class, 'ticket'])->name('ventas.ticket');
         Route::get('caja', [CajaController::class,'index'])->name('caja.index');
+        Route::get('caja/estado-actual', [CajaController::class,'estadoActual'])->name('caja.estado');
         Route::post('caja/abrir', [CajaController::class,'abrir'])->name('caja.abrir');
         Route::get('caja/{caja}', [CajaController::class,'show'])->name('caja.show');
         Route::patch('caja/{caja}/cerrar', [CajaController::class,'cerrar'])->name('caja.cerrar');
@@ -80,6 +144,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('reportes/sync-logs', [ReporteController::class,'syncLogs'])->name('reportes.sync');
         Route::post('reportes/sync-now', [ReporteController::class,'syncRun'])->name('reportes.sync.run');
         Route::get('reportes/export/ventas', [ReporteController::class,'exportVentasCsv'])->name('reportes.export.ventas');
+        Route::get('reportes/export/stock', [ReporteController::class,'exportStockBajoCsv'])->name('reportes.export.stock');
     });
     Route::middleware(['role:cliente'])->group(function () {
         Route::prefix('tienda')->group(function () {

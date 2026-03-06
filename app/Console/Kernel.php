@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('inventory:sync-usage')->everyTenMinutes();
+        $schedule->command('stock:check')->dailyAt('08:00');
     }
 
     /**

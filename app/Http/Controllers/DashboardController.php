@@ -33,7 +33,7 @@ class DashboardController extends Controller
     public function index()
     {
         // Obtener rol y usuario actual
-        $rol = Auth::user()->rol ?? null;
+        $rol = strtolower(trim(Auth::user()->rol->nombre ?? ''));
         $userId = Auth::user()->id_usuario ?? null;
         
         // Obtener filtro de cajero si existe (para vista de admin)
@@ -63,7 +63,19 @@ class DashboardController extends Controller
                 
                 // Alertas de inventario y sincronización
                 $s['stock_bajo'] = Producto::whereColumn('stock','<=','stock_minimo')->count();
+                $s['productos_stock_bajo'] = Producto::whereColumn('stock','<=','stock_minimo')
+                    ->select('id_producto','nombre','stock','stock_minimo')
+                    ->orderBy('stock','asc')
+                    ->limit(5)
+                    ->get();
+                
                 $s['ultima_sync'] = InventoryUsageSync::max('applied_at') ?? InventoryUsageSync::max('created_at');
+                
+                // Ultimas 5 ventas
+                $s['ultimas_ventas'] = Venta::with('cliente')
+                    ->orderBy('fecha','desc')
+                    ->limit(5)
+                    ->get();
                 
                 // --- Gráfica Global de Ventas Diarias (Mes Actual) ---
                 $rangos = Venta::selectRaw('DATE(fecha) as d, SUM(total) as t')
@@ -83,6 +95,18 @@ class DashboardController extends Controller
                 }
                 $s['labels_dias'] = $dias;
                 $s['serie_dias'] = $serieDias;
+
+                // --- Top 5 Productos del Mes (Para Gráfica de Dona) ---
+                $s['top_productos'] = DB::table('detalle_ventas')
+                    ->join('ventas', 'detalle_ventas.id_venta', '=', 'ventas.id_venta')
+                    ->join('productos', 'detalle_ventas.id_producto', '=', 'productos.id_producto')
+                    ->select('productos.nombre', DB::raw('SUM(detalle_ventas.cantidad) as total_vendido'))
+                    ->whereBetween('ventas.fecha', [$startMonth, $endMonth])
+                    ->where('ventas.estado', '!=', 'anulada')
+                    ->groupBy('productos.id_producto', 'productos.nombre')
+                    ->orderByDesc('total_vendido')
+                    ->limit(5)
+                    ->get();
                 
                 // --- Gráfica Filtrada por Cajero (si se selecciona uno) ---
                 if ($cajeroId) {
@@ -194,9 +218,15 @@ class DashboardController extends Controller
                 }
             }
             
-            // --- Lógica para BODEGUERO ---
+            // --- Lógica para ADMIN y BODEGUERO ---
             if (in_array($rol, ['admin','bodeguero'])) {
                 $s['stock_bajo'] = $s['stock_bajo'] ?? Producto::whereColumn('stock','<=','stock_minimo')->count();
+                $s['productos_stock_bajo'] = $s['productos_stock_bajo'] ?? Producto::whereColumn('stock','<=','stock_minimo')
+                    ->select('id_producto','nombre','stock','stock_minimo')
+                    ->orderBy('stock','asc')
+                    ->limit(5)
+                    ->get();
+                    
                 $s['productos_total'] = Producto::count();
                 $s['compras_mes_total'] = $s['compras_mes_total'] ?? Compra::whereBetween('fecha', [now()->startOfMonth(), now()->endOfMonth()])->sum('total');
             }
@@ -220,7 +250,9 @@ class DashboardController extends Controller
         });
         
         // Obtener lista de cajeros para el filtro (solo admin)
-        $cajeros = $rol === 'admin' ? Usuario::where('rol','cajero')->orderBy('nombre')->get() : collect();
+        $cajeros = $rol === 'admin' ? Usuario::whereHas('rol', function($q) {
+            $q->where('nombre', 'cajero');
+        })->orderBy('nombre')->get() : collect();
         
         return view('dashboard', [
             'stats' => $stats,

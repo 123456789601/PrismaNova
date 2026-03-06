@@ -57,6 +57,10 @@ class Venta extends Model
         'total',
         'metodo_pago',
         'metodo_pago_id',
+        'monto_recibido',
+        'cambio',
+        'referencia_pago',
+        'ultimos_digitos',
         'estado',
     ];
 

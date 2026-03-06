@@ -69,7 +69,7 @@ class Usuario extends Authenticatable
         'documento',
         'email',
         'password',
-        'rol',
+        'rol_id',
         'estado',
         'tema',
     ];
@@ -95,6 +95,27 @@ class Usuario extends Authenticatable
     ];
 
     /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new \App\Notifications\RestablecerContrasenaNotification($token));
+    }
+
+    /**
+     * Relación: Un usuario pertenece a un rol.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function rol()
+    {
+        return $this->belongsTo(Rol::class, 'rol_id');
+    }
+
+    /**
      * Relación: Un usuario puede registrar múltiples compras.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -112,6 +133,20 @@ class Usuario extends Authenticatable
     public function ventas()
     {
         return $this->hasMany(Venta::class, 'id_usuario', 'id_usuario');
+    }
+
+    /**
+     * Verifica si el usuario tiene un rol específico.
+     *
+     * @param string|array $role
+     * @return bool
+     */
+    public function hasRole($role)
+    {
+        if (is_array($role)) {
+            return $this->rol && in_array($this->rol->nombre, $role);
+        }
+        return $this->rol && $this->rol->nombre === $role;
     }
 
     /**

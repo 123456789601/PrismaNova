@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Producto
@@ -31,6 +32,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Producto extends Model
 {
+    use SoftDeletes;
+
     /**
      * Tabla asociada al modelo.
      *
@@ -45,11 +48,6 @@ class Producto extends Model
      */
     protected $primaryKey = 'id_producto';
 
-    /**
-     * Atributos asignables masivamente.
-     *
-     * @var array
-     */
     protected $fillable = [
         'codigo_barras',
         'nombre',
@@ -64,6 +62,13 @@ class Producto extends Model
         'fecha_vencimiento',
         'estado',
     ];
+
+    /**
+     * Atributos que deben ser mutados a fechas.
+     *
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
 
     /**
      * Atributos adicionales que se agregan a la serialización del modelo (JSON).

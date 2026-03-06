@@ -8,6 +8,7 @@ use App\Models\DetalleVenta;
 use App\Models\Producto;
 use App\Models\Cliente;
 use App\Models\MetodoPago;
+use App\Models\Bitacora;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -332,6 +333,8 @@ class VentaApiController extends Controller
                     'subtotal' => $d['subtotal'],
                 ]);
             }
+
+            Bitacora::registrar('CREATE', 'ventas', $venta->id_venta, 'Venta creada via API');
 
             DB::commit();
             

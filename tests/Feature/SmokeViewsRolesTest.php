@@ -2,6 +2,7 @@
 namespace Tests\Feature;
 
 use App\Models\Usuario;
+use App\Models\Rol;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -10,15 +11,17 @@ class SmokeViewsRolesTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected function crearUsuario($rol, $doc)
+    protected function crearUsuario($rolNombre, $doc)
     {
+        $rol = Rol::firstOrCreate(['nombre' => $rolNombre], ['descripcion' => 'Test role']);
+        
         return Usuario::create([
-            'nombre' => ucfirst($rol),
+            'nombre' => ucfirst($rolNombre),
             'apellido' => 'Test',
             'documento' => $doc,
-            'email' => $rol.'.smoke@test.local',
+            'email' => $rolNombre.'.smoke@test.local',
             'password' => Hash::make('secret'),
-            'rol' => $rol,
+            'rol_id' => $rol->id,
             'estado' => 'activo',
         ]);
     }

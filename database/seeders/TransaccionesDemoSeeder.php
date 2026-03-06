@@ -18,7 +18,8 @@ class TransaccionesDemoSeeder extends Seeder
         };
 
         // Obtener IDs necesarios
-        $adminRow = DB::table('usuarios')->where('rol','admin')->first();
+        $rolAdminId = DB::table('roles')->where('nombre', 'admin')->value('id');
+        $adminRow = DB::table('usuarios')->where('rol_id', $rolAdminId)->first();
         $adminId = $adminRow->id_usuario ?? ($adminRow->id ?? null);
         $cliente = DB::table('clientes')->where('email','cliente@prismanova.local')->first();
         if (!$adminId || !$cliente) {

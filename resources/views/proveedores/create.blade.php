@@ -1,45 +1,106 @@
 @extends('layouts.app')
 @section('title','Nuevo Proveedor')
 @section('content')
-<h4 class="mb-3">Nuevo Proveedor</h4>
-<form method="POST" action="{{ route('proveedores.store') }}">
-    @csrf
-    <div class="row g-3">
-        <div class="col-md-6">
-            <label class="form-label">Empresa</label>
-            <input class="form-control" name="nombre_empresa" value="{{ old('nombre_empresa') }}" required>
-        </div>
-        <div class="col-md-6">
-            <label class="form-label">NIT</label>
-            <input class="form-control" name="nit" value="{{ old('nit') }}" required>
-        </div>
-        <div class="col-md-6">
-            <label class="form-label">Contacto</label>
-            <input class="form-control" name="contacto" value="{{ old('contacto') }}">
-        </div>
-        <div class="col-md-6">
-            <label class="form-label">Teléfono</label>
-            <input class="form-control" name="telefono" value="{{ old('telefono') }}">
-        </div>
-        <div class="col-md-6">
-            <label class="form-label">Dirección</label>
-            <input class="form-control" name="direccion" value="{{ old('direccion') }}">
-        </div>
-        <div class="col-md-6">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-control" name="email" value="{{ old('email') }}">
-        </div>
-        <div class="col-md-6">
-            <label class="form-label">Estado</label>
-            <select class="form-select" name="estado" required>
-                <option value="activo">Activo</option>
-                <option value="inactivo">Inactivo</option>
-            </select>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="glass-card overflow-hidden">
+                <div class="card-header bg-transparent border-bottom border-light border-opacity-25 py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold text-white"><i class="bi bi-truck me-2"></i>Nuevo Proveedor</h5>
+                    <a href="{{ route('proveedores.index') }}" class="btn btn-sm btn-light bg-opacity-10 text-white border-0 rounded-pill px-3 shadow-sm">
+                        <i class="bi bi-arrow-left me-1"></i>Volver
+                    </a>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ route('proveedores.store') }}" id="formProveedor" novalidate class="row g-3">
+                        @csrf
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-white-50">Empresa <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="nombre_empresa" id="nombre_empresa" value="{{ old('nombre_empresa') }}" required>
+                            @error('nombre_empresa')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
+                            <div class="invalid-feedback ms-2">Nombre de la empresa requerido.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-white-50">NIT <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="nit" id="nit" value="{{ old('nit') }}" required pattern="[0-9\-\.]+" title="Solo números, guiones y puntos">
+                            @error('nit')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
+                            <div class="invalid-feedback ms-2">NIT requerido (números, guiones, puntos).</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-white-50">Contacto</label>
+                            <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="contacto" id="contacto" value="{{ old('contacto') }}">
+                            @error('contacto')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-white-50">Teléfono</label>
+                            <input type="tel" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="telefono" id="telefono" value="{{ old('telefono') }}" pattern="[0-9+\-\s]+">
+                            @error('telefono')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-white-50">Dirección</label>
+                            <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="direccion" id="direccion" value="{{ old('direccion') }}">
+                            @error('direccion')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-white-50">Email</label>
+                            <input type="email" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="email" id="email" value="{{ old('email') }}">
+                            @error('email')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
+                            <div class="invalid-feedback ms-2">Email inválido.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-white-50">Estado <span class="text-danger">*</span></label>
+                            <select class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="estado" required>
+                                <option value="activo" class="bg-dark text-white">Activo</option>
+                                <option value="inactivo" class="bg-dark text-white">Inactivo</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 text-end mt-4">
+                            <a href="{{ route('proveedores.index') }}" class="btn btn-outline-light rounded-pill px-4 me-2 shadow-sm hover-scale">Cancelar</a>
+                            <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm hover-scale">
+                                <i class="bi bi-save me-2"></i>Guardar Proveedor
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="mt-3">
-        <a href="{{ route('proveedores.index') }}" class="btn btn-secondary">Cancelar</a>
-        <button class="btn btn-primary">Guardar</button>
-    </div>
-</form>
+</div>
+
+<script>
+    // 1. Protección de Consola
+    console.log("%c¡DETENTE!", "color: red; font-size: 50px; font-weight: bold; -webkit-text-stroke: 1px black;");
+    console.log("%cEsta función es para desarrolladores. No copies ni pegues nada aquí.", "font-size: 18px;");
+
+    // 2. Validaciones JS
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('formProveedor');
+        
+        // Validación NIT
+        const nitInput = document.getElementById('nit');
+        if(nitInput) {
+            nitInput.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9\-\.]/g, '');
+            });
+        }
+
+        // Validación Teléfono
+        const telefonoInput = document.getElementById('telefono');
+        if(telefonoInput) {
+            telefonoInput.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9+\-\s]/g, '');
+            });
+        }
+
+        // Validación Bootstrap
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+</script>
 @endsection

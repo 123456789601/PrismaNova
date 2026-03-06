@@ -1,0 +1,90 @@
+:root {
+    --glass-bg: rgba(30, 30, 40, 0.8);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.05);
+    --glass-blur: blur(15px);
+}
+
+body {
+    background-color: #121212;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    box-shadow: 0 1rem 3rem rgba(0,0,0,.175);
+    border-radius: 1rem;
+    padding: 40px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+@media print {
+    body {
+        background-color: white !important;
+        color: black !important;
+    }
+    .glass-card {
+        background: none !important;
+        backdrop-filter: none !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+    }
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* Utilities extracted from inline styles */
+.text-right {
+    text-align: right;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mt-10px {
+    margin-top: 10px;
+}
+
+.mb-20px {
+    margin-bottom: 20px;
+}
+
+.sku-text {
+    color: #7f8c8d;
+}
+
+.discount-text {
+    color: #e74c3c;
+}
+
+.btn-toggle-theme {
+    padding: 10px 20px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.btn-print {
+    padding: 10px 20px;
+    background: #2c3e50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}

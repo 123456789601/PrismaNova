@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cliente;
+use App\Models\Bitacora;
 use App\Http\Requests\StoreClienteRequest;
 use App\Http\Requests\UpdateClienteRequest;
 
@@ -21,7 +22,18 @@ class ClienteController extends Controller
      */
     public function index()
     {
-        $clientes = Cliente::orderBy('id_cliente','desc')->paginate(10);
+        $query = Cliente::orderBy('id_cliente','desc');
+        
+        if(request('q')){
+            $term = request('q');
+            $query->where(function($q) use ($term){
+                $q->where('nombre','like',"%$term%")
+                  ->orWhere('apellido','like',"%$term%")
+                  ->orWhere('documento','like',"%$term%");
+            });
+        }
+        
+        $clientes = $query->paginate(10);
         return view('clientes.index', compact('clientes'));
     }
 
@@ -43,7 +55,8 @@ class ClienteController extends Controller
      */
     public function show(Cliente $cliente)
     {
-        return view('clientes.show', compact('cliente'));
+        $ventas = $cliente->ventas()->orderBy('fecha', 'desc')->paginate(10);
+        return view('clientes.show', compact('cliente', 'ventas'));
     }
 
     /**
@@ -54,7 +67,17 @@ class ClienteController extends Controller
      */
     public function store(StoreClienteRequest $request)
     {
-        Cliente::create($request->validated());
+        $cliente = Cliente::create($request->validated());
+        Bitacora::registrar('CREATE', 'clientes', $cliente->id_cliente, 'Cliente registrado');
+        
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Cliente creado con éxito',
+                'cliente' => $cliente
+            ]);
+        }
+
         return redirect()->route('clientes.index')->with('success','Cliente creado');
     }
 
@@ -79,6 +102,7 @@ class ClienteController extends Controller
     public function update(UpdateClienteRequest $request, Cliente $cliente)
     {
         $cliente->update($request->validated());
+        Bitacora::registrar('UPDATE', 'clientes', $cliente->id_cliente, 'Cliente actualizado');
         return redirect()->route('clientes.index')->with('success','Cliente actualizado');
     }
 
@@ -90,7 +114,9 @@ class ClienteController extends Controller
      */
     public function destroy(Cliente $cliente)
     {
+        $id = $cliente->id_cliente;
         $cliente->delete();
+        Bitacora::registrar('DELETE', 'clientes', $id, 'Cliente eliminado');
         return redirect()->route('clientes.index')->with('success','Cliente eliminado');
     }
 }

@@ -11,13 +11,39 @@ class UsuarioAdminSeeder extends Seeder
 {
     public function run()
     {
+        // Ensure roles exist
+        $adminRol = DB::table('roles')->where('nombre', 'admin')->first();
+        if (!$adminRol) {
+            $id = DB::table('roles')->insertGetId(['nombre' => 'admin', 'descripcion' => 'Administrador del sistema', 'created_at' => now(), 'updated_at' => now()]);
+            $adminRol = (object)['id' => $id];
+        }
+
+        $cajeroRol = DB::table('roles')->where('nombre', 'cajero')->first();
+        if (!$cajeroRol) {
+            $id = DB::table('roles')->insertGetId(['nombre' => 'cajero', 'descripcion' => 'Cajero del sistema', 'created_at' => now(), 'updated_at' => now()]);
+            $cajeroRol = (object)['id' => $id];
+        }
+
+        $clienteRol = DB::table('roles')->where('nombre', 'cliente')->first();
+        if (!$clienteRol) {
+            $id = DB::table('roles')->insertGetId(['nombre' => 'cliente', 'descripcion' => 'Cliente del sistema', 'created_at' => now(), 'updated_at' => now()]);
+            $clienteRol = (object)['id' => $id];
+        }
+        
+        // Also ensure bodeguero role exists
+        $bodegueroRol = DB::table('roles')->where('nombre', 'bodeguero')->first();
+        if (!$bodegueroRol) {
+            $id = DB::table('roles')->insertGetId(['nombre' => 'bodeguero', 'descripcion' => 'Bodeguero del sistema', 'created_at' => now(), 'updated_at' => now()]);
+            $bodegueroRol = (object)['id' => $id];
+        }
+
         if (!DB::table('usuarios')->where('email','admin@prismanova.local')->exists()) {
             $data = [
                 'nombre' => 'Admin',
                 'apellido' => 'Sistema',
                 'email' => 'admin@prismanova.local',
                 'password' => Hash::make('admin123'),
-                'rol' => 'admin',
+                'rol_id' => $adminRol->id,
                 'estado' => 'activo',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -28,7 +54,6 @@ class UsuarioAdminSeeder extends Seeder
             if (Schema::hasColumn('usuarios','username')) {
                 $data['username'] = 'admin';
             }
-            // No usamos 'rol_id'; el sistema funciona con la columna 'rol'
             DB::table('usuarios')->insert($data);
         }
         if (!DB::table('usuarios')->where('email','cajero@prismanova.local')->exists()) {
@@ -37,7 +62,7 @@ class UsuarioAdminSeeder extends Seeder
                 'apellido' => 'Demo',
                 'email' => 'cajero@prismanova.local',
                 'password' => Hash::make('cajero123'),
-                'rol' => 'cajero',
+                'rol_id' => $cajeroRol->id,
                 'estado' => 'activo',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -56,7 +81,7 @@ class UsuarioAdminSeeder extends Seeder
                 'apellido' => 'Demo',
                 'email' => 'cliente@prismanova.local',
                 'password' => Hash::make('cliente123'),
-                'rol' => 'cliente',
+                'rol_id' => $clienteRol->id,
                 'estado' => 'activo',
                 'created_at' => now(),
                 'updated_at' => now(),

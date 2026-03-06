@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdatePerfilRequest;
 use App\Models\Cliente;
+use App\Models\Bitacora;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -72,6 +73,8 @@ class PerfilController extends Controller
             $cliente->direccion = $data['direccion'] ?? $cliente->direccion;
             $cliente->save();
         }
+
+        Bitacora::registrar('UPDATE', 'usuarios', $usuario->id_usuario, 'Perfil actualizado');
 
         return redirect()->route('perfil')->with('success','Perfil actualizado');
     }

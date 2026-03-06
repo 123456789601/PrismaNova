@@ -1,0 +1,96 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+    background: #fff;
+}
+.container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    border: 1px solid #eee;
+    padding: 40px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 20px;
+}
+.company-info h1 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+    font-size: 28px;
+}
+.invoice-details {
+    text-align: right;
+}
+.invoice-details h2 {
+    margin: 0 0 10px 0;
+    color: #7f8c8d;
+}
+.client-info {
+    margin-bottom: 30px;
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+th {
+    background: #2c3e50;
+    color: #fff;
+    padding: 12px;
+    text-align: left;
+}
+td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+.totals {
+    width: 300px;
+    margin-left: auto;
+}
+.totals-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+.totals-row.final {
+    border-bottom: 2px solid #2c3e50;
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #2c3e50;
+}
+.footer {
+    text-align: center;
+    margin-top: 50px;
+    color: #7f8c8d;
+    font-size: 0.9em;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+.badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.bg-success { background: #d4edda; color: #155724; }
+.bg-danger { background: #f8d7da; color: #721c24; }
+.bg-warning { background: #fff3cd; color: #856404; }
+
+@media print {
+    body { padding: 0; background: #fff; }
+    .container { border: none; box-shadow: none; padding: 0; max-width: 100%; }
+    .no-print { display: none; }
+}

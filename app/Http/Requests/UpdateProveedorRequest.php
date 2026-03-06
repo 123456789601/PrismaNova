@@ -25,4 +25,20 @@ class UpdateProveedorRequest extends FormRequest
             'estado' => 'required|in:activo,inactivo',
         ];
     }
+
+    /**
+     * Preparar los datos para la validación.
+     * Sanear entradas para evitar XSS y estandarizar formato.
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'nombre_empresa' => mb_convert_case(trim(strip_tags($this->nombre_empresa)), MB_CASE_TITLE, 'UTF-8'),
+            'nit' => trim(strip_tags($this->nit)),
+            'contacto' => mb_convert_case(trim(strip_tags($this->contacto)), MB_CASE_TITLE, 'UTF-8'),
+            'telefono' => trim(strip_tags($this->telefono)),
+            'direccion' => trim(strip_tags($this->direccion)),
+            'email' => strtolower(trim(strip_tags($this->email))),
+        ]);
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cupon;
 use App\Http\Requests\StoreCuponRequest;
 use App\Http\Requests\UpdateCuponRequest;
+use App\Models\Bitacora;
 
 /**
  * Class CuponController
@@ -71,6 +72,7 @@ class CuponController extends Controller
     public function update(UpdateCuponRequest $request, Cupon $cupone)
     {
         $cupone->update($request->validated());
+        Bitacora::registrar('UPDATE', 'cupones', $cupone->id_cupon, 'Cupón actualizado');
         return redirect()->route('cupones.index')->with('success','Cupón actualizado');
     }
 
@@ -82,7 +84,9 @@ class CuponController extends Controller
      */
     public function destroy(Cupon $cupone)
     {
+        $id = $cupone->id_cupon;
         $cupone->delete();
+        Bitacora::registrar('DELETE', 'cupones', $id, 'Cupón eliminado');
         return redirect()->route('cupones.index')->with('success','Cupón eliminado');
     }
 }

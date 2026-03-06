@@ -1,102 +1,268 @@
 @extends('layouts.app')
 @section('title','Nueva Venta')
 @section('content')
-<h4 class="mb-3">Nueva Venta</h4>
-<form method="POST" action="{{ route('ventas.store') }}">
-    @csrf
-    <div class="row g-3 mb-3">
-        <div class="col-md-4">
-            <label class="form-label">Cliente</label>
-            <select class="form-select" name="id_cliente" required>
-                <option value="">Seleccione</option>
-                @foreach($clientes as $c)
-                    <option value="{{ $c->id_cliente }}">{{ $c->nombre }} {{ $c->apellido }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">Fecha</label>
-            <input type="datetime-local" class="form-control" name="fecha" value="{{ now()->format('Y-m-d\\TH:i') }}" required>
-        </div>
-        <div class="col-md-2">
-            <label class="form-label">Impuesto</label>
-            <input type="number" step="0.01" class="form-control" name="impuesto" value="0">
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">Método de pago</label>
-            <select class="form-select" name="metodo_pago_id">
-                <option value="">Seleccione</option>
-                @isset($metodos)
-                    @foreach($metodos as $m)
-                        <option value="{{ $m->id_metodo_pago }}">{{ $m->nombre }}</option>
-                    @endforeach
-                @endisset
-            </select>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-xl-11">
+            <div class="glass-card">
+                <div class="card-header bg-transparent border-bottom py-3 d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+                    <h5 class="mb-0 fw-bold text-primary"><i class="bi bi-cart-plus me-2"></i>Registrar Venta</h5>
+                    <a href="{{ route('ventas.index') }}" class="btn btn-sm btn-light rounded-pill px-3 shadow-sm w-100 w-md-auto text-center">
+                        <i class="bi bi-arrow-left me-1"></i>Volver
+                    </a>
+                </div>
+                <div class="card-body p-3 p-md-4">
+                    <form method="POST" action="{{ route('ventas.store') }}" id="formVenta">
+                        @csrf
+                        {{-- Encabezado Venta --}}
+                        <div class="row g-3 mb-4 p-3 p-md-4 bg-secondary bg-opacity-10 rounded-4 border border-light border-opacity-10">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small text-white-50">Cliente <span class="text-danger">*</span></label>
+                                <select class="form-select border-0 rounded-pill bg-secondary bg-opacity-25 text-white focus-ring-primary" name="id_cliente" required>
+                                    <option value="" class="text-dark">Seleccione Cliente...</option>
+                                    @foreach($clientes as $c)
+                                        <option value="{{ $c->id_cliente }}" class="text-dark">{{ $c->nombre }} {{ $c->apellido }} ({{ $c->documento }})</option>
+                                    @endforeach
+                                </select>
+                                @error('id_cliente')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold small text-white-50">Fecha <span class="text-danger">*</span></label>
+                                <input type="datetime-local" class="form-control border-0 rounded-pill bg-secondary bg-opacity-25 text-white focus-ring-primary" name="fecha" value="{{ now()->format('Y-m-d\\TH:i') }}" required>
+                                @error('fecha')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label fw-bold small text-white-50">Impuesto ({{ $configuracion['moneda'] ?? '$' }} )</label>
+                                <input type="number" step="0.01" class="form-control border-0 rounded-pill bg-secondary bg-opacity-25 text-white focus-ring-primary" name="impuesto" id="impuesto" value="0" oninput="calcularTotales()">
+                                @error('impuesto')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold small text-white-50">Método de Pago</label>
+                                <select class="form-select border-0 rounded-pill bg-secondary bg-opacity-25 text-white focus-ring-primary" name="metodo_pago_id">
+                                    <option value="" class="text-dark">Seleccione...</option>
+                                    @isset($metodos)
+                                        @foreach($metodos as $m)
+                                            <option value="{{ $m->id_metodo_pago }}" class="text-dark">{{ $m->nombre }}</option>
+                                        @endforeach
+                                    @endisset
+                                </select>
+                                @error('metodo_pago_id')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
+                            </div>
+                        </div>
+
+                        {{-- Detalle de Productos --}}
+                        <div class="table-responsive mb-4 rounded-4 overflow-hidden shadow-sm border border-light border-opacity-10">
+                            <table class="table align-middle mb-0 text-white" id="tablaDetalles">
+                                <thead class="bg-primary bg-opacity-10 text-white">
+                                    <tr>
+                                        <th class="ps-4 py-3 border-0" style="width: 40%;">Producto</th>
+                                        <th class="py-3 border-0 text-center" style="width: 15%;">Stock</th>
+                                        <th class="py-3 border-0" style="width: 15%;">Cantidad</th>
+                                        <th class="py-3 border-0" style="width: 20%;">Precio Unit.</th>
+                                        <th class="py-3 border-0 text-end pe-4" style="width: 10%;">Subtotal</th>
+                                        <th class="py-3 border-0" style="width: 5%;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-transparent">
+                                    {{-- Las filas se agregan dinámicamente con JS --}}
+                                </tbody>
+                            </table>
+                            <div class="p-3 bg-secondary bg-opacity-10 border-top border-light border-opacity-10">
+                                <button type="button" class="btn btn-outline-light btn-sm rounded-pill shadow-sm fw-bold hover-scale" onclick="agregarFila()">
+                                    <i class="bi bi-plus-circle me-2"></i>Agregar Producto
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Totales y Descuentos --}}
+                        <div class="row justify-content-end g-3 mt-2">
+                            <div class="col-md-5 col-lg-4">
+                                <div class="glass-card rounded-4 p-4">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-white-50">Subtotal:</span>
+                                        <span class="fw-bold fs-5 text-white">{{ $configuracion['moneda'] ?? '$' }} <span id="lblSubtotal">0.00</span></span>
+                                    </div>
+                                    
+                                    <div class="mb-3 border-bottom border-light border-opacity-10 pb-3">
+                                        <label class="form-label fw-bold small text-white-50">Descuento Global ({{ $configuracion['moneda'] ?? '$' }} )</label>
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text border-0 bg-secondary bg-opacity-25 text-white-50">{{ $configuracion['moneda'] ?? '$' }} </span>
+                                            <input type="number" step="0.01" min="0" class="form-control border-0 bg-secondary bg-opacity-25 text-white" name="descuento" id="descuento" value="0" oninput="calcularTotales()">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold small text-white-50">Cupón</label>
+                                        <input type="text" class="form-control form-control-sm rounded-pill bg-secondary bg-opacity-25 text-white border-0" name="cupon" placeholder="Código">
+                                    </div>
+
+                                    <div class="d-flex justify-content-between align-items-center mt-2 pt-3 border-top border-light border-opacity-10">
+                                        <span class="fw-bold text-primary fs-4">TOTAL:</span>
+                                        <span class="fw-bold text-primary fs-3">{{ $configuracion['moneda'] ?? '$' }} <span id="lblTotal">0.00</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4 pt-3 border-top">
+                            <a href="{{ route('ventas.index') }}" class="btn btn-light rounded-pill px-4 fw-bold">Cancelar</a>
+                            <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-lg transform-hover" id="btnGuardar">
+                                <i class="bi bi-check-lg me-2"></i>Finalizar Venta
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="table-responsive">
-        <table class="table" id="items">
-            <thead>
-                <tr>
-                    <th>Producto</th>
-                    <th>Cantidad</th>
-                    <th>Precio unitario</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        <select class="form-select" name="id_producto[]">
-                            @foreach($productos as $prod)
-                                <option value="{{ $prod->id_producto }}">{{ $prod->nombre }} (Stock: {{ $prod->stock }})</option>
-                            @endforeach
-                        </select>
-                    </td>
-                    <td><input type="number" class="form-control" name="cantidad[]" value="1" min="1"></td>
-                    <td><input type="number" step="0.01" class="form-control" name="precio_unitario[]" value="0"></td>
-                    <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">X</button></td>
-                </tr>
-            </tbody>
-        </table>
-        <button type="button" class="btn btn-secondary" onclick="addRow()">Agregar ítem</button>
-    </div>
-    <div class="row g-3 mt-2">
-        <div class="col-md-3">
-            <label class="form-label">Descuento</label>
-            <input type="number" step="0.01" class="form-control" name="descuento" value="0">
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">Cupón</label>
-            <input type="text" class="form-control" name="cupon" placeholder="Ej: PROMO10">
-        </div>
-    </div>
-    <div class="mt-3">
-        <a href="{{ route('ventas.index') }}" class="btn btn-outline-secondary">Cancelar</a>
-        <button class="btn btn-primary">Guardar</button>
-    </div>
-</form>
-<script>
-function addRow(){
-    const tbody = document.querySelector('#items tbody');
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-        <td>
-            <select class="form-select" name="id_producto[]">
+</div>
+
+{{-- Template para filas de productos (oculto) --}}
+<template id="filaTemplate">
+    <tr>
+        <td class="ps-4 border-0">
+            <select class="form-select border-0 bg-secondary bg-opacity-25 rounded-pill text-white focus-ring-primary producto-select" name="id_producto[]" onchange="productoSeleccionado(this)" required>
+                <option value="" data-precio="0" data-stock="0" class="text-dark">Seleccione producto...</option>
                 @foreach($productos as $prod)
-                    <option value="{{ $prod->id_producto }}">{{ $prod->nombre }} (Stock: {{ $prod->stock }})</option>
+                    <option value="{{ $prod->id_producto }}" data-precio="{{ $prod->precio_venta }}" data-stock="{{ $prod->stock }}" class="text-dark">
+                        {{ $prod->nombre }}
+                    </option>
                 @endforeach
             </select>
         </td>
-        <td><input type="number" class="form-control" name="cantidad[]" value="1" min="1"></td>
-        <td><input type="number" step="0.01" class="form-control" name="precio_unitario[]" value="0"></td>
-        <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">X</button></td>
-    `;
-    tbody.appendChild(tr);
-}
-function removeRow(btn){
-    const tr = btn.closest('tr');
-    tr.parentNode.removeChild(tr);
-}
+        <td class="text-center border-0">
+            <span class="badge bg-secondary stock-badge">0</span>
+        </td>
+        <td class="border-0">
+            <input type="number" class="form-control border-0 bg-secondary bg-opacity-25 rounded-pill text-white focus-ring-primary cantidad-input" name="cantidad[]" value="1" min="1" oninput="calcularFila(this)" required>
+        </td>
+        <td class="border-0">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text border-0 bg-secondary bg-opacity-25 rounded-start-pill text-white-50">{{ $configuracion['moneda'] ?? '$' }} </span>
+                <input type="number" step="0.01" class="form-control border-0 bg-secondary bg-opacity-25 rounded-end-pill text-white focus-ring-primary precio-input" name="precio_unitario[]" value="0" min="0" oninput="calcularFila(this)" required>
+            </div>
+        </td>
+        <td class="text-end pe-4 border-0 fw-bold subtotal-text text-white">{{ $configuracion['moneda'] ?? '$' }} 0.00</td>
+        <td class="text-center border-0">
+            <button type="button" class="btn btn-sm btn-outline-light text-danger border-0 rounded-circle shadow-sm hover-scale" onclick="eliminarFila(this)">
+                <i class="bi bi-trash"></i>
+            </button>
+        </td>
+    </tr>
+</template>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Agregar primera fila al cargar
+        agregarFila();
+    });
+
+    function agregarFila() {
+        const template = document.getElementById('filaTemplate');
+        const clone = template.content.cloneNode(true);
+        document.querySelector('#tablaDetalles tbody').appendChild(clone);
+    }
+
+    function eliminarFila(btn) {
+        const tbody = document.querySelector('#tablaDetalles tbody');
+        if (tbody.rows.length > 1) {
+            btn.closest('tr').remove();
+            calcularTotales();
+        } else {
+            alert('Debe haber al menos un producto en la venta.');
+        }
+    }
+
+    function productoSeleccionado(select) {
+        const option = select.options[select.selectedIndex];
+        const precio = option.getAttribute('data-precio') || 0;
+        const stock = option.getAttribute('data-stock') || 0;
+        
+        const row = select.closest('tr');
+        const precioInput = row.querySelector('.precio-input');
+        const stockBadge = row.querySelector('.stock-badge');
+        const cantidadInput = row.querySelector('.cantidad-input');
+
+        precioInput.value = parseFloat(precio).toFixed(2);
+        stockBadge.textContent = stock;
+        
+        // Validar stock visualmente
+        if(parseInt(stock) === 0) {
+            stockBadge.className = 'badge bg-danger stock-badge';
+        } else if(parseInt(stock) < 5) {
+            stockBadge.className = 'badge bg-warning text-dark stock-badge';
+        } else {
+            stockBadge.className = 'badge bg-success stock-badge';
+        }
+        
+        // Reset cantidad a 1
+        cantidadInput.value = 1;
+        cantidadInput.max = stock; // Opcional: restringir input max
+
+        calcularFila(select);
+    }
+
+    function calcularFila(element) {
+        const row = element.closest('tr');
+        const cantidad = parseFloat(row.querySelector('.cantidad-input').value) || 0;
+        const precio = parseFloat(row.querySelector('.precio-input').value) || 0;
+        const subtotal = cantidad * precio;
+
+        row.querySelector('.subtotal-text').textContent = '{{ $configuracion['moneda'] ?? '$' }} ' + subtotal.toFixed(2);
+        calcularTotales();
+    }
+
+    function calcularTotales() {
+        let subtotal = 0;
+        document.querySelectorAll('#tablaDetalles tbody tr').forEach(row => {
+            const cantidad = parseFloat(row.querySelector('.cantidad-input').value) || 0;
+            const precio = parseFloat(row.querySelector('.precio-input').value) || 0;
+            subtotal += cantidad * precio;
+        });
+
+        const descuento = parseFloat(document.getElementById('descuento').value) || 0;
+        const impuesto = parseFloat(document.getElementById('impuesto').value) || 0;
+        
+        // El impuesto suma, el descuento resta
+        // Asumiendo que el impuesto es un monto fijo según el input ({{ $configuracion['moneda'] ?? '$' }} ), no un porcentaje calculado aquí
+        // El label dice "Impuesto ({{ $configuracion['moneda'] ?? '$' }} )" en mi código nuevo, aunque antes decía % en el viejo.
+        // Voy a mantenerlo como monto fijo para simplificar, o si es %, debería calcularse sobre el subtotal.
+        // El input actual dice "Impuesto ({{ $configuracion['moneda'] ?? '$' }} )", así que lo trato como monto.
+        
+        const total = Math.max(0, subtotal - descuento + impuesto);
+
+        document.getElementById('lblSubtotal').textContent = subtotal.toFixed(2);
+        document.getElementById('lblTotal').textContent = total.toFixed(2);
+    }
+
+    // Validación antes de enviar
+    document.getElementById('formVenta').addEventListener('submit', function(e) {
+        const rows = document.querySelectorAll('#tablaDetalles tbody tr');
+        if (rows.length === 0) {
+            e.preventDefault();
+            alert('Agregue al menos un producto.');
+            return;
+        }
+        
+        let stockError = false;
+        rows.forEach(row => {
+            const select = row.querySelector('.producto-select');
+            const option = select.options[select.selectedIndex];
+            const stock = parseInt(option.getAttribute('data-stock') || 0);
+            const cantidad = parseInt(row.querySelector('.cantidad-input').value || 0);
+            
+            if (cantidad > stock) {
+                stockError = true;
+                row.querySelector('.cantidad-input').classList.add('is-invalid');
+            } else {
+                row.querySelector('.cantidad-input').classList.remove('is-invalid');
+            }
+        });
+
+        if (stockError) {
+            e.preventDefault();
+            alert('Uno o más productos superan el stock disponible.');
+        }
+    });
 </script>
 @endsection

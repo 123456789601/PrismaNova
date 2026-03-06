@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Categoria;
 use App\Http\Requests\StoreCategoriaRequest;
 use App\Http\Requests\UpdateCategoriaRequest;
+use App\Models\Bitacora;
 
 /**
  * Class CategoriaController
@@ -54,7 +55,8 @@ class CategoriaController extends Controller
      */
     public function store(StoreCategoriaRequest $request)
     {
-        Categoria::create($request->validated());
+        $categoria = Categoria::create($request->validated());
+        Bitacora::registrar('CREATE', 'categorias', $categoria->id_categoria, 'Categoría creada');
         return redirect()->route('categorias.index')->with('success','Categoría creada');
     }
 
@@ -79,6 +81,7 @@ class CategoriaController extends Controller
     public function update(UpdateCategoriaRequest $request, Categoria $categoria)
     {
         $categoria->update($request->validated());
+        Bitacora::registrar('UPDATE', 'categorias', $categoria->id_categoria, 'Categoría actualizada');
         return redirect()->route('categorias.index')->with('success','Categoría actualizada');
     }
 
@@ -90,7 +93,9 @@ class CategoriaController extends Controller
      */
     public function destroy(Categoria $categoria)
     {
+        $id = $categoria->id_categoria;
         $categoria->delete();
+        Bitacora::registrar('DELETE', 'categorias', $id, 'Categoría eliminada');
         return redirect()->route('categorias.index')->with('success','Categoría eliminada');
     }
 }

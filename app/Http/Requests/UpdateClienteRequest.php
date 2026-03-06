@@ -16,13 +16,40 @@ class UpdateClienteRequest extends FormRequest
         $id = $this->route('cliente');
         $id = is_object($id) ? $id->getKey() : $id;
         return [
-            'nombre' => 'required|string|max:100',
-            'apellido' => 'required|string|max:100',
-            'documento' => 'required|string|max:50|unique:clientes,documento,' . $id . ',id_cliente',
+            'nombre' => ['required', 'string', 'max:100', 'regex:/^[\pL\s]+$/u'],
+            'apellido' => ['required', 'string', 'max:100', 'regex:/^[\pL\s]+$/u'],
+            'documento' => ['required', 'string', 'max:50', 'regex:/^[0-9]+$/', 'unique:clientes,documento,' . $id . ',id_cliente'],
             'telefono' => 'nullable|string|max:20',
             'direccion' => 'nullable|string|max:200',
             'email' => 'nullable|email|max:150|unique:clientes,email,' . $id . ',id_cliente',
             'estado' => 'required|in:activo,inactivo',
         ];
+    }
+
+    public function messages()
+    {
+        return [
+            'nombre.regex' => 'El nombre no puede contener números ni caracteres especiales.',
+            'apellido.regex' => 'El apellido no puede contener números ni caracteres especiales.',
+            'documento.regex' => 'El documento solo puede contener números (sin espacios ni guiones).',
+        ];
+    }
+
+    /**
+     * Preparar los datos para la validación.
+     * Sanear entradas para evitar XSS y estandarizar formato.
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'nombre' => mb_convert_case(trim(strip_tags($this->nombre)), MB_CASE_TITLE, 'UTF-8'),
+            'apellido' => mb_convert_case(trim(strip_tags($this->apellido)), MB_CASE_TITLE, 'UTF-8'),
+            // Eliminar puntos y guiones del documento
+            'documento' => preg_replace('/[^0-9]/', '', trim(strip_tags($this->documento))),
+            // Eliminar todo excepto números y signo + del teléfono
+            'telefono' => preg_replace('/[^0-9+]/', '', trim(strip_tags($this->telefono))),
+            'direccion' => trim(strip_tags($this->direccion)),
+            'email' => strtolower(trim(strip_tags($this->email))),
+        ]);
     }
 }
