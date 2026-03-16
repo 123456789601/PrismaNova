@@ -85,4 +85,30 @@ class ClienteHistorialTest extends TestCase
         $response->assertSee('Historial de Compras');
         $response->assertSee('Este cliente aún no ha realizado compras');
     }
+
+    /** @test */
+    public function al_eliminar_cliente_con_ventas_se_marca_como_inactivo()
+    {
+        Venta::create([
+            'id_cliente' => $this->cliente->id_cliente,
+            'id_usuario' => $this->usuario->id_usuario,
+            'fecha' => now(),
+            'subtotal' => 100.00,
+            'descuento' => 0.00,
+            'impuesto' => 19.00,
+            'total' => 119.00,
+            'metodo_pago' => 'Efectivo',
+            'estado' => 'completada'
+        ]);
+
+        $response = $this->actingAs($this->usuario)->delete(route('clientes.destroy', $this->cliente));
+
+        $response->assertRedirect(route('clientes.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('clientes', [
+            'id_cliente' => $this->cliente->id_cliente,
+            'estado' => 'inactivo',
+        ]);
+    }
 }

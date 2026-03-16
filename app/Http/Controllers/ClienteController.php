@@ -6,6 +6,8 @@ use App\Models\Cliente;
 use App\Models\Bitacora;
 use App\Http\Requests\StoreClienteRequest;
 use App\Http\Requests\UpdateClienteRequest;
+use Illuminate\Database\QueryException;
+use Illuminate\Http\Request;
 
 /**
  * Class ClienteController
@@ -109,14 +111,57 @@ class ClienteController extends Controller
     /**
      * Elimina un cliente de la base de datos.
      *
+     * Si el cliente tiene ventas asociadas, no se elimina por integridad referencial;
+     * se marca como inactivo.
+     *
      * @param Cliente $cliente
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(Cliente $cliente)
+    public function destroy(Request $request, Cliente $cliente)
     {
         $id = $cliente->id_cliente;
-        $cliente->delete();
-        Bitacora::registrar('DELETE', 'clientes', $id, 'Cliente eliminado');
-        return redirect()->route('clientes.index')->with('success','Cliente eliminado');
+
+        if ($cliente->ventas()->exists()) {
+            $cliente->estado = 'inactivo';
+            $cliente->save();
+
+            Bitacora::registrar('UPDATE', 'clientes', $id, 'Cliente inactivado (tiene ventas asociadas)');
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'inactivated' => true,
+                    'message' => 'El cliente tiene ventas asociadas; se marcó como inactivo.',
+                ]);
+            }
+
+            return redirect()->route('clientes.index')->with('success', 'El cliente tiene ventas asociadas; se marcó como inactivo.');
+        }
+
+        try {
+            $cliente->delete();
+            Bitacora::registrar('DELETE', 'clientes', $id, 'Cliente eliminado');
+
+            if ($request->wantsJson()) {
+                return response()->json(['success' => true, 'deleted' => true]);
+            }
+
+            return redirect()->route('clientes.index')->with('success', 'Cliente eliminado');
+        } catch (QueryException $e) {
+            $cliente->estado = 'inactivo';
+            $cliente->save();
+
+            Bitacora::registrar('UPDATE', 'clientes', $id, 'Cliente inactivado (no se pudo eliminar por restricciones)');
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'inactivated' => true,
+                    'message' => 'No se pudo eliminar por restricciones; se marcó como inactivo.',
+                ]);
+            }
+
+            return redirect()->route('clientes.index')->with('success', 'No se pudo eliminar por restricciones; se marcó como inactivo.');
+        }
     }
 }

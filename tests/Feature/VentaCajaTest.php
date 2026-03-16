@@ -11,6 +11,7 @@ use App\Models\Cliente;
 use App\Models\Producto;
 use App\Models\Categoria;
 use App\Models\Proveedor;
+use App\Models\MetodoPago;
 
 class VentaCajaTest extends TestCase
 {
@@ -146,5 +147,126 @@ class VentaCajaTest extends TestCase
 
         $response = $this->get(route('ventas.pos'));
         $response->assertStatus(200);
+    }
+
+    /** @test */
+    public function requiere_referencia_en_transferencia_desde_cajero_o_admin()
+    {
+        $rolCajero = Rol::where('nombre', 'cajero')->first();
+        $cajero = Usuario::create([
+            'nombre' => 'Cajero',
+            'apellido' => 'Test',
+            'documento' => '12345678',
+            'email' => 'cajero2@test.com',
+            'password' => bcrypt('password'),
+            'rol_id' => $rolCajero->id,
+            'estado' => 'activo'
+        ]);
+        $this->actingAs($cajero);
+
+        Caja::create([
+            'fecha_apertura' => now(),
+            'monto_inicial' => 1000,
+            'estado' => 'abierta'
+        ]);
+
+        $cliente = Cliente::create([
+            'nombre' => 'Cliente Test',
+            'apellido' => 'Apellido Test',
+            'documento' => '111222334',
+            'email' => 'cliente2@test.com',
+            'telefono' => '3001234567'
+        ]);
+
+        $proveedor = Proveedor::create(['nombre_empresa' => 'Prov', 'contacto' => 'C', 'telefono' => '1', 'email' => 'p2@p.com']);
+        $categoria = Categoria::create(['nombre' => 'Cat2', 'descripcion' => 'Desc']);
+        $producto = Producto::create([
+            'codigo_barras' => 'PROD002',
+            'nombre' => 'Producto Test',
+            'descripcion' => 'Desc',
+            'precio_compra' => 50,
+            'precio_venta' => 100,
+            'stock' => 10,
+            'stock_minimo' => 5,
+            'id_categoria' => $categoria->id_categoria,
+            'id_proveedor' => $proveedor->id_proveedor,
+            'estado' => 'activo'
+        ]);
+
+        $mp = MetodoPago::create(['nombre' => 'Transferencia', 'estado' => 'activo']);
+
+        $response = $this->post(route('ventas.store'), [
+            'id_cliente' => $cliente->id_cliente,
+            'fecha' => now()->format('Y-m-d H:i:s'),
+            'metodo_pago_id' => $mp->id_metodo_pago,
+            'metodo_pago' => 'Transferencia',
+            'id_producto' => [$producto->id_producto],
+            'cantidad' => [1],
+            'precio_unitario' => [100],
+        ]);
+
+        $response->assertSessionHasErrors(['referencia_pago']);
+        $this->assertDatabaseCount('ventas', 0);
+    }
+
+    /** @test */
+    public function requiere_referencia_y_ultimos_4_en_tarjeta_desde_cajero_o_admin()
+    {
+        $rolCajero = Rol::where('nombre', 'cajero')->first();
+        $cajero = Usuario::create([
+            'nombre' => 'Cajero',
+            'apellido' => 'Test',
+            'documento' => '12345678',
+            'email' => 'cajero3@test.com',
+            'password' => bcrypt('password'),
+            'rol_id' => $rolCajero->id,
+            'estado' => 'activo'
+        ]);
+        $this->actingAs($cajero);
+
+        Caja::create([
+            'fecha_apertura' => now(),
+            'monto_inicial' => 1000,
+            'estado' => 'abierta'
+        ]);
+
+        $cliente = Cliente::create([
+            'nombre' => 'Cliente Test',
+            'apellido' => 'Apellido Test',
+            'documento' => '111222335',
+            'email' => 'cliente3@test.com',
+            'telefono' => '3001234567'
+        ]);
+
+        $proveedor = Proveedor::create(['nombre_empresa' => 'Prov', 'contacto' => 'C', 'telefono' => '1', 'email' => 'p3@p.com']);
+        $categoria = Categoria::create(['nombre' => 'Cat3', 'descripcion' => 'Desc']);
+        $producto = Producto::create([
+            'codigo_barras' => 'PROD003',
+            'nombre' => 'Producto Test',
+            'descripcion' => 'Desc',
+            'precio_compra' => 50,
+            'precio_venta' => 100,
+            'stock' => 10,
+            'stock_minimo' => 5,
+            'id_categoria' => $categoria->id_categoria,
+            'id_proveedor' => $proveedor->id_proveedor,
+            'estado' => 'activo'
+        ]);
+
+        $mp = MetodoPago::create(['nombre' => 'Tarjeta', 'estado' => 'activo']);
+
+        $response = $this->post(route('ventas.store'), [
+            'id_cliente' => $cliente->id_cliente,
+            'fecha' => now()->format('Y-m-d H:i:s'),
+            'metodo_pago_id' => $mp->id_metodo_pago,
+            'metodo_pago' => 'Tarjeta',
+            'id_producto' => [$producto->id_producto],
+            'cantidad' => [1],
+            'precio_unitario' => [100],
+            'referencia_pago' => 'REF-1',
+        ]);
+
+        $response->assertSessionHasErrors(['ultimos_digitos']);
+        $this->assertDatabaseCount('ventas', 0);
     }
 }

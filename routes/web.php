@@ -79,6 +79,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/perfil', [PerfilController::class,'show'])->name('perfil');
     Route::put('/perfil', [PerfilController::class,'update'])->name('perfil.update');
     Route::post('/perfil/tema', [PerfilController::class,'updateTheme'])->name('perfil.tema.update');
+    Route::prefix('api')->group(function () {
+        Route::post('ventas', [VentaApiController::class,'store'])->middleware('role:admin,cajero,cliente');
+        Route::get('ventas', [VentaApiController::class,'index'])->middleware('role:admin,cajero');
+        Route::get('ventas/export', [VentaApiController::class,'exportCsv'])->middleware('role:admin,cajero');
+    });
     // Route::prefix('api')->group(function () {
     //    Route::get('productos', [ProductApiController::class,'index']);
     //    Route::get('productos/{producto}', [ProductApiController::class,'show']);

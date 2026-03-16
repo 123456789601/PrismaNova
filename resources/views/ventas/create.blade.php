@@ -38,7 +38,7 @@
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label fw-bold small text-white-50">Método de Pago</label>
-                                <select class="form-select border-0 rounded-pill bg-secondary bg-opacity-25 text-white focus-ring-primary" name="metodo_pago_id">
+                                <select class="form-select border-0 rounded-pill bg-secondary bg-opacity-25 text-white focus-ring-primary" name="metodo_pago_id" id="metodo_pago_id" required>
                                     <option value="" class="text-dark">Seleccione...</option>
                                     @isset($metodos)
                                         @foreach($metodos as $m)
@@ -46,7 +46,50 @@
                                         @endforeach
                                     @endisset
                                 </select>
+                                <input type="hidden" name="metodo_pago" id="metodo_pago_nombre" value="">
                                 @error('metodo_pago_id')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-12 d-none" id="pagoDetallesWrap">
+                                <div class="p-3 bg-secondary bg-opacity-10 rounded-4 border border-light border-opacity-10 shadow-sm">
+                                    <div class="fw-bold text-white mb-3"><i class="bi bi-wallet2 me-2 text-primary"></i>Datos de pago</div>
+
+                                    <div id="pagoEfectivoFields" class="d-none">
+                                        <label class="form-label fw-bold small text-white-50">Monto Recibido ({{ $configuracion['moneda'] ?? '$' }} )</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text border-0 bg-secondary bg-opacity-25 text-white-50">{{ $configuracion['moneda'] ?? '$' }} </span>
+                                            <input type="number" step="0.01" class="form-control border-0 bg-secondary bg-opacity-25 text-white" name="monto_recibido" id="monto_recibido" placeholder="0.00">
+                                        </div>
+                                        @error('monto_recibido')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
+                                    </div>
+
+                                    <div id="pagoTransferenciaFields" class="d-none">
+                                        <div class="mb-3">
+                                            <div class="text-white-50 small">Banco destino: <span class="text-white">{{ $configuracion['banco_nombre'] ?? 'Bancolombia' }}</span></div>
+                                            <div class="text-white-50 small">Tipo: <span class="text-white">{{ $configuracion['banco_tipo_cuenta'] ?? 'Ahorros' }}</span></div>
+                                            <div class="text-white-50 small">Cuenta: <span class="text-white">{{ $configuracion['banco_numero_cuenta'] ?? '00000000000' }}</span></div>
+                                            <div class="text-white-50 small">Titular: <span class="text-white">{{ $configuracion['banco_titular'] ?? 'PrismaNova' }}</span></div>
+                                            @if(!empty($configuracion['banco_nit']))
+                                                <div class="text-white-50 small">NIT: <span class="text-white">{{ $configuracion['banco_nit'] }}</span></div>
+                                            @endif
+                                        </div>
+                                        <label class="form-label fw-bold small text-white-50">Referencia / Comprobante</label>
+                                        <input type="text" class="form-control border-0 bg-secondary bg-opacity-25 text-white" name="referencia_pago" id="referencia_pago" maxlength="50" placeholder="Ej: 00123456">
+                                        @error('referencia_pago')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
+                                    </div>
+
+                                    <div id="pagoTarjetaFields" class="d-none">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold small text-white-50">Referencia / Nro. Operación</label>
+                                            <input type="text" class="form-control border-0 bg-secondary bg-opacity-25 text-white" name="referencia_pago" id="referencia_pago_tarjeta" maxlength="50" placeholder="Ej: 00123456">
+                                            @error('referencia_pago')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
+                                        </div>
+                                        <div class="mb-1">
+                                            <label class="form-label fw-bold small text-white-50">Últimos 4 dígitos</label>
+                                            <input type="text" class="form-control border-0 bg-secondary bg-opacity-25 text-white" name="ultimos_digitos" id="ultimos_digitos" maxlength="4" placeholder="Ej: 4242">
+                                            @error('ultimos_digitos')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -155,7 +198,68 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Agregar primera fila al cargar
         agregarFila();
+
+        const mpSelect = document.getElementById('metodo_pago_id');
+        if (mpSelect) {
+            mpSelect.addEventListener('change', syncPagoFields);
+            syncPagoFields();
+        }
     });
+
+    function syncPagoFields() {
+        const select = document.getElementById('metodo_pago_id');
+        const wrap = document.getElementById('pagoDetallesWrap');
+        const efectivo = document.getElementById('pagoEfectivoFields');
+        const transferencia = document.getElementById('pagoTransferenciaFields');
+        const tarjeta = document.getElementById('pagoTarjetaFields');
+
+        if (!select || !wrap || !efectivo || !transferencia || !tarjeta) return;
+
+        const opt = select.options[select.selectedIndex];
+        const nombre = (opt ? opt.textContent : '').trim();
+        document.getElementById('metodo_pago_nombre').value = nombre;
+
+        wrap.classList.add('d-none');
+        efectivo.classList.add('d-none');
+        transferencia.classList.add('d-none');
+        tarjeta.classList.add('d-none');
+
+        const disableAll = (enabled) => {
+            ['monto_recibido','referencia_pago','referencia_pago_tarjeta','ultimos_digitos'].forEach((id) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.disabled = !enabled;
+            });
+        };
+        disableAll(false);
+
+        const lower = nombre.toLowerCase();
+        if (!lower || lower === 'seleccione...') {
+            return;
+        }
+
+        wrap.classList.remove('d-none');
+
+        if (lower === 'efectivo') {
+            efectivo.classList.remove('d-none');
+            const el = document.getElementById('monto_recibido');
+            if (el) el.disabled = false;
+            return;
+        }
+
+        if (lower === 'transferencia') {
+            transferencia.classList.remove('d-none');
+            const el = document.getElementById('referencia_pago');
+            if (el) el.disabled = false;
+            return;
+        }
+
+        tarjeta.classList.remove('d-none');
+        const ref = document.getElementById('referencia_pago_tarjeta');
+        const ult = document.getElementById('ultimos_digitos');
+        if (ref) ref.disabled = false;
+        if (ult) ult.disabled = false;
+    }
 
     function agregarFila() {
         const template = document.getElementById('filaTemplate');

@@ -239,29 +239,98 @@ class VentaApiController extends Controller
         if (!$user) {
             abort(401);
         }
-        $rol = $user->rol;
+        $rol = '';
+        $rawRole = $user->getAttribute('rol');
+        if (is_string($rawRole) && trim($rawRole) !== '') {
+            $rol = $rawRole;
+        } else {
+            $rolName = optional($user->rol)->nombre;
+            if (is_string($rolName) && trim($rolName) !== '') {
+                $rol = $rolName;
+            }
+        }
+        $rol = strtolower(trim($rol));
         
         // Validación de datos de entrada
         $data = $request->validate([
             'items' => 'required|array|min:1',
             'items.*.id_producto' => 'required|integer|exists:productos,id_producto',
             'items.*.cantidad' => 'required|integer|min:1',
-            'metodo_pago' => 'required|string|max:50',
+            'metodo_pago' => 'required|string|max:20',
+            'referencia_pago' => 'nullable|string|max:50',
+            'ultimos_digitos' => 'nullable|string|size:4',
             'id_cliente' => 'nullable|integer|exists:clientes,id_cliente',
             'cupon' => 'nullable|string|max:50',
         ]);
 
+        $metodoRaw = strtolower(trim((string) ($data['metodo_pago'] ?? '')));
+        $allowed = $rol === 'cliente'
+            ? ['tarjeta', 'transferencia']
+            : ['efectivo', 'tarjeta', 'transferencia'];
+
+        if (!in_array($metodoRaw, $allowed, true)) {
+            return response()->json(['error' => 'Método de pago no permitido.'], 422);
+        }
+
+        $metodoPagoNombre = [
+            'efectivo' => 'Efectivo',
+            'tarjeta' => 'Tarjeta',
+            'transferencia' => 'Transferencia',
+        ][$metodoRaw] ?? (string) ($data['metodo_pago'] ?? '');
+
+        if ($metodoRaw === 'tarjeta') {
+            if (empty($data['referencia_pago']) || empty($data['ultimos_digitos'])) {
+                return response()->json(['error' => 'Faltan datos de tarjeta.'], 422);
+            }
+        }
+        if ($metodoRaw === 'transferencia') {
+            if (empty($data['referencia_pago'])) {
+                return response()->json(['error' => 'Ingrese la referencia o comprobante de la transferencia.'], 422);
+            }
+            $data['ultimos_digitos'] = null;
+        }
+
         // Determinar ID del cliente según el rol del usuario actual
         $idCliente = null;
         if ($rol === 'cliente') {
-            // Si es un cliente logueado, se asigna automáticamente
-            $cli = Cliente::where('email', $user->email)->orWhere('documento',$user->documento)->first();
-            if ($cli) {
-                $idCliente = $cli->id_cliente;
+            $cli = Cliente::where('email', $user->email)
+                ->orWhere('documento', $user->documento)
+                ->first();
+
+            if (!$cli) {
+                $documento = (string) ($user->documento ?? '');
+                if ($documento === '' || $user->email === null) {
+                    return response()->json(['error' => 'No se pudo asociar el cliente a la venta.'], 422);
+                }
+
+                try {
+                    $cli = Cliente::create([
+                        'nombre' => (string) ($user->nombre ?? 'Cliente'),
+                        'apellido' => (string) ($user->apellido ?? ''),
+                        'documento' => $documento,
+                        'telefono' => null,
+                        'direccion' => null,
+                        'email' => (string) $user->email,
+                        'estado' => 'activo',
+                    ]);
+                } catch (\Throwable $e) {
+                    $cli = Cliente::where('email', $user->email)
+                        ->orWhere('documento', $user->documento)
+                        ->first();
+                }
             }
+
+            if (!$cli) {
+                return response()->json(['error' => 'No se pudo asociar el cliente a la venta.'], 422);
+            }
+
+            $idCliente = $cli->id_cliente;
         } else {
             // Si es personal, se usa el cliente enviado en el request
             $idCliente = $data['id_cliente'] ?? null;
+            if (!$idCliente) {
+                return response()->json(['error' => 'Debe seleccionar un cliente para registrar la venta.'], 422);
+            }
         }
 
         DB::beginTransaction();
@@ -311,6 +380,13 @@ class VentaApiController extends Controller
             }
 
             // Crear registro de Venta
+            $metodoPagoId = null;
+            try {
+                $metodoPagoId = MetodoPago::where('nombre', $metodoPagoNombre)->value('id_metodo_pago');
+            } catch (\Throwable $e) {
+                $metodoPagoId = null;
+            }
+
             $venta = Venta::create([
                 'id_cliente' => $idCliente,
                 'id_usuario' => $user->id_usuario,
@@ -319,7 +395,10 @@ class VentaApiController extends Controller
                 'descuento' => $tot['descuento'],
                 'impuesto' => $tot['impuesto'],
                 'total' => $tot['total'],
-                'metodo_pago' => $data['metodo_pago'],
+                'metodo_pago' => $metodoPagoNombre,
+                'metodo_pago_id' => $metodoPagoId,
+                'referencia_pago' => $data['referencia_pago'] ?? null,
+                'ultimos_digitos' => $data['ultimos_digitos'] ?? null,
                 'estado' => 'completada',
             ]);
 
@@ -337,6 +416,9 @@ class VentaApiController extends Controller
             Bitacora::registrar('CREATE', 'ventas', $venta->id_venta, 'Venta creada via API');
 
             DB::commit();
+            if ($request->hasSession()) {
+                $request->session()->forget('cart');
+            }
             
             // Cargar relaciones para la respuesta
             $venta->load('detalles');

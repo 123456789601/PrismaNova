@@ -1,5 +1,12 @@
 @php
-    $rol = strtolower(trim(auth()->user()->rol->nombre ?? ''));
+    $u = auth()->user();
+    $rawRol = $u->getAttribute('rol');
+    if (is_string($rawRol) && trim($rawRol) !== '') {
+        $rol = $rawRol;
+    } else {
+        $rol = $u->rol->nombre ?? '';
+    }
+    $rol = strtolower(trim((string)$rol));
 @endphp
 
 <nav class="sidebar glass-card d-flex flex-column m-0 m-md-3 sidebar-sticky" id="sidebar">

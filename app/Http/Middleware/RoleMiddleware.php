@@ -30,11 +30,19 @@ class RoleMiddleware
             return redirect()->route('login');
         }
         $user = Auth::user();
-        // Convert user role and allowed roles to lowercase for comparison
-        $userRole = strtolower(trim($user->rol->nombre ?? ''));
-        $allowedRoles = array_map(function($role) {
-            return strtolower(trim($role));
-        }, $roles);
+        $userRole = '';
+        $rawRole = $user->getAttribute('rol');
+        if (is_string($rawRole) && trim($rawRole) !== '') {
+            $userRole = $rawRole;
+        } else {
+            $rolModel = $user->rol;
+            if (is_object($rolModel) && isset($rolModel->nombre) && is_string($rolModel->nombre)) {
+                $userRole = $rolModel->nombre;
+            }
+        }
+
+        $userRole = strtolower(trim($userRole));
+        $allowedRoles = array_map(fn($role) => strtolower(trim((string) $role)), $roles);
 
         if (!in_array($userRole, $allowedRoles, true)) {
             abort(403);

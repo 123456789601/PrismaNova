@@ -199,11 +199,28 @@
                     <div id="cardFields" class="payment-section d-none">
                         <div class="mb-3">
                             <label class="form-label text-white">Referencia / Nro. Operación</label>
-                            <input type="text" class="form-control bg-secondary bg-opacity-25 border-0 text-white" name="referencia_pago" placeholder="Ej: 00123456">
+                            <input type="text" class="form-control bg-secondary bg-opacity-25 border-0 text-white" name="referencia_pago" id="pos_referencia_tarjeta" placeholder="Ej: 00123456" disabled>
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-white">Últimos 4 dígitos</label>
-                            <input type="text" class="form-control bg-secondary bg-opacity-25 border-0 text-white" name="ultimos_digitos" maxlength="4" placeholder="Ej: 4242">
+                            <input type="text" class="form-control bg-secondary bg-opacity-25 border-0 text-white" name="ultimos_digitos" id="pos_ultimos_digitos" maxlength="4" placeholder="Ej: 4242" disabled>
+                        </div>
+                    </div>
+
+                    <!-- Transfer Fields -->
+                    <div id="transferFields" class="payment-section d-none">
+                        <div class="mb-3">
+                            <div class="text-white-50 small">Banco destino: <span class="text-white">{{ $configuracion['banco_nombre'] ?? 'Bancolombia' }}</span></div>
+                            <div class="text-white-50 small">Tipo: <span class="text-white">{{ $configuracion['banco_tipo_cuenta'] ?? 'Ahorros' }}</span></div>
+                            <div class="text-white-50 small">Cuenta: <span class="text-white">{{ $configuracion['banco_numero_cuenta'] ?? '00000000000' }}</span></div>
+                            <div class="text-white-50 small">Titular: <span class="text-white">{{ $configuracion['banco_titular'] ?? 'PrismaNova' }}</span></div>
+                            @if(!empty($configuracion['banco_nit']))
+                                <div class="text-white-50 small">NIT: <span class="text-white">{{ $configuracion['banco_nit'] }}</span></div>
+                            @endif
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-white">Referencia / Comprobante</label>
+                            <input type="text" class="form-control bg-secondary bg-opacity-25 border-0 text-white" name="referencia_pago" id="pos_referencia_transferencia" placeholder="Ej: 00123456" disabled>
                         </div>
                     </div>
 
@@ -1178,15 +1195,35 @@
 
         const cashFields = document.getElementById('cashFields');
         const cardFields = document.getElementById('cardFields');
+        const transferFields = document.getElementById('transferFields');
         const btnConfirm = document.getElementById('btnConfirmPay');
+        const refTarjeta = document.getElementById('pos_referencia_tarjeta');
+        const ult = document.getElementById('pos_ultimos_digitos');
+        const refTrans = document.getElementById('pos_referencia_transferencia');
 
         if (name === 'efectivo') {
             cashFields.classList.remove('d-none');
             cardFields.classList.add('d-none');
+            transferFields.classList.add('d-none');
+            if (refTarjeta) refTarjeta.disabled = true;
+            if (ult) ult.disabled = true;
+            if (refTrans) refTrans.disabled = true;
             calculateChange();
         } else {
             cashFields.classList.add('d-none');
-            cardFields.classList.remove('d-none');
+            if (name === 'transferencia') {
+                cardFields.classList.add('d-none');
+                transferFields.classList.remove('d-none');
+                if (refTrans) refTrans.disabled = false;
+                if (refTarjeta) refTarjeta.disabled = true;
+                if (ult) ult.disabled = true;
+            } else {
+                transferFields.classList.add('d-none');
+                cardFields.classList.remove('d-none');
+                if (refTarjeta) refTarjeta.disabled = false;
+                if (ult) ult.disabled = false;
+                if (refTrans) refTrans.disabled = true;
+            }
             btnConfirm.disabled = false; // Always enable for non-cash (simplified)
         }
     }

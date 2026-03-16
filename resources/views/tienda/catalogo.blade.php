@@ -72,7 +72,22 @@
 </div>
 
 <script>
-const token = document.querySelector('meta[name=csrf-token]').content;
+const ROUTES = {
+    productos: @json(parse_url(url('/api/productos'), PHP_URL_PATH)),
+    carritoJson: @json(parse_url(route('tienda.carrito.json'), PHP_URL_PATH)),
+    carritoAgregar: @json(parse_url(route('tienda.carrito.add'), PHP_URL_PATH)),
+    login: @json(parse_url(route('login'), PHP_URL_PATH))
+};
+
+function getCookie(name){
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return '';
+}
+const token = ()=>{
+    return document.querySelector('meta[name=csrf-token]')?.content || decodeURIComponent(getCookie('XSRF-TOKEN') || '');
+};
 const grid = document.getElementById('grid');
 const pager = document.getElementById('pager');
 const search = document.getElementById('search');
@@ -117,7 +132,10 @@ function showProductDetails(id) {
 
 async function updateCount(){
     try{
-        const res = await fetch('{{ route('tienda.carrito.json') }}', {credentials:'include'});
+        const res = await fetch(ROUTES.carritoJson, {
+            credentials:'include',
+            headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}
+        });
         const data = await res.json();
         document.getElementById('cart-count').textContent = data.count ?? 0;
     }catch(e){ document.getElementById('cart-count').textContent = 0; }
@@ -130,19 +148,48 @@ async function addToCart(id, fromModal = false){
     }
 
     try {
-        const res = await fetch('{{ route('tienda.carrito.add') }}', {
+        const res = await fetch(ROUTES.carritoAgregar, {
             method:'POST',
-            headers:{'Content-Type':'application/json','X-CSRF-TOKEN':token},
+            headers:{
+                'Content-Type':'application/json',
+                'Accept':'application/json',
+                'X-Requested-With':'XMLHttpRequest',
+                'X-CSRF-TOKEN':token()
+            },
             credentials:'include',
             body: JSON.stringify({id_producto:id})
         });
 
-        const contentType = res.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-             throw new Error("Respuesta del servidor no es JSON (Posible error 500 o 419)");
+        if (res.status === 419) {
+            try{
+                const cookieNames = document.cookie.split(';').map(c => c.split('=')[0].trim()).filter(Boolean);
+                console.error('CSRF 419', {
+                    metaTokenLength: (document.querySelector('meta[name=csrf-token]')?.content || '').length,
+                    cookieNames
+                });
+            }catch(_){}
+            alert('Sesión expirada, recarga la página');
+            window.location.reload();
+            return;
+        }
+        if (res.status === 401) {
+            alert('No estás autenticado. Inicia sesión de nuevo en esta misma URL.');
+            window.location.href = ROUTES.login;
+            return;
+        }
+        if (res.status === 403) {
+            alert('No tienes permisos para agregar al carrito.');
+            return;
         }
 
-        const data = await res.json();
+        const contentType = res.headers.get("content-type");
+        let data = null;
+        if (contentType && contentType.includes("application/json")) {
+            data = await res.json();
+        } else {
+            const text = await res.text().catch(() => '');
+            throw new Error(`Respuesta no válida del servidor (HTTP ${res.status}). ${text ? 'Revisa laravel.log' : ''}`.trim());
+        }
         
         if(!res.ok || data.ok!==true){ 
             alert(data.error || 'No se pudo agregar el producto'); 
@@ -179,7 +226,7 @@ async function addToCart(id, fromModal = false){
 }
 
 async function load(page=1,q=''){
-    const url = new URL('/api/productos', window.location.origin);
+    const url = new URL(ROUTES.productos, window.location.origin);
     url.searchParams.set('page', page);
     if(q) url.searchParams.set('search', q);
     

@@ -42,7 +42,22 @@ class ProductApiController extends Controller
             }
             
             $productos = $q->orderBy('id_producto','desc')->paginate(12);
-            
+            $productos->getCollection()->transform(function ($p) {
+                $img = (string) ($p->imagen ?? '');
+                if ($img !== '') {
+                    if (preg_match('#^https?://#i', $img)) {
+                        $p->imagen_url = $img;
+                    } elseif (strpos($img, 'img/') === 0) {
+                        $p->imagen_url = asset($img);
+                    } else {
+                        $p->imagen_url = asset('storage/'.$img);
+                    }
+                } else {
+                    $p->imagen_url = asset('img/placeholder-producto.svg');
+                }
+                return $p;
+            });
+
             return response()->json($productos);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Error loading products: ' . $e->getMessage());

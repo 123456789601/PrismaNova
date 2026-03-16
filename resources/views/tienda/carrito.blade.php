@@ -52,11 +52,11 @@
                     <div class="d-flex align-items-center gap-3 p-3 bg-secondary bg-opacity-10 rounded-4 border border-light border-opacity-10 shadow-sm">
                         <label class="form-label mb-0 fw-bold text-white-50 text-uppercase small"><i class="bi bi-credit-card me-2"></i>Método de pago:</label>
                         <select id="metodo" class="form-select rounded-pill border-0 shadow-sm bg-secondary bg-opacity-25 text-white" style="width:200px">
-                            <option value="efectivo" class="text-dark">Efectivo</option>
                             <option value="tarjeta" class="text-dark">Tarjeta</option>
                             <option value="transferencia" class="text-dark">Transferencia</option>
                         </select>
                     </div>
+                    <div id="payment-details" class="mt-3 d-none"></div>
                 </div>
                 <div class="col-md-6 text-md-end">
                     <div class="d-flex align-items-center justify-content-md-end gap-3">
@@ -75,7 +75,21 @@
 @section('scripts')
 <script>
 const PLACEHOLDER_IMG = "{{ asset('img/placeholder-producto.svg') }}";
-const token = document.querySelector('meta[name=csrf-token]').content;
+const BANK_INFO = {
+    nombre: @json($configuracion['banco_nombre'] ?? 'Bancolombia'),
+    tipoCuenta: @json($configuracion['banco_tipo_cuenta'] ?? 'Ahorros'),
+    numeroCuenta: @json($configuracion['banco_numero_cuenta'] ?? '00000000000'),
+    titular: @json($configuracion['banco_titular'] ?? 'PrismaNova'),
+    nit: @json($configuracion['banco_nit'] ?? ''),
+};
+
+function getCookie(name){
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return '';
+}
+const token = ()=> document.querySelector('meta[name=csrf-token]')?.content || decodeURIComponent(getCookie('XSRF-TOKEN') || '');
 let currentItems = [];
 
 async function loadCart(){
@@ -83,7 +97,10 @@ async function loadCart(){
     tbody.innerHTML = '';
     
     try {
-        const res = await fetch('{{ route('tienda.carrito.json') }}',{credentials:'include'});
+        const res = await fetch('/tienda/carrito/json',{
+            credentials:'include',
+            headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}
+        });
         const data = await res.json();
         currentItems = data.items || [];
         
@@ -104,7 +121,7 @@ async function loadCart(){
             tr.innerHTML = `
                 <td class="ps-4 border-bottom border-light border-opacity-10">
                     <div class="d-flex align-items-center gap-3">
-                        <img src="${i.imagen ? '{{ asset('storage') }}/'+i.imagen : PLACEHOLDER_IMG}" alt="" style="height:48px;width:48px;object-fit:cover" class="rounded-3 shadow-sm" onerror="this.src='${PLACEHOLDER_IMG}'">
+                        <img src="${i.imagen || PLACEHOLDER_IMG}" alt="" style="height:48px;width:48px;object-fit:cover" class="rounded-3 shadow-sm" onerror="this.src='${PLACEHOLDER_IMG}'">
                         <span class="fw-bold text-white">${i.nombre}</span>
                     </div>
                 </td>
@@ -152,18 +169,85 @@ async function loadCart(){
 }
 
 async function updateItem(id, quantity) {
-    await fetch('{{ route('tienda.carrito.update') }}', {
-        method:'PATCH', headers:{'Content-Type':'application/json','X-CSRF-TOKEN':token}, credentials:'include',
+    await fetch('/tienda/carrito/cantidad', {
+        method:'PATCH',
+        headers:{
+            'Content-Type':'application/json',
+            'Accept':'application/json',
+            'X-Requested-With':'XMLHttpRequest',
+            'X-CSRF-TOKEN':token()
+        },
+        credentials:'include',
         body: JSON.stringify({id_producto:id, cantidad:quantity})
     });
     await loadCart();
 }
 
 async function removeItem(id) {
-    await fetch('{{ url('tienda/carrito/item') }}/'+id, {
-        method:'DELETE', headers:{'X-CSRF-TOKEN':token}, credentials:'include'
+    await fetch('/tienda/carrito/item/'+id, {
+        method:'DELETE',
+        headers:{
+            'Accept':'application/json',
+            'X-Requested-With':'XMLHttpRequest',
+            'X-CSRF-TOKEN':token()
+        },
+        credentials:'include'
     });
     await loadCart();
+}
+
+function renderPaymentDetails(){
+    const metodo = document.getElementById('metodo')?.value || 'tarjeta';
+    const container = document.getElementById('payment-details');
+    if(!container) return;
+
+    container.classList.remove('d-none');
+
+    if(metodo === 'transferencia'){
+        const nitLine = BANK_INFO.nit ? `<div class="text-white-50 small">NIT: <span class="text-white">${BANK_INFO.nit}</span></div>` : '';
+        container.innerHTML = `
+            <div class="p-3 bg-secondary bg-opacity-10 rounded-4 border border-light border-opacity-10 shadow-sm">
+                <div class="fw-bold text-white mb-2"><i class="bi bi-bank me-2 text-primary"></i>Datos para transferencia</div>
+                <div class="text-white-50 small">Banco: <span class="text-white">${BANK_INFO.nombre}</span></div>
+                <div class="text-white-50 small">Tipo: <span class="text-white">${BANK_INFO.tipoCuenta}</span></div>
+                <div class="text-white-50 small">Cuenta: <span class="text-white">${BANK_INFO.numeroCuenta}</span></div>
+                <div class="text-white-50 small">Titular: <span class="text-white">${BANK_INFO.titular}</span></div>
+                ${nitLine}
+                <hr class="border-light border-opacity-10 my-3">
+                <label class="form-label mb-1 fw-bold text-white-50 text-uppercase small">Referencia / Comprobante</label>
+                <input id="transfer-ref" type="text" class="form-control bg-secondary bg-opacity-25 border-0 text-white" maxlength="50" placeholder="Ej: 00123456">
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="p-3 bg-secondary bg-opacity-10 rounded-4 border border-light border-opacity-10 shadow-sm">
+            <div class="fw-bold text-white mb-2"><i class="bi bi-credit-card-2-front me-2 text-primary"></i>Datos de tarjeta</div>
+            <div class="row g-3">
+                <div class="col-12">
+                    <label class="form-label mb-1 fw-bold text-white-50 text-uppercase small">Nombre en la tarjeta</label>
+                    <input id="card-name" type="text" class="form-control bg-secondary bg-opacity-25 border-0 text-white" maxlength="60" autocomplete="cc-name" placeholder="Como aparece en la tarjeta">
+                </div>
+                <div class="col-12">
+                    <label class="form-label mb-1 fw-bold text-white-50 text-uppercase small">Número de tarjeta</label>
+                    <input id="card-number" type="text" inputmode="numeric" class="form-control bg-secondary bg-opacity-25 border-0 text-white" maxlength="19" autocomplete="cc-number" placeholder="0000 0000 0000 0000">
+                </div>
+                <div class="col-6">
+                    <label class="form-label mb-1 fw-bold text-white-50 text-uppercase small">Vencimiento</label>
+                    <input id="card-exp" type="text" class="form-control bg-secondary bg-opacity-25 border-0 text-white" maxlength="5" autocomplete="cc-exp" placeholder="MM/AA">
+                </div>
+                <div class="col-6">
+                    <label class="form-label mb-1 fw-bold text-white-50 text-uppercase small">CVV</label>
+                    <input id="card-cvv" type="password" inputmode="numeric" class="form-control bg-secondary bg-opacity-25 border-0 text-white" maxlength="4" autocomplete="cc-csc" placeholder="***">
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function normalizeDigits(v){
+    return String(v || '').replace(/\D+/g,'');
 }
 
 async function checkout(){
@@ -176,13 +260,39 @@ async function checkout(){
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Procesando...';
     
     try {
+        const metodo = document.getElementById('metodo').value;
+        const extra = {};
+        if(metodo === 'transferencia'){
+            const ref = (document.getElementById('transfer-ref')?.value || '').trim();
+            if(!ref){
+                throw new Error('Ingresa la referencia o comprobante de la transferencia.');
+            }
+            extra.referencia_pago = ref;
+        }else if(metodo === 'tarjeta'){
+            const name = (document.getElementById('card-name')?.value || '').trim();
+            const num = normalizeDigits(document.getElementById('card-number')?.value || '');
+            const exp = (document.getElementById('card-exp')?.value || '').trim();
+            const cvv = normalizeDigits(document.getElementById('card-cvv')?.value || '');
+            if(!name || num.length < 13 || num.length > 19 || !/^\d{2}\/\d{2}$/.test(exp) || (cvv.length < 3 || cvv.length > 4)){
+                throw new Error('Completa los datos de la tarjeta correctamente.');
+            }
+            extra.ultimos_digitos = num.slice(-4);
+            extra.referencia_pago = 'WEB-' + Date.now();
+        }
+
         const body = {
-            metodo_pago: document.getElementById('metodo').value,
+            metodo_pago: metodo,
             items: currentItems.map(i=>({id_producto:i.id_producto,cantidad:i.cantidad}))
+            ,...extra
         };
         const res = await fetch('/api/ventas',{
             method:'POST',
-            headers:{'Content-Type':'application/json','X-CSRF-TOKEN':token},
+            headers:{
+                'Content-Type':'application/json',
+                'Accept':'application/json',
+                'X-Requested-With':'XMLHttpRequest',
+                'X-CSRF-TOKEN':token()
+            },
             credentials:'include',
             body: JSON.stringify(body)
         });
@@ -214,6 +324,8 @@ async function checkout(){
 }
 
 document.getElementById('checkout').onclick=checkout;
+document.getElementById('metodo').addEventListener('change', renderPaymentDetails);
+renderPaymentDetails();
 loadCart();
 </script>
 @endsection
