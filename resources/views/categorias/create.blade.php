@@ -26,6 +26,16 @@
                             </div>
                         </div>
 
+                        <div class="col-md-12">
+                            <label for="descripcion" class="form-label fw-bold small text-white-50">Descripción</label>
+                            <textarea class="form-control rounded-4 bg-secondary bg-opacity-10 border-0 text-white" name="descripcion" id="descripcion" rows="3" placeholder="Descripción opcional...">{{ old('descripcion') }}</textarea>
+                            @error('descripcion')
+                                <div class="text-danger small ms-2 mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <input type="hidden" name="estado" value="activo">
+
                         <div class="col-12 text-end mt-5">
                             <a href="{{ route('categorias.index') }}" class="btn btn-secondary rounded-pill px-4 me-2">Cancelar</a>
                             <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-sm">Guardar</button>

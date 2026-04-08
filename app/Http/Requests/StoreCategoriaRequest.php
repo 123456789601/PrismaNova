@@ -19,4 +19,11 @@ class StoreCategoriaRequest extends FormRequest
             'estado' => 'required|in:activo,inactivo',
         ];
     }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'estado' => $this->estado ?? 'activo',
+        ]);
+    }
 }

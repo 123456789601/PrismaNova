@@ -27,6 +27,25 @@
                             </div>
                         </div>
 
+                        <div class="col-md-12">
+                            <label for="descripcion" class="form-label fw-bold small text-white-50">Descripción</label>
+                            <textarea class="form-control rounded-4 bg-secondary bg-opacity-10 border-0 text-white" name="descripcion" id="descripcion" rows="3">{{ old('descripcion', $categoria->descripcion) }}</textarea>
+                            @error('descripcion')
+                                <div class="text-danger small ms-2 mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="estado" class="form-label fw-bold small text-white-50">Estado <span class="text-danger">*</span></label>
+                            <select name="estado" id="estado" class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-white shadow-none" required>
+                                <option value="activo" {{ old('estado', $categoria->estado) == 'activo' ? 'selected' : '' }} class="bg-dark">Activo</option>
+                                <option value="inactivo" {{ old('estado', $categoria->estado) == 'inactivo' ? 'selected' : '' }} class="bg-dark">Inactivo</option>
+                            </select>
+                            @error('estado')
+                                <div class="text-danger small ms-2 mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <div class="col-12 text-end mt-5">
                             <a href="{{ route('categorias.index') }}" class="btn btn-secondary rounded-pill px-4 me-2">Cancelar</a>
                             <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-sm">Actualizar</button>
