@@ -36,7 +36,7 @@ class ResetPasswordController extends Controller
     }
 
     /**
-     * Reset the given user's password.
+     * Restablecer la contraseña del usuario dado.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
@@ -49,10 +49,8 @@ class ResetPasswordController extends Controller
             'password' => 'required|confirmed|min:8',
         ]);
 
-        // Here we will attempt to reset the user's password. If it is successful we
-        // will update the password on an actual user model and persist it to the
-        // database. Otherwise we will parse the error and return the response.
-        $status = Password::broker()->reset(
+        // Intentamos restablecer la contraseña usando el broker 'usuarios'
+        $status = Password::broker('usuarios')->reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
                 $user->forceFill([
@@ -66,7 +64,7 @@ class ResetPasswordController extends Controller
         );
 
         return $status == Password::PASSWORD_RESET
-                    ? redirect()->route('dashboard')->with('status', __($status))
+                    ? redirect()->route('login')->with('status', __($status))
                     : back()->withErrors(['email' => __($status)]);
     }
 }

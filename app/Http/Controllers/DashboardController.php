@@ -253,12 +253,44 @@ class DashboardController extends Controller
         $cajeros = $rol === 'admin' ? Usuario::whereHas('rol', function($q) {
             $q->where('nombre', 'cajero');
         })->orderBy('nombre')->get() : collect();
+
+        // Obtener sugerencias personalizadas para el cliente (basado en sus compras)
+        $sugerencias = collect();
+        if ($rol === 'cliente') {
+            $cliente = Cliente::where('email', Auth::user()->email)->orWhere('documento', Auth::user()->documento)->first();
+            if ($cliente) {
+                // Obtener categorías que el cliente ha comprado más
+                $idsCategorias = DB::table('detalle_ventas')
+                    ->join('ventas', 'detalle_ventas.id_venta', '=', 'ventas.id_venta')
+                    ->join('productos', 'detalle_ventas.id_producto', '=', 'productos.id_producto')
+                    ->where('ventas.id_cliente', $cliente->id_cliente)
+                    ->distinct()
+                    ->pluck('productos.id_categoria');
+
+                if ($idsCategorias->isNotEmpty()) {
+                    $sugerencias = Producto::whereIn('id_categoria', $idsCategorias)
+                        ->where('stock', '>', 0)
+                        ->where('estado', 'activo')
+                        ->inRandomOrder()
+                        ->take(4)
+                        ->get();
+                } else {
+                    // Si no ha comprado nada, sugerir productos aleatorios populares
+                    $sugerencias = Producto::where('stock', '>', 0)
+                        ->where('estado', 'activo')
+                        ->inRandomOrder()
+                        ->take(4)
+                        ->get();
+                }
+            }
+        }
         
         return view('dashboard', [
             'stats' => $stats,
             'rol' => $rol,
             'cajeros' => $cajeros,
             'cajero_id' => $cajeroId,
+            'sugerencias' => $sugerencias,
         ]);
     }
 }

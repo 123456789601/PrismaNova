@@ -41,7 +41,7 @@ class RestablecerContrasenaNotification extends Notification
     }
 
     /**
-     * Get the mail representation of the notification.
+     * Obtener la representación por correo de la notificación.
      *
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
@@ -50,12 +50,12 @@ class RestablecerContrasenaNotification extends Notification
     {
         return (new MailMessage)
             ->subject('Restablecimiento de Contraseña - PrismaNova')
-            ->greeting('¡Hola!')
-            ->line('Estás recibiendo este correo porque recibimos una solicitud de restablecimiento de contraseña para tu cuenta.')
-            ->action('Restablecer Contraseña', url(config('app.url').route('password.reset', ['token' => $this->token, 'email' => $notifiable->getEmailForPasswordReset()], false)))
-            ->line('Este enlace de restablecimiento caducará en 60 minutos.')
-            ->line('Si no solicitaste un restablecimiento de contraseña, no es necesaria ninguna acción.')
-            ->salutation('Saludos, PrismaNova');
+            ->greeting('¡Hola ' . $notifiable->nombre . '!')
+            ->line('Has recibido este correo porque se solicitó un cambio de contraseña para tu cuenta en PrismaNova Supermercado.')
+            ->action('Restablecer mi contraseña', url(route('password.reset', ['token' => $this->token, 'email' => $notifiable->getEmailForPasswordReset()], false)))
+            ->line('Este enlace es válido por 60 minutos.')
+            ->line('Si tú no realizaste esta solicitud, puedes ignorar este mensaje con total seguridad.')
+            ->salutation('Atentamente, El equipo de PrismaNova');
     }
 
     /**

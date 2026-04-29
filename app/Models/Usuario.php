@@ -95,13 +95,14 @@ class Usuario extends Authenticatable
     ];
 
     /**
-     * Send the password reset notification.
+     * Envía la notificación de restablecimiento de contraseña.
      *
      * @param  string  $token
      * @return void
      */
     public function sendPasswordResetNotification($token)
     {
+        // Usamos la notificación personalizada para que el correo esté en español y tenga buen diseño
         $this->notify(new \App\Notifications\RestablecerContrasenaNotification($token));
     }
 

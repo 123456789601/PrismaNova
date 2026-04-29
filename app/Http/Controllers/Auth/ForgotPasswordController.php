@@ -10,7 +10,7 @@ use App\Rules\Recaptcha;
 class ForgotPasswordController extends Controller
 {
     /**
-     * Display the form to request a password reset link.
+     * Muestra el formulario para solicitar un enlace de restablecimiento de contraseña.
      *
      * @return \Illuminate\View\View
      */
@@ -20,7 +20,7 @@ class ForgotPasswordController extends Controller
     }
 
     /**
-     * Send a reset link to the given user.
+     * Enviar un enlace de restablecimiento al usuario proporcionado.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
@@ -35,15 +35,19 @@ class ForgotPasswordController extends Controller
 
         $request->validate($rules);
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
-        $status = Password::broker()->sendResetLink(
-            $request->only('email')
-        );
+        // Intentamos enviar el enlace. Laravel usa el Broker configurado en config/auth.php
+        // En nuestro caso, está configurado para usar el modelo Usuario.
+        try {
+            $status = Password::broker('usuarios')->sendResetLink(
+                $request->only('email')
+            );
 
-        return $status == Password::RESET_LINK_SENT
-                    ? back()->with(['status' => __($status)])
-                    : back()->withErrors(['email' => __($status)]);
+            return $status == Password::RESET_LINK_SENT
+                        ? back()->with(['status' => __($status)])
+                        : back()->withErrors(['email' => __($status)]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error enviando email de recuperación: ' . $e->getMessage());
+            return back()->withErrors(['email' => 'No se pudo enviar el correo. Verifique la configuración del servidor de correos.']);
+        }
     }
 }

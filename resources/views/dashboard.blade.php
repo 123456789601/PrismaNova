@@ -467,6 +467,40 @@
         </div>
     </div>
     @endif
+
+    {{-- Sugerencias Personalizadas para el Cliente --}}
+    @if($rol === 'cliente' && isset($sugerencias) && $sugerencias->count() > 0)
+    <div class="col-12 mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-bold mb-0 text-primary"><i class="bi bi-stars me-2"></i>Especialmente para ti</h4>
+            <a href="{{ route('tienda.catalogo') }}" class="text-decoration-none text-primary small fw-bold">Ver todo <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="row g-4">
+            @foreach($sugerencias as $prod)
+            <div class="col-md-3">
+                <div class="glass-card h-100 transform-hover overflow-hidden position-relative">
+                    <div class="p-4 text-center bg-secondary bg-opacity-10">
+                        @if($prod->imagen)
+                            <img src="{{ asset('storage/' . $prod->imagen) }}" class="img-fluid rounded" style="max-height: 120px;" alt="{{ $prod->nombre }}">
+                        @else
+                            <i class="bi bi-box-seam fs-1 text-muted"></i>
+                        @endif
+                    </div>
+                    <div class="p-4">
+                        <h6 class="fw-bold mb-2 text-dark">{{ $prod->nombre }}</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold text-success">{{ $configuracion['moneda'] ?? '$' }} {{ number_format($prod->precio_venta, 2) }}</span>
+                            <button class="btn btn-sm btn-primary rounded-pill add-to-cart-dash" data-id="{{ $prod->id_producto }}">
+                                <i class="bi bi-plus-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
 </div>
 
 {{-- Scripts para Gráficas --}}
@@ -475,6 +509,32 @@
 document.addEventListener('DOMContentLoaded', function() {
     Chart.defaults.font.family = "'Inter', sans-serif";
     Chart.defaults.color = '#6b7280';
+
+    // Función para agregar al carrito desde el dashboard
+    document.querySelectorAll('.add-to-cart-dash').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const id = this.dataset.id;
+            try {
+                const res = await fetch('{{ route("tienda.carrito.add") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ id_producto: id })
+                });
+                if(res.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Agregado!',
+                        text: 'Producto añadido al carrito',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            } catch(e) {}
+        });
+    });
     
     @if($rol==='admin' && isset($stats['labels_dias']))
     const ctxDias = document.getElementById('chartDias');
