@@ -1269,10 +1269,10 @@
             },
             body: JSON.stringify(data)
         })
-        .then(res => res.json())
-        .then(resp => {
-            if (resp.success) {
-                const cliente = resp.cliente;
+        .then(async res => {
+            const data = await res.json();
+            if (res.ok && data.success) {
+                const cliente = data.cliente;
                 const select = document.getElementById('clientSelect');
                 const option = document.createElement('option');
                 option.value = cliente.id_cliente;
@@ -1280,12 +1280,26 @@
                 select.add(option);
                 select.value = cliente.id_cliente; // Select the new client
                 
-                alert('Cliente registrado correctamente');
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: 'Cliente registrado correctamente',
+                    confirmButtonColor: '#4f46e5'
+                });
                 const modal = bootstrap.Modal.getInstance(document.getElementById('newClientModal'));
                 modal.hide();
                 form.reset();
             } else {
-                alert('Error: ' + (resp.message || 'Error al guardar cliente'));
+                let errorMsg = data.message || 'Error al guardar cliente';
+                if (data.errors) {
+                    errorMsg = Object.values(data.errors).flat().join('\n');
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de Validación',
+                    text: errorMsg,
+                    confirmButtonColor: '#ef4444'
+                });
             }
         })
         .catch(err => {

@@ -32,18 +32,18 @@
         <div class="col-lg-6 mb-5 mb-lg-0">
             <div class="pe-lg-5">
                 <h1 class="display-3 fw-bolder mb-4 fade-in-up delay-200 text-gradient">
-                    Impulsa tu negocio con <span id="typing-text" class="text-primary"></span><span class="cursor-blink">|</span>
+                    Haz tu mercado fácil con <span id="typing-text" class="text-primary"></span><span class="cursor-blink">|</span>
                 </h1>
                 <p class="lead text-muted mb-5 fade-in-up delay-300 fs-4">
-                    Controla inventarios, ventas y clientes en una plataforma unificada. 
-                    Diseñada para ser intuitiva, rápida y escalar contigo.
+                    Todo lo que necesitas para tu hogar en un solo lugar. 
+                    Calidad, frescura y rapidez directamente a tu puerta.
                 </p>
                 <div class="d-flex gap-3 fade-in-up delay-400 flex-wrap">
                     @auth
-                        <a href="{{ url('/dashboard') }}" class="btn btn-primary btn-lg rounded-pill px-5 shadow-lg fw-bold transform-hover">Ir al Panel <i class="bi bi-arrow-right ms-2"></i></a>
+                        <a href="{{ url('/tienda') }}" class="btn btn-primary btn-lg rounded-pill px-5 shadow-lg fw-bold transform-hover">Ver Catálogo <i class="bi bi-bag-fill ms-2"></i></a>
                     @else
-                        <a href="{{ route('register') }}" class="btn btn-primary btn-lg rounded-pill px-5 shadow-lg fw-bold transform-hover">Comenzar Gratis <i class="bi bi-rocket-takeoff-fill ms-2"></i></a>
-                        <a href="{{ route('login') }}" class="btn btn-outline-primary btn-lg rounded-pill px-5 fw-bold border-2 transform-hover">Ya tengo cuenta</a>
+                        <a href="{{ route('register') }}" class="btn btn-primary btn-lg rounded-pill px-5 shadow-lg fw-bold transform-hover">Empezar a Comprar <i class="bi bi-cart-fill ms-2"></i></a>
+                        <a href="{{ route('login') }}" class="btn btn-outline-primary btn-lg rounded-pill px-5 fw-bold border-2 transform-hover">Ingresar</a>
                     @endauth
                 </div>
                 
@@ -71,10 +71,10 @@
                     <div class="glass-card h-100 transform-hover">
                         <div class="card-body p-4 text-center">
                             <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-flex mb-3 text-primary">
-                                <i class="bi bi-graph-up-arrow fs-2"></i>
+                                <i class="bi bi-truck fs-2"></i>
                             </div>
-                            <h5 class="fw-bold mb-2">Reportes en Tiempo Real</h5>
-                            <p class="text-muted small mb-0">Toma decisiones informadas con estadísticas detalladas y precisas.</p>
+                            <h5 class="fw-bold mb-2">Entregas Rápidas</h5>
+                            <p class="text-muted small mb-0">Recibe tu pedido en la puerta de tu casa en tiempo récord.</p>
                         </div>
                     </div>
                 </div>
@@ -82,10 +82,10 @@
                     <div class="glass-card h-100 transform-hover">
                         <div class="card-body p-4 text-center">
                             <div class="rounded-circle bg-success bg-opacity-10 p-3 d-inline-flex mb-3 text-success">
-                                <i class="bi bi-box-seam fs-2"></i>
+                                <i class="bi bi-patch-check fs-2"></i>
                             </div>
-                            <h5 class="fw-bold mb-2">Inventario Inteligente</h5>
-                            <p class="text-muted small mb-0">Control total de stock, alertas y gestión de proveedores simplificada.</p>
+                            <h5 class="fw-bold mb-2">Productos Frescos</h5>
+                            <p class="text-muted small mb-0">Garantizamos la mejor calidad y frescura en cada uno de nuestros productos.</p>
                         </div>
                     </div>
                 </div>
@@ -93,10 +93,10 @@
                     <div class="glass-card h-100 transform-hover">
                         <div class="card-body p-4 text-center">
                             <div class="rounded-circle bg-warning bg-opacity-10 p-3 d-inline-flex mb-3 text-warning">
-                                <i class="bi bi-people-fill fs-2"></i>
+                                <i class="bi bi-tags-fill fs-2"></i>
                             </div>
-                            <h5 class="fw-bold mb-2">Gestión de Clientes</h5>
-                            <p class="text-muted small mb-0">Fideliza a tus compradores y mantén un historial detallado.</p>
+                            <h5 class="fw-bold mb-2">Precios Increíbles</h5>
+                            <p class="text-muted small mb-0">Las mejores ofertas y promociones pensadas para tu bolsillo.</p>
                         </div>
                     </div>
                 </div>
@@ -104,10 +104,10 @@
                     <div class="glass-card h-100 transform-hover">
                         <div class="card-body p-4 text-center">
                             <div class="rounded-circle bg-info bg-opacity-10 p-3 d-inline-flex mb-3 text-info">
-                                <i class="bi bi-shield-check fs-2"></i>
+                                <i class="bi bi-shield-lock-fill fs-2"></i>
                             </div>
-                            <h5 class="fw-bold mb-2">Seguridad Garantizada</h5>
-                            <p class="text-muted small mb-0">Tus datos protegidos con los más altos estándares de seguridad.</p>
+                            <h5 class="fw-bold mb-2">Pagos Seguros</h5>
+                            <p class="text-muted small mb-0">Diferentes métodos de pago protegidos con total seguridad.</p>
                         </div>
                     </div>
                 </div>
@@ -164,7 +164,7 @@
                     </div>
                     <span class="fw-bold fs-5 text-body">PrismaNova</span>
                 </a>
-                <p class="text-muted small">Tu aliado estratégico para la gestión empresarial moderna. Simplifica, optimiza y crece con nosotros.</p>
+                <p class="text-muted small">Tu supermercado de confianza para el día a día. Calidad, frescura y los mejores precios para tu familia.</p>
                 <div class="d-flex gap-2">
                     <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle"><i class="bi bi-facebook"></i></a>
                     <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle"><i class="bi bi-twitter-x"></i></a>
@@ -210,7 +210,7 @@
 <script>
     // Efecto Typing en el Título
     const typingTextElement = document.getElementById('typing-text');
-    const words = ["Inteligencia", "Estrategia", "Innovación", "Futuro"];
+    const words = ["Frescura", "Calidad", "Rapidez", "Hogar"];
     let wordIndex = 0;
     let charIndex = 0;
     let isDeleting = false;

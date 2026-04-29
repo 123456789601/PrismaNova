@@ -103,14 +103,16 @@ class RegistrationController extends Controller
                 $clientePorDoc->save();
             }
         } else {
-            // El cliente ya existe por email, no hacemos nada (preservamos sus datos actuales)
-            // Opcionalmente podríamos actualizar nombre/apellido si están vacíos en el registro existente
+            // El cliente ya existe por email, actualizamos nombre y apellido si están vacíos
+            if (empty($cliente->nombre)) $cliente->nombre = $data['nombre'];
+            if (empty($cliente->apellido)) $cliente->apellido = $data['apellido'];
+            if ($cliente->isDirty()) $cliente->save();
         }
 
         // Autenticar automáticamente tras registro exitoso
         Auth::login($usuario);
         $request->session()->regenerate();
 
-        return redirect()->route('dashboard')->with('success','Registro completado');
+        return redirect()->route('home')->with('success', 'Registro completado exitosamente');
     }
 }

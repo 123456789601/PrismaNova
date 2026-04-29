@@ -53,7 +53,7 @@ class LoginController extends Controller
 
         $credentials = $request->validate($rules);
         
-        // Remove recaptcha from credentials before attempting login
+        // Eliminar recaptcha de las credenciales antes de intentar el inicio de sesión
         unset($credentials['g-recaptcha-response']);
 
         $this->ensureIsNotRateLimited($request);
@@ -73,7 +73,7 @@ class LoginController extends Controller
     }
 
     /**
-     * Ensure the login request is not rate limited.
+     * Asegurarse de que la solicitud de inicio de sesión no esté limitada por tasa.
      *
      * @return void
      *
@@ -96,7 +96,7 @@ class LoginController extends Controller
     }
 
     /**
-     * Get the rate limiting throttle key for the request.
+     * Obtener la clave de limitación de tasa para la solicitud.
      *
      * @return string
      */

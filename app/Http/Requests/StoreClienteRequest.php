@@ -42,12 +42,10 @@ class StoreClienteRequest extends FormRequest
         $this->merge([
             'nombre' => mb_convert_case(trim(strip_tags($this->nombre)), MB_CASE_TITLE, 'UTF-8'),
             'apellido' => mb_convert_case(trim(strip_tags($this->apellido)), MB_CASE_TITLE, 'UTF-8'),
-            // Eliminar puntos y guiones del documento
             'documento' => preg_replace('/[^0-9]/', '', trim(strip_tags($this->documento))),
-            // Eliminar todo excepto números y signo + del teléfono
             'telefono' => preg_replace('/[^0-9+]/', '', trim(strip_tags($this->telefono))),
             'direccion' => trim(strip_tags($this->direccion)),
-            'email' => strtolower(trim(strip_tags($this->email))),
+            'email' => $this->email ? strtolower(trim(strip_tags($this->email))) : null,
         ]);
     }
 }

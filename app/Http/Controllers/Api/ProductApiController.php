@@ -41,7 +41,7 @@ class ProductApiController extends Controller
                 });
             }
             
-            $productos = $q->orderBy('id_producto','desc')->paginate(12);
+              $productos = $q->orderBy('id_producto','desc')->paginate(12);
             $productos->getCollection()->transform(function ($p) {
                 $img = (string) ($p->imagen ?? '');
                 if ($img !== '') {
