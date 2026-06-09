@@ -18,7 +18,25 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ time() }}">
+    <style>
+        /* Force light mode table visibility */
+        html:not([data-bs-theme="dark"]) .table {
+            color: #212529 !important;
+        }
+        html:not([data-bs-theme="dark"]) .table thead th {
+            color: #495057 !important;
+            border-color: rgba(0, 0, 0, 0.1) !important;
+        }
+        html:not([data-bs-theme="dark"]) .table td,
+        html:not([data-bs-theme="dark"]) .table th {
+            border-color: rgba(0, 0, 0, 0.08) !important;
+            color: #212529 !important;
+        }
+        html:not([data-bs-theme="dark"]) .table tbody tr {
+            color: #212529 !important;
+        }
+    </style>
     <script>
         // Precargar tema
         (function() {

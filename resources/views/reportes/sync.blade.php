@@ -25,8 +25,8 @@
     <div class="glass-card mb-4 overflow-hidden">
         <div class="card-body p-4">
             <div class="table-responsive rounded-4 shadow-sm border border-light border-opacity-10 overflow-hidden">
-                <table class="table table-hover align-middle mb-0 text-white">
-                    <thead class="bg-primary bg-opacity-10 text-white">
+                <table class="table table-hover align-middle mb-0 text-body">
+                    <thead class="bg-primary bg-opacity-10 text-body">
                         <tr>
                             <th class="ps-4 py-3 border-0">ID</th>
                             <th class="py-3 border-0">External ID</th>
@@ -39,13 +39,13 @@
                     <tbody class="border-top-0">
                         @foreach($logs as $l)
                         <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                            <td class="ps-4 fw-bold text-white-50">#{{ $l->id }}</td>
-                            <td class="text-white-50 small">{{ $l->external_id }}</td>
+                            <td class="ps-4 fw-bold text-muted">#{{ $l->id }}</td>
+                            <td class="text-muted small">{{ $l->external_id }}</td>
                             <td>
                                 @php $p = $l->payload ?? []; @endphp
-                                <span class="fw-bold text-white">{{ $p['id_producto'] ?? '-' }}</span>
+                                <span class="fw-bold text-body">{{ $p['id_producto'] ?? '-' }}</span>
                                 @if(isset($p['codigo_barras']))
-                                    <span class="badge bg-secondary bg-opacity-10 text-white border border-light border-opacity-25 ms-2">{{ $p['codigo_barras'] }}</span>
+                                    <span class="badge bg-secondary bg-opacity-10 text-body border border-light border-opacity-25 ms-2">{{ $p['codigo_barras'] }}</span>
                                 @endif
                             </td>
                             <td>
@@ -60,7 +60,7 @@
                                     <span class="text-warning small"><i class="bi bi-clock me-1"></i>Pendiente</span>
                                 @endif
                             </td>
-                            <td class="pe-4 text-white-50 small">{{ $l->created_at->format('d/m/Y H:i') }}</td>
+                            <td class="pe-4 text-muted small">{{ $l->created_at->format('d/m/Y H:i') }}</td>
                         </tr>
                         @endforeach
                     </tbody>

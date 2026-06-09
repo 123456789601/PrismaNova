@@ -12,7 +12,7 @@
         </a>
     </div>
 
-    <div id="cart-empty" class="alert alert-info d-none border-0 rounded-4 overflow-hidden mb-4 shadow-sm bg-info bg-opacity-10 text-white">
+    <div id="cart-empty" class="alert alert-info d-none border-0 rounded-4 overflow-hidden mb-4 shadow-sm bg-info bg-opacity-10 text-body">
         <div class="d-flex justify-content-between align-items-center p-2">
             <div class="d-flex align-items-center">
                 <div class="rounded-circle bg-white bg-opacity-10 p-3 me-3 text-info border border-info border-opacity-25">
@@ -24,7 +24,7 @@
                 </div>
             </div>
             <div>
-                <a href="{{ route('tienda.catalogo') }}" class="btn btn-info text-white fw-bold rounded-pill px-4 shadow-sm transform-hover">Ir al catálogo</a>
+                <a href="{{ route('tienda.catalogo') }}" class="btn btn-info text-body fw-bold rounded-pill px-4 shadow-sm transform-hover">Ir al catálogo</a>
             </div>
         </div>
     </div>
@@ -32,8 +32,8 @@
     <div class="glass-card overflow-hidden" id="cart-container">
         <div class="card-body p-4">
             <div class="table-responsive rounded-4 shadow-sm border border-light border-opacity-10 overflow-hidden">
-                <table class="table align-middle mb-0 text-white" id="cart-table">
-                    <thead class="bg-primary bg-opacity-10 text-white fw-bold text-uppercase small">
+                <table class="table align-middle mb-0 text-body" id="cart-table">
+                    <thead class="bg-primary bg-opacity-10 text-body fw-bold text-uppercase small">
                         <tr>
                             <th class="ps-4 py-3 border-bottom border-light border-opacity-10">Producto</th>
                             <th class="py-3 border-bottom border-light border-opacity-10">Precio</th>
@@ -50,8 +50,8 @@
             <div class="row align-items-center justify-content-between g-3">
                 <div class="col-md-6">
                     <div class="d-flex align-items-center gap-3 p-3 bg-secondary bg-opacity-10 rounded-4 border border-light border-opacity-10 shadow-sm">
-                        <label class="form-label mb-0 fw-bold text-white-50 text-uppercase small"><i class="bi bi-credit-card me-2"></i>Método de pago:</label>
-                        <select id="metodo" class="form-select rounded-pill border-0 shadow-sm bg-secondary bg-opacity-25 text-white" style="width:200px">
+                        <label class="form-label mb-0 fw-bold text-muted text-uppercase small"><i class="bi bi-credit-card me-2"></i>Método de pago:</label>
+                        <select id="metodo" class="form-select rounded-pill border-0 shadow-sm bg-secondary bg-opacity-25 text-body" style="width:200px">
                             <option value="tarjeta" class="text-dark">Tarjeta</option>
                             <option value="transferencia" class="text-dark">Transferencia</option>
                         </select>
@@ -122,15 +122,15 @@ async function loadCart(){
                 <td class="ps-4 border-bottom border-light border-opacity-10">
                     <div class="d-flex align-items-center gap-3">
                         <img src="${i.imagen || PLACEHOLDER_IMG}" alt="" style="height:48px;width:48px;object-fit:cover" class="rounded-3 shadow-sm" onerror="this.src='${PLACEHOLDER_IMG}'">
-                        <span class="fw-bold text-white">${i.nombre}</span>
+                        <span class="fw-bold text-body">${i.nombre}</span>
                     </div>
                 </td>
-                <td class="fw-bold text-white-50 border-bottom border-light border-opacity-10">{{ $configuracion['moneda'] ?? '$' }} ${Number(i.precio).toFixed(2)}</td>
+                <td class="fw-bold text-muted border-bottom border-light border-opacity-10">{{ $configuracion['moneda'] ?? '$' }} ${Number(i.precio).toFixed(2)}</td>
                 <td class="border-bottom border-light border-opacity-10">
                     <div class="input-group input-group-sm rounded-pill overflow-hidden bg-secondary bg-opacity-25 border border-light border-opacity-10" style="width:140px">
-                        <button class="btn btn-link text-white-50 border-0 minus hover-scale" type="button"><i class="bi bi-dash"></i></button>
-                        <input type="number" min="1" value="${i.cantidad}" class="form-control text-center border-0 qty fw-bold bg-transparent text-white">
-                        <button class="btn btn-link text-white-50 border-0 plus hover-scale" type="button"><i class="bi bi-plus"></i></button>
+                        <button class="btn btn-link text-muted border-0 minus hover-scale" type="button"><i class="bi bi-dash"></i></button>
+                        <input type="number" min="1" value="${i.cantidad}" class="form-control text-center border-0 qty fw-bold bg-transparent text-body">
+                        <button class="btn btn-link text-muted border-0 plus hover-scale" type="button"><i class="bi bi-plus"></i></button>
                     </div>
                 </td>
                 <td class="fw-bold text-primary border-bottom border-light border-opacity-10">{{ $configuracion['moneda'] ?? '$' }} ${Number(i.subtotal || (i.precio*i.cantidad)).toFixed(2)}</td>
@@ -204,18 +204,18 @@ function renderPaymentDetails(){
     container.classList.remove('d-none');
 
     if(metodo === 'transferencia'){
-        const nitLine = BANK_INFO.nit ? `<div class="text-white-50 small">NIT: <span class="text-white">${BANK_INFO.nit}</span></div>` : '';
+        const nitLine = BANK_INFO.nit ? `<div class="text-muted small">NIT: <span class="text-body">${BANK_INFO.nit}</span></div>` : '';
         container.innerHTML = `
             <div class="p-3 bg-secondary bg-opacity-10 rounded-4 border border-light border-opacity-10 shadow-sm">
-                <div class="fw-bold text-white mb-2"><i class="bi bi-bank me-2 text-primary"></i>Datos para transferencia</div>
-                <div class="text-white-50 small">Banco: <span class="text-white">${BANK_INFO.nombre}</span></div>
-                <div class="text-white-50 small">Tipo: <span class="text-white">${BANK_INFO.tipoCuenta}</span></div>
-                <div class="text-white-50 small">Cuenta: <span class="text-white">${BANK_INFO.numeroCuenta}</span></div>
-                <div class="text-white-50 small">Titular: <span class="text-white">${BANK_INFO.titular}</span></div>
+                <div class="fw-bold text-body mb-2"><i class="bi bi-bank me-2 text-primary"></i>Datos para transferencia</div>
+                <div class="text-muted small">Banco: <span class="text-body">${BANK_INFO.nombre}</span></div>
+                <div class="text-muted small">Tipo: <span class="text-body">${BANK_INFO.tipoCuenta}</span></div>
+                <div class="text-muted small">Cuenta: <span class="text-body">${BANK_INFO.numeroCuenta}</span></div>
+                <div class="text-muted small">Titular: <span class="text-body">${BANK_INFO.titular}</span></div>
                 ${nitLine}
                 <hr class="border-light border-opacity-10 my-3">
-                <label class="form-label mb-1 fw-bold text-white-50 text-uppercase small">Referencia / Comprobante</label>
-                <input id="transfer-ref" type="text" class="form-control bg-secondary bg-opacity-25 border-0 text-white" maxlength="50" placeholder="Ej: 00123456">
+                <label class="form-label mb-1 fw-bold text-muted text-uppercase small">Referencia / Comprobante</label>
+                <input id="transfer-ref" type="text" class="form-control bg-secondary bg-opacity-25 border-0 text-body" maxlength="50" placeholder="Ej: 00123456">
             </div>
         `;
         return;
@@ -223,23 +223,23 @@ function renderPaymentDetails(){
 
     container.innerHTML = `
         <div class="p-3 bg-secondary bg-opacity-10 rounded-4 border border-light border-opacity-10 shadow-sm">
-            <div class="fw-bold text-white mb-2"><i class="bi bi-credit-card-2-front me-2 text-primary"></i>Datos de tarjeta</div>
+            <div class="fw-bold text-body mb-2"><i class="bi bi-credit-card-2-front me-2 text-primary"></i>Datos de tarjeta</div>
             <div class="row g-3">
                 <div class="col-12">
-                    <label class="form-label mb-1 fw-bold text-white-50 text-uppercase small">Nombre en la tarjeta</label>
-                    <input id="card-name" type="text" class="form-control bg-secondary bg-opacity-25 border-0 text-white" maxlength="60" autocomplete="cc-name" placeholder="Como aparece en la tarjeta">
+                    <label class="form-label mb-1 fw-bold text-muted text-uppercase small">Nombre en la tarjeta</label>
+                    <input id="card-name" type="text" class="form-control bg-secondary bg-opacity-25 border-0 text-body" maxlength="60" autocomplete="cc-name" placeholder="Como aparece en la tarjeta">
                 </div>
                 <div class="col-12">
-                    <label class="form-label mb-1 fw-bold text-white-50 text-uppercase small">Número de tarjeta</label>
-                    <input id="card-number" type="text" inputmode="numeric" class="form-control bg-secondary bg-opacity-25 border-0 text-white" maxlength="19" autocomplete="cc-number" placeholder="0000 0000 0000 0000">
+                    <label class="form-label mb-1 fw-bold text-muted text-uppercase small">Número de tarjeta</label>
+                    <input id="card-number" type="text" inputmode="numeric" class="form-control bg-secondary bg-opacity-25 border-0 text-body" maxlength="19" autocomplete="cc-number" placeholder="0000 0000 0000 0000">
                 </div>
                 <div class="col-6">
-                    <label class="form-label mb-1 fw-bold text-white-50 text-uppercase small">Vencimiento</label>
-                    <input id="card-exp" type="text" class="form-control bg-secondary bg-opacity-25 border-0 text-white" maxlength="5" autocomplete="cc-exp" placeholder="MM/AA">
+                    <label class="form-label mb-1 fw-bold text-muted text-uppercase small">Vencimiento</label>
+                    <input id="card-exp" type="text" class="form-control bg-secondary bg-opacity-25 border-0 text-body" maxlength="5" autocomplete="cc-exp" placeholder="MM/AA">
                 </div>
                 <div class="col-6">
-                    <label class="form-label mb-1 fw-bold text-white-50 text-uppercase small">CVV</label>
-                    <input id="card-cvv" type="password" inputmode="numeric" class="form-control bg-secondary bg-opacity-25 border-0 text-white" maxlength="4" autocomplete="cc-csc" placeholder="***">
+                    <label class="form-label mb-1 fw-bold text-muted text-uppercase small">CVV</label>
+                    <input id="card-cvv" type="password" inputmode="numeric" class="form-control bg-secondary bg-opacity-25 border-0 text-body" maxlength="4" autocomplete="cc-csc" placeholder="***">
                 </div>
             </div>
         </div>

@@ -18,8 +18,8 @@
     <div class="glass-card overflow-hidden">
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 text-white">
-                    <thead class="bg-primary bg-opacity-10 text-white">
+                <table class="table table-hover align-middle mb-0 text-body">
+                    <thead class="bg-primary bg-opacity-10 text-body">
                         <tr>
                             <th class="ps-4 py-3 border-0">ID</th>
                             <th class="py-3 border-0">Apertura</th>
@@ -31,23 +31,23 @@
                     <tbody class="border-top-0">
                         @forelse($cajas as $c)
                         <tr class="hover-bg-white-10 border-bottom border-light border-opacity-10">
-                            <td class="ps-4 fw-bold text-white">#{{ $c->id_caja }}</td>
+                            <td class="ps-4 fw-bold text-body">#{{ $c->id_caja }}</td>
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div class="avatar-sm bg-primary bg-opacity-10 rounded-circle text-primary me-2 d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px;">
                                         <i class="bi bi-clock"></i>
                                     </div>
-                                    <span class="text-white fw-medium">{{ $c->fecha_apertura }}</span>
+                                    <span class="text-body fw-medium">{{ $c->fecha_apertura }}</span>
                                 </div>
                             </td>
                             <td>
                                 @if($c->fecha_cierre)
                                     <div class="d-flex align-items-center">
                                         <i class="bi bi-check-circle-fill me-2 text-success"></i>
-                                        <span class="text-white fw-medium">{{ $c->fecha_cierre }}</span>
+                                        <span class="text-body fw-medium">{{ $c->fecha_cierre }}</span>
                                     </div>
                                 @else
-                                    <span class="badge bg-secondary bg-opacity-25 text-white-50 border border-secondary border-opacity-25 rounded-pill px-3">En curso</span>
+                                    <span class="badge bg-secondary bg-opacity-25 text-muted border border-secondary border-opacity-25 rounded-pill px-3">En curso</span>
                                 @endif
                             </td>
                             <td>
@@ -66,7 +66,7 @@
                         @empty
                         <tr>
                             <td colspan="5" class="text-center py-5">
-                                <div class="text-white-50">
+                                <div class="text-muted">
                                     <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
                                     No hay registros de caja.
                                 </div>

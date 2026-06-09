@@ -54,38 +54,38 @@ class CuponController extends Controller
     /**
      * Muestra el formulario para editar un cupón existente.
      *
-     * @param Cupon $cupone
+     * @param Cupon $cupon
      * @return \Illuminate\View\View
      */
-    public function edit(Cupon $cupone)
+    public function edit(Cupon $cupon)
     {
-        return view('cupones.edit', ['cupon' => $cupone]);
+        return view('cupones.edit', compact('cupon'));
     }
 
     /**
      * Actualiza la información de un cupón.
      *
      * @param UpdateCuponRequest $request
-     * @param Cupon $cupone
+     * @param Cupon $cupon
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(UpdateCuponRequest $request, Cupon $cupone)
+    public function update(UpdateCuponRequest $request, Cupon $cupon)
     {
-        $cupone->update($request->validated());
-        Bitacora::registrar('UPDATE', 'cupones', $cupone->id_cupon, 'Cupón actualizado');
+        $cupon->update($request->validated());
+        Bitacora::registrar('UPDATE', 'cupones', $cupon->id_cupon, 'Cupón actualizado');
         return redirect()->route('cupones.index')->with('success','Cupón actualizado');
     }
 
     /**
      * Elimina un cupón del sistema.
      *
-     * @param Cupon $cupone
+     * @param Cupon $cupon
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(Cupon $cupone)
+    public function destroy(Cupon $cupon)
     {
-        $id = $cupone->id_cupon;
-        $cupone->delete();
+        $id = $cupon->id_cupon;
+        $cupon->delete();
         Bitacora::registrar('DELETE', 'cupones', $id, 'Cupón eliminado');
         return redirect()->route('cupones.index')->with('success','Cupón eliminado');
     }

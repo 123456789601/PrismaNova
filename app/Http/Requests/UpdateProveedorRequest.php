@@ -4,13 +4,32 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class UpdateProveedorRequest
+ * 
+ * Validación de datos para la actualización de un proveedor existente.
+ * Asegura la integridad de los datos, permitiendo el mismo NIT o email
+ * solo si pertenece al proveedor que se está actualizando.
+ */
 class UpdateProveedorRequest extends FormRequest
 {
+    /**
+     * Determina si el usuario está autorizado para hacer esta solicitud.
+     *
+     * @return bool
+     */
     public function authorize()
     {
         return true;
     }
 
+    /**
+     * Obtiene las reglas de validación que se aplican a la solicitud.
+     * 
+     * Excluye el proveedor actual de la validación de unicidad de NIT y email.
+     *
+     * @return array
+     */
     public function rules()
     {
         $id = $this->route('proveedor');
@@ -27,8 +46,9 @@ class UpdateProveedorRequest extends FormRequest
     }
 
     /**
-     * Preparar los datos para la validación.
-     * Sanear entradas para evitar XSS y estandarizar formato.
+     * Prepara los datos para la validación.
+     * 
+     * Sanea las entradas para evitar XSS y estandariza el formato.
      */
     protected function prepareForValidation()
     {

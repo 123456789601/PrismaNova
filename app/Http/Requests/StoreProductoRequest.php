@@ -26,6 +26,7 @@ class StoreProductoRequest extends FormRequest
      * Obtiene las reglas de validación que se aplican a la solicitud.
      * 
      * Valida campos obligatorios y formatos (imagen, numéricos, fechas).
+     * Incluye unicidad de nombre y código de barras.
      *
      * @return array
      */
@@ -33,7 +34,7 @@ class StoreProductoRequest extends FormRequest
     {
         return [
             'codigo_barras' => 'nullable|string|max:50|unique:productos,codigo_barras',
-            'nombre' => 'required|string|max:150',
+            'nombre' => 'required|string|max:150|unique:productos,nombre',
             'descripcion' => 'nullable|string|max:191',
             'imagen' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'id_categoria' => 'required|exists:categorias,id_categoria',

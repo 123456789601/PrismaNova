@@ -5,13 +5,33 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
+/**
+ * Class UpdateUsuarioRequest
+ * 
+ * Validación de datos para la actualización de un usuario existente.
+ * Asegura la integridad de los datos, permitiendo el mismo documento o email
+ * solo si pertenece al usuario que se está actualizando. La contraseña es opcional.
+ */
 class UpdateUsuarioRequest extends FormRequest
 {
+    /**
+     * Determina si el usuario está autorizado para hacer esta solicitud.
+     *
+     * @return bool
+     */
     public function authorize()
     {
         return true;
     }
 
+    /**
+     * Obtiene las reglas de validación que se aplican a la solicitud.
+     * 
+     * Excluye el usuario actual de la validación de unicidad de documento y email.
+     * La contraseña es opcional en actualizaciones.
+     *
+     * @return array
+     */
     public function rules()
     {
         $usuario = $this->route('usuario');
@@ -29,6 +49,11 @@ class UpdateUsuarioRequest extends FormRequest
         ];
     }
 
+    /**
+     * Obtiene los mensajes de error de validación personalizados.
+     *
+     * @return array
+     */
     public function messages()
     {
         return [
@@ -44,6 +69,11 @@ class UpdateUsuarioRequest extends FormRequest
         ];
     }
 
+    /**
+     * Prepara los datos para la validación.
+     * 
+     * Sanea las entradas para evitar XSS y estandariza el formato.
+     */
     protected function prepareForValidation()
     {
         $this->merge([

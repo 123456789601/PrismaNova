@@ -5,7 +5,7 @@
 <div class="container-fluid py-4">
     <div class="glass-card overflow-hidden">
         <div class="card-header bg-transparent border-bottom border-light border-opacity-10 py-3 d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
-            <h4 class="mb-0 fw-bold text-white"><i class="bi bi-receipt me-2 text-primary"></i>Ventas</h4>
+            <h4 class="mb-0 fw-bold text-body"><i class="bi bi-receipt me-2 text-primary"></i>Ventas</h4>
             <a href="{{ route('ventas.create') }}" class="btn btn-primary btn-sm rounded-pill shadow-sm w-100 w-md-auto text-center">
                 <i class="bi bi-plus-lg me-1"></i>Nueva Venta
             </a>
@@ -15,8 +15,8 @@
             <div class="px-4 py-3 border-bottom border-light border-opacity-10">
                 <form class="row g-3 align-items-end" method="GET" action="{{ route('ventas.index') }}">
                     <div class="col-md-3">
-                        <label class="form-label small text-white-50 text-uppercase fw-bold">Estado</label>
-                        <select name="estado" class="form-select rounded-pill bg-secondary bg-opacity-10 border-light border-opacity-10 text-white shadow-sm focus-ring focus-ring-primary">
+                        <label class="form-label small text-muted text-uppercase fw-bold">Estado</label>
+                        <select name="estado" class="form-select rounded-pill bg-secondary bg-opacity-10 border-light border-opacity-10 text-body shadow-sm focus-ring focus-ring-primary">
                             <option value="" class="text-dark">Todos</option>
                             <option value="pendiente" {{ request('estado')==='pendiente'?'selected':'' }} class="text-dark">Pendiente</option>
                             <option value="completada" {{ request('estado')==='completada'?'selected':'' }} class="text-dark">Completada</option>
@@ -26,12 +26,12 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label small text-white-50 text-uppercase fw-bold">Desde</label>
-                        <input type="date" name="desde" value="{{ request('desde') }}" class="form-control rounded-pill bg-secondary bg-opacity-10 border-light border-opacity-10 text-white shadow-sm focus-ring focus-ring-primary">
+                        <label class="form-label small text-muted text-uppercase fw-bold">Desde</label>
+                        <input type="date" name="desde" value="{{ request('desde') }}" class="form-control rounded-pill bg-secondary bg-opacity-10 border-light border-opacity-10 text-body shadow-sm focus-ring focus-ring-primary">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label small text-white-50 text-uppercase fw-bold">Hasta</label>
-                        <input type="date" name="hasta" value="{{ request('hasta') }}" class="form-control rounded-pill bg-secondary bg-opacity-10 border-light border-opacity-10 text-white shadow-sm focus-ring focus-ring-primary">
+                        <label class="form-label small text-muted text-uppercase fw-bold">Hasta</label>
+                        <input type="date" name="hasta" value="{{ request('hasta') }}" class="form-control rounded-pill bg-secondary bg-opacity-10 border-light border-opacity-10 text-body shadow-sm focus-ring focus-ring-primary">
                     </div>
                     <div class="col-md-3 d-flex gap-2">
                         <button type="submit" class="btn btn-primary w-100 rounded-pill shadow-sm"><i class="bi bi-filter me-2"></i>Filtrar</button>
@@ -40,8 +40,8 @@
                 </form>
             </div>
             <div class="table-responsive">
-                <table class="table align-middle mb-0 text-white">
-                    <thead class="bg-primary bg-opacity-10 text-white">
+                <table class="table align-middle mb-0 text-body">
+                    <thead class="bg-primary bg-opacity-10 text-body">
                         <tr>
                             <th class="ps-4 py-3 border-0">ID</th>
                             <th class="py-3 border-0">Cliente</th>
@@ -54,21 +54,21 @@
                     <tbody class="border-top-0">
                         @forelse($ventas as $v)
                         <tr class="hover-bg-white-10 transition-base">
-                            <td class="ps-4 fw-bold text-white-50 border-bottom border-light border-opacity-10">#{{ $v->id_venta }}</td>
+                            <td class="ps-4 fw-bold text-muted border-bottom border-light border-opacity-10">#{{ $v->id_venta }}</td>
                             <td class="border-bottom border-light border-opacity-10">
                                 <div class="d-flex align-items-center">
-                                    <div class="avatar-sm bg-white bg-opacity-10 rounded-circle text-white me-3 d-flex align-items-center justify-content-center border border-light border-opacity-10" style="width: 36px; height: 36px;">
+                                    <div class="avatar-sm bg-white bg-opacity-10 rounded-circle text-body me-3 d-flex align-items-center justify-content-center border border-light border-opacity-10" style="width: 36px; height: 36px;">
                                         <i class="bi bi-person-fill"></i>
                                     </div>
                                     <div>
-                                        <div class="fw-bold text-white">{{ $v->cliente->nombre ?? 'Cliente General' }}</div>
-                                        <div class="small text-white-50">{{ $v->cliente->email ?? '' }}</div>
+                                        <div class="fw-bold text-body">{{ $v->cliente->nombre ?? 'Cliente General' }}</div>
+                                        <div class="small text-muted">{{ $v->cliente->email ?? '' }}</div>
                                     </div>
                                 </div>
                             </td>
                             <td class="text-nowrap border-bottom border-light border-opacity-10">
-                                <div class="small text-white fw-medium"><i class="bi bi-calendar3 me-1 text-primary"></i>{{ \Carbon\Carbon::parse($v->fecha)->format('d/m/Y') }}</div>
-                                <div class="small text-white-50"><i class="bi bi-clock me-1"></i>{{ \Carbon\Carbon::parse($v->fecha)->format('H:i') }}</div>
+                                <div class="small text-body fw-medium"><i class="bi bi-calendar3 me-1 text-primary"></i>{{ \Carbon\Carbon::parse($v->fecha)->format('d/m/Y') }}</div>
+                                <div class="small text-muted"><i class="bi bi-clock me-1"></i>{{ \Carbon\Carbon::parse($v->fecha)->format('H:i') }}</div>
                             </td>
                             <td class="fw-bold text-success border-bottom border-light border-opacity-10">{{ $configuracion['moneda'] ?? '$' }} {{ number_format($v->total, 2) }}</td>
                             <td class="border-bottom border-light border-opacity-10">
@@ -92,7 +92,7 @@
                                         <i class="bi bi-eye"></i>
                                     </a>
                                     <!-- Using target=_blank for ticket and invoice to open in new tab -->
-                                    <a href="{{ route('ventas.ticket', $v) }}?print=1" target="_blank" class="btn btn-sm btn-outline-light text-white border-0 hover-scale" data-bs-toggle="tooltip" title="Imprimir Ticket">
+                                    <a href="{{ route('ventas.ticket', $v) }}?print=1" target="_blank" class="btn btn-sm btn-outline-light text-body border-0 hover-scale" data-bs-toggle="tooltip" title="Imprimir Ticket">
                                         <i class="bi bi-receipt"></i>
                                     </a>
                                     <a href="{{ route('ventas.factura', $v) }}" target="_blank" class="btn btn-sm btn-outline-light text-danger border-0 hover-scale" data-bs-toggle="tooltip" title="PDF Factura">
@@ -104,7 +104,7 @@
                         @empty
                         <tr>
                             <td colspan="6" class="text-center py-5 border-0">
-                                <div class="text-white-50">
+                                <div class="text-muted">
                                     <i class="bi bi-receipt fs-1 d-block mb-2 opacity-50"></i>
                                     No se encontraron ventas registradas.
                                 </div>

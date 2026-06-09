@@ -6,8 +6,8 @@
         <div class="col-lg-8">
             <div class="glass-card overflow-hidden">
                 <div class="card-header bg-transparent border-bottom border-light border-opacity-25 py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-bold text-white"><i class="bi bi-truck me-2"></i>Nuevo Proveedor</h5>
-                    <a href="{{ route('proveedores.index') }}" class="btn btn-sm btn-light bg-opacity-10 text-white border-0 rounded-pill px-3 shadow-sm">
+                    <h5 class="mb-0 fw-bold text-body"><i class="bi bi-truck me-2"></i>Nuevo Proveedor</h5>
+                    <a href="{{ route('proveedores.index') }}" class="btn btn-sm btn-light bg-opacity-10 text-body border-0 rounded-pill px-3 shadow-sm">
                         <i class="bi bi-arrow-left me-1"></i>Volver
                     </a>
                 </div>
@@ -15,43 +15,43 @@
                     <form method="POST" action="{{ route('proveedores.store') }}" id="formProveedor" novalidate class="row g-3">
                         @csrf
                         <div class="col-md-6">
-                            <label class="form-label fw-bold small text-white-50">Empresa <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="nombre_empresa" id="nombre_empresa" value="{{ old('nombre_empresa') }}" required>
+                            <label class="form-label fw-bold small text-muted">Empresa <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="nombre_empresa" id="nombre_empresa" value="{{ old('nombre_empresa') }}" required>
                             @error('nombre_empresa')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
                             <div class="invalid-feedback ms-2">Nombre de la empresa requerido.</div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold small text-white-50">NIT <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="nit" id="nit" value="{{ old('nit') }}" required pattern="[0-9\-\.]+" title="Solo números, guiones y puntos">
+                            <label class="form-label fw-bold small text-muted">NIT <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="nit" id="nit" value="{{ old('nit') }}" required pattern="[0-9\-\.]+" title="Solo números, guiones y puntos">
                             @error('nit')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
                             <div class="invalid-feedback ms-2">NIT requerido (números, guiones, puntos).</div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold small text-white-50">Contacto</label>
-                            <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="contacto" id="contacto" value="{{ old('contacto') }}">
+                            <label class="form-label fw-bold small text-muted">Contacto</label>
+                            <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="contacto" id="contacto" value="{{ old('contacto') }}">
                             @error('contacto')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold small text-white-50">Teléfono</label>
-                            <input type="tel" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="telefono" id="telefono" value="{{ old('telefono') }}" pattern="[0-9+\-\s]+">
+                            <label class="form-label fw-bold small text-muted">Teléfono</label>
+                            <input type="tel" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="telefono" id="telefono" value="{{ old('telefono') }}" pattern="[0-9+\-\s]+">
                             @error('telefono')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold small text-white-50">Dirección</label>
-                            <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="direccion" id="direccion" value="{{ old('direccion') }}">
+                            <label class="form-label fw-bold small text-muted">Dirección</label>
+                            <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="direccion" id="direccion" value="{{ old('direccion') }}">
                             @error('direccion')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold small text-white-50">Email</label>
-                            <input type="email" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="email" id="email" value="{{ old('email') }}">
+                            <label class="form-label fw-bold small text-muted">Email</label>
+                            <input type="email" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="email" id="email" value="{{ old('email') }}">
                             @error('email')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
                             <div class="invalid-feedback ms-2">Email inválido.</div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold small text-white-50">Estado <span class="text-danger">*</span></label>
-                            <select class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="estado" required>
-                                <option value="activo" class="bg-dark text-white">Activo</option>
-                                <option value="inactivo" class="bg-dark text-white">Inactivo</option>
+                            <label class="form-label fw-bold small text-muted">Estado <span class="text-danger">*</span></label>
+                            <select class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="estado" required>
+                                <option value="activo" class="bg-dark text-body">Activo</option>
+                                <option value="inactivo" class="bg-dark text-body">Inactivo</option>
                             </select>
                         </div>
 

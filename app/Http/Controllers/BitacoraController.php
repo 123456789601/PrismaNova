@@ -6,11 +6,22 @@ use App\Models\Bitacora;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
 
+/**
+ * Class BitacoraController
+ * 
+ * Gestiona el registro y visualización de la bitácora del sistema.
+ * Permite a los administradores ver el historial de acciones realizadas.
+ */
 class BitacoraController extends Controller
 {
     /**
      * Muestra el listado de registros de la bitácora.
+     * 
+     * Permite filtrar por usuario, fecha y tipo de acción.
      * Solo accesible por administradores.
+     *
+     * @param  \Illuminate\Http\Request  $request Solicitud con filtros opcionales.
+     * @return \Illuminate\View\View Vista con el listado de registros.
      */
     public function index(Request $request)
     {

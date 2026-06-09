@@ -5,7 +5,7 @@
 @php($rol = strtolower(trim(auth()->user()->rol->nombre ?? '')))
 
 {{-- Encabezado de bienvenida con nuevo gradiente --}}
-<div class="glass-card p-4 p-md-5 mb-4 text-white position-relative overflow-hidden bg-primary-gradient-borderless">
+<div class="glass-card p-4 p-md-5 mb-4 text-body position-relative overflow-hidden bg-primary-gradient-borderless">
     <div class="position-relative z-1">
         <h2 class="fw-bold mb-2 fs-3 fs-md-2">¡Hola, {{ auth()->user()->nombre }}! 👋</h2>
         <p class="mb-0 opacity-100 fs-6 fs-md-5">Bienvenido a tu panel de control de PrismaNova.</p>

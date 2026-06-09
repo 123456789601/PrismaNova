@@ -6,7 +6,7 @@
         <div class="col-lg-8">
             <div class="glass-card overflow-hidden">
                 <div class="card-header bg-transparent py-3 border-bottom border-light border-opacity-10 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-bold text-white"><i class="bi bi-person-plus me-2"></i>Nuevo Usuario</h5>
+                    <h5 class="mb-0 fw-bold text-body"><i class="bi bi-person-plus me-2"></i>Nuevo Usuario</h5>
                     <a href="{{ route('usuarios.index') }}" class="btn btn-sm btn-outline-light rounded-pill px-3 hover-scale">
                         <i class="bi bi-arrow-left me-1"></i>Volver
                     </a>
@@ -16,46 +16,46 @@
                         @csrf
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-white-50">Nombre <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="nombre" id="nombre" value="{{ old('nombre') }}" required oninput="this.value = this.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '')" title="Solo letras y espacios">
+                                <label class="form-label fw-bold small text-muted">Nombre <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="nombre" id="nombre" value="{{ old('nombre') }}" required oninput="this.value = this.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '')" title="Solo letras y espacios">
                                 @error('nombre')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
                                 <div class="invalid-feedback ms-2">Nombre requerido (solo letras).</div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-white-50">Apellido <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="apellido" id="apellido" value="{{ old('apellido') }}" required oninput="this.value = this.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '')" title="Solo letras y espacios">
+                                <label class="form-label fw-bold small text-muted">Apellido <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="apellido" id="apellido" value="{{ old('apellido') }}" required oninput="this.value = this.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '')" title="Solo letras y espacios">
                                 @error('apellido')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
                                 <div class="invalid-feedback ms-2">Apellido requerido (solo letras).</div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-white-50">Documento <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="documento" id="documento" value="{{ old('documento') }}" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" title="Solo números">
+                                <label class="form-label fw-bold small text-muted">Documento <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="documento" id="documento" value="{{ old('documento') }}" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" title="Solo números">
                                 @error('documento')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
                                 <div class="invalid-feedback ms-2">Documento requerido (solo números).</div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-white-50">Email <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="email" id="email" value="{{ old('email') }}" required>
+                                <label class="form-label fw-bold small text-muted">Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="email" id="email" value="{{ old('email') }}" required>
                                 @error('email')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
                                 <div class="invalid-feedback ms-2">Email inválido.</div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-white-50">Contraseña <span class="text-danger">*</span></label>
-                                <input type="password" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="password" required minlength="8" title="Mínimo 8 caracteres, mayúsculas, minúsculas, números y símbolos">
-                                <div class="form-text text-white-50 small mt-1"><i class="bi bi-info-circle me-1"></i>Mínimo 8 caracteres, mayúsculas, minúsculas, números y símbolos.</div>
+                                <label class="form-label fw-bold small text-muted">Contraseña <span class="text-danger">*</span></label>
+                                <input type="password" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="password" required minlength="8" title="Mínimo 8 caracteres, mayúsculas, minúsculas, números y símbolos">
+                                <div class="form-text text-muted small mt-1"><i class="bi bi-info-circle me-1"></i>Mínimo 8 caracteres, mayúsculas, minúsculas, números y símbolos.</div>
                                 @error('password')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
                                 <div class="invalid-feedback ms-2">Contraseña requerida (min 8 caracteres).</div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-white-50">Confirmar contraseña <span class="text-danger">*</span></label>
-                                <input type="password" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="password_confirmation" required minlength="8">
+                                <label class="form-label fw-bold small text-muted">Confirmar contraseña <span class="text-danger">*</span></label>
+                                <input type="password" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="password_confirmation" required minlength="8">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-white-50">Rol <span class="text-danger">*</span></label>
-                                <select class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="rol_id" required>
-                                    <option value="" class="bg-dark text-white">Seleccione</option>
+                                <label class="form-label fw-bold small text-muted">Rol <span class="text-danger">*</span></label>
+                                <select class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="rol_id" required>
+                                    <option value="" class="bg-dark text-body">Seleccione</option>
                                     @foreach($roles as $rol)
-                                        <option value="{{ $rol->id }}" class="bg-dark text-white" {{ old('rol_id') == $rol->id ? 'selected' : '' }}>
+                                        <option value="{{ $rol->id }}" class="bg-dark text-body" {{ old('rol_id') == $rol->id ? 'selected' : '' }}>
                                             {{ ucfirst($rol->nombre) }}
                                         </option>
                                     @endforeach
@@ -63,10 +63,10 @@
                                 @error('rol_id')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-white-50">Estado <span class="text-danger">*</span></label>
-                                <select class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="estado" required>
-                                    <option value="activo" class="bg-dark text-white">Activo</option>
-                                    <option value="inactivo" class="bg-dark text-white">Inactivo</option>
+                                <label class="form-label fw-bold small text-muted">Estado <span class="text-danger">*</span></label>
+                                <select class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="estado" required>
+                                    <option value="activo" class="bg-dark text-body">Activo</option>
+                                    <option value="inactivo" class="bg-dark text-body">Inactivo</option>
                                 </select>
                             </div>
                         </div>

@@ -16,8 +16,8 @@
         <div class="card-header bg-transparent border-bottom border-light border-opacity-10 py-3">
             <form action="{{ route('clientes.index') }}" method="GET" class="d-flex gap-2 w-100 w-md-auto">
                 <div class="input-group flex-grow-1">
-                    <span class="input-group-text bg-secondary bg-opacity-10 border-0 text-white rounded-start-pill"><i class="bi bi-search"></i></span>
-                    <input type="text" name="q" class="form-control bg-secondary bg-opacity-10 border-0 text-white placeholder-light" placeholder="Buscar por nombre, apellido o documento..." value="{{ request('q') }}">
+                    <span class="input-group-text bg-secondary bg-opacity-10 border-0 text-body rounded-start-pill"><i class="bi bi-search"></i></span>
+                    <input type="text" name="q" class="form-control bg-secondary bg-opacity-10 border-0 text-body placeholder-light" placeholder="Buscar por nombre, apellido o documento..." value="{{ request('q') }}">
                     <button type="submit" class="btn btn-primary rounded-end-pill px-4 hover-scale">Buscar</button>
                 </div>
                 @if(request('q'))
@@ -27,8 +27,8 @@
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table align-middle mb-0 text-white">
-                    <thead class="bg-primary bg-opacity-10 text-white fw-bold text-uppercase small">
+                <table class="table align-middle mb-0 text-body">
+                    <thead class="bg-primary bg-opacity-10 text-body fw-bold text-uppercase small">
                         <tr>
                             <th class="ps-4 py-3 border-0 rounded-start-pill">ID</th>
                             <th class="py-3 border-0">Nombre</th>
@@ -41,19 +41,19 @@
                     <tbody class="border-top-0">
                         @foreach($clientes as $c)
                         <tr class="hover-bg-white-10 transition-all">
-                            <td class="ps-4 fw-bold text-white-50 border-bottom border-light border-opacity-10">#{{ $c->id_cliente }}</td>
+                            <td class="ps-4 fw-bold text-muted border-bottom border-light border-opacity-10">#{{ $c->id_cliente }}</td>
                             <td class="border-bottom border-light border-opacity-10">
                                 <div class="d-flex align-items-center">
                                     <div class="avatar-sm rounded-circle bg-primary bg-opacity-10 text-primary fw-bold me-3 d-flex justify-content-center align-items-center shadow-sm" style="width: 36px; height: 36px;">
                                         <i class="bi bi-person"></i>
                                     </div>
                                     <div>
-                                        <div class="fw-bold text-white">{{ $c->nombre }} {{ $c->apellido }}</div>
+                                        <div class="fw-bold text-body">{{ $c->nombre }} {{ $c->apellido }}</div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="border-bottom border-light border-opacity-10"><span class="badge bg-secondary bg-opacity-10 text-white border border-light border-opacity-10 rounded-pill">{{ $c->documento }}</span></td>
-                            <td class="text-white-50 border-bottom border-light border-opacity-10">{{ $c->telefono }}</td>
+                            <td class="border-bottom border-light border-opacity-10"><span class="badge bg-secondary bg-opacity-10 text-body border border-light border-opacity-10 rounded-pill">{{ $c->documento }}</span></td>
+                            <td class="text-muted border-bottom border-light border-opacity-10">{{ $c->telefono }}</td>
                             <td class="border-bottom border-light border-opacity-10">
                                 @if($c->estado == 'activo')
                                     <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3">Activo</span>

@@ -11,21 +11,21 @@
 
     <div class="glass-card mb-4 overflow-hidden">
         <div class="card-header bg-transparent border-bottom border-light border-opacity-10 py-3">
-            <h5 class="mb-0 fw-bold text-white"><i class="bi bi-filter me-2 text-primary"></i>Filtros de Búsqueda</h5>
+            <h5 class="mb-0 fw-bold text-body"><i class="bi bi-filter me-2 text-primary"></i>Filtros de Búsqueda</h5>
         </div>
         <div class="card-body p-4">
             <form method="GET" action="{{ route('reportes.index') }}" class="row g-3">
                 <div class="col-md-3">
-                    <label class="form-label small text-white-50 text-uppercase fw-bold">Desde</label>
-                    <input type="date" name="desde" value="{{ $desde ?? '' }}" class="form-control rounded-pill bg-secondary bg-opacity-10 text-white border-light border-opacity-10">
+                    <label class="form-label small text-muted text-uppercase fw-bold">Desde</label>
+                    <input type="date" name="desde" value="{{ $desde ?? '' }}" class="form-control rounded-pill bg-secondary bg-opacity-10 text-body border-light border-opacity-10">
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label small text-white-50 text-uppercase fw-bold">Hasta</label>
-                    <input type="date" name="hasta" value="{{ $hasta ?? '' }}" class="form-control rounded-pill bg-secondary bg-opacity-10 text-white border-light border-opacity-10">
+                    <label class="form-label small text-muted text-uppercase fw-bold">Hasta</label>
+                    <input type="date" name="hasta" value="{{ $hasta ?? '' }}" class="form-control rounded-pill bg-secondary bg-opacity-10 text-body border-light border-opacity-10">
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label small text-white-50 text-uppercase fw-bold">Cajero</label>
-                    <select name="cajero_id" class="form-select rounded-pill bg-secondary bg-opacity-10 text-white border-light border-opacity-10">
+                    <label class="form-label small text-muted text-uppercase fw-bold">Cajero</label>
+                    <select name="cajero_id" class="form-select rounded-pill bg-secondary bg-opacity-10 text-body border-light border-opacity-10">
                         <option value="" class="text-dark">Todos</option>
                         @foreach($cajeros as $cj)
                         <option value="{{ $cj->id_usuario }}" {{ ($cajero_id??'')==$cj->id_usuario?'selected':'' }} class="text-dark">{{ $cj->nombre }} {{ $cj->apellido }}</option>
@@ -33,8 +33,8 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label small text-white-50 text-uppercase fw-bold">Estado</label>
-                    <select name="estado" class="form-select rounded-pill bg-secondary bg-opacity-10 text-white border-light border-opacity-10">
+                    <label class="form-label small text-muted text-uppercase fw-bold">Estado</label>
+                    <select name="estado" class="form-select rounded-pill bg-secondary bg-opacity-10 text-body border-light border-opacity-10">
                         <option value="" {{ !$estado?'selected':'' }} class="text-dark">Todos</option>
                         <option value="pendiente" {{ ($estado??'')==='pendiente'?'selected':'' }} class="text-dark">Pendiente</option>
                         <option value="completada" {{ ($estado??'')==='completada'?'selected':'' }} class="text-dark">Completada</option>
@@ -44,8 +44,8 @@
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label small text-white-50 text-uppercase fw-bold">Método de pago</label>
-                    <select name="metodo_pago_id" class="form-select rounded-pill bg-secondary bg-opacity-10 text-white border-light border-opacity-10">
+                    <label class="form-label small text-muted text-uppercase fw-bold">Método de pago</label>
+                    <select name="metodo_pago_id" class="form-select rounded-pill bg-secondary bg-opacity-10 text-body border-light border-opacity-10">
                         <option value="" class="text-dark">Todos</option>
                         @foreach($metodosPago as $mp)
                         <option value="{{ $mp->id_metodo_pago }}" {{ ($metodo_pago_id??'')==$mp->id_metodo_pago?'selected':'' }} class="text-dark">{{ $mp->nombre }}</option>
@@ -53,8 +53,8 @@
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label small text-white-50 text-uppercase fw-bold">Cliente</label>
-                    <input type="text" name="cliente" value="{{ $cliente ?? '' }}" class="form-control rounded-pill bg-secondary bg-opacity-10 text-white border-light border-opacity-10" placeholder="Nombre o documento">
+                    <label class="form-label small text-muted text-uppercase fw-bold">Cliente</label>
+                    <input type="text" name="cliente" value="{{ $cliente ?? '' }}" class="form-control rounded-pill bg-secondary bg-opacity-10 text-body border-light border-opacity-10" placeholder="Nombre o documento">
                 </div>
                 <div class="col-md-4 d-flex align-items-end gap-2">
                     <button class="btn btn-primary flex-grow-1 transform-hover shadow-sm" style="background: var(--primary-gradient); border: none;">
@@ -84,8 +84,8 @@
                         <i class="bi bi-currency-dollar fs-3"></i>
                     </div>
                     <div>
-                        <h6 class="text-white-50 text-uppercase small fw-bold mb-1">Ventas Hoy</h6>
-                        <h4 class="mb-0 fw-bold text-white">{{ $configuracion['moneda'] ?? '$' }} {{ number_format($ventasHoy,2) }}</h4>
+                        <h6 class="text-muted text-uppercase small fw-bold mb-1">Ventas Hoy</h6>
+                        <h4 class="mb-0 fw-bold text-body">{{ $configuracion['moneda'] ?? '$' }} {{ number_format($ventasHoy,2) }}</h4>
                     </div>
                 </div>
             </div>
@@ -97,8 +97,8 @@
                         <i class="bi bi-cart-dash fs-3"></i>
                     </div>
                     <div>
-                        <h6 class="text-white-50 text-uppercase small fw-bold mb-1">Compras Hoy</h6>
-                        <h4 class="mb-0 fw-bold text-white">{{ $configuracion['moneda'] ?? '$' }} {{ number_format($comprasHoy,2) }}</h4>
+                        <h6 class="text-muted text-uppercase small fw-bold mb-1">Compras Hoy</h6>
+                        <h4 class="mb-0 fw-bold text-body">{{ $configuracion['moneda'] ?? '$' }} {{ number_format($comprasHoy,2) }}</h4>
                     </div>
                 </div>
             </div>
@@ -110,8 +110,8 @@
                         <i class="bi bi-calendar-check fs-3"></i>
                     </div>
                     <div>
-                        <h6 class="text-white-50 text-uppercase small fw-bold mb-1">Ventas Mes</h6>
-                        <h4 class="mb-0 fw-bold text-white">{{ $configuracion['moneda'] ?? '$' }} {{ number_format($ventasMes,2) }}</h4>
+                        <h6 class="text-muted text-uppercase small fw-bold mb-1">Ventas Mes</h6>
+                        <h4 class="mb-0 fw-bold text-body">{{ $configuracion['moneda'] ?? '$' }} {{ number_format($ventasMes,2) }}</h4>
                     </div>
                 </div>
             </div>
@@ -123,8 +123,8 @@
                         <i class="bi bi-bag-check fs-3"></i>
                     </div>
                     <div>
-                        <h6 class="text-white-50 text-uppercase small fw-bold mb-1">Compras Mes</h6>
-                        <h4 class="mb-0 fw-bold text-white">{{ $configuracion['moneda'] ?? '$' }} {{ number_format($comprasMes,2) }}</h4>
+                        <h6 class="text-muted text-uppercase small fw-bold mb-1">Compras Mes</h6>
+                        <h4 class="mb-0 fw-bold text-body">{{ $configuracion['moneda'] ?? '$' }} {{ number_format($comprasMes,2) }}</h4>
                     </div>
                 </div>
             </div>
@@ -139,8 +139,8 @@
                         <i class="bi bi-receipt fs-3"></i>
                     </div>
                     <div>
-                        <h6 class="text-white-50 text-uppercase small fw-bold mb-1"># Ventas Mes</h6>
-                        <h4 class="mb-0 fw-bold text-white">{{ number_format($ventasCountMes) }}</h4>
+                        <h6 class="text-muted text-uppercase small fw-bold mb-1"># Ventas Mes</h6>
+                        <h4 class="mb-0 fw-bold text-body">{{ number_format($ventasCountMes) }}</h4>
                     </div>
                 </div>
             </div>
@@ -152,8 +152,8 @@
                         <i class="bi bi-people fs-3"></i>
                     </div>
                     <div>
-                        <h6 class="text-white-50 text-uppercase small fw-bold mb-1">Clientes Activos</h6>
-                        <h4 class="mb-0 fw-bold text-white">{{ number_format($clientesConCompraMes) }}</h4>
+                        <h6 class="text-muted text-uppercase small fw-bold mb-1">Clientes Activos</h6>
+                        <h4 class="mb-0 fw-bold text-body">{{ number_format($clientesConCompraMes) }}</h4>
                     </div>
                 </div>
             </div>
@@ -161,12 +161,12 @@
         <div class="col-md-6">
             <div class="glass-card h-100 overflow-hidden shadow-lg">
                 <div class="card-header bg-transparent border-bottom border-light border-opacity-10 py-3">
-                    <h6 class="m-0 fw-bold text-white"><i class="bi bi-trophy me-2"></i>Top Productos del Mes</h6>
+                    <h6 class="m-0 fw-bold text-body"><i class="bi bi-trophy me-2"></i>Top Productos del Mes</h6>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0 text-white">
-                            <thead class="bg-secondary bg-opacity-10 text-white">
+                        <table class="table table-hover align-middle mb-0 text-body">
+                            <thead class="bg-secondary bg-opacity-10 text-body">
                                 <tr>
                                     <th class="ps-4 border-0">Producto</th>
                                     <th class="border-0">Cantidad</th>
@@ -176,12 +176,12 @@
                             <tbody class="border-top-0">
                                 @forelse($topProductosMes as $p)
                                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                                    <td class="ps-4 fw-medium text-white-50">{{ $p->producto }}</td>
-                                    <td class="text-white"><span class="badge bg-primary bg-opacity-10 text-primary rounded-pill border border-primary border-opacity-25">{{ number_format($p->cantidad) }}</span></td>
-                                    <td class="text-end pe-4 fw-bold text-white">{{ $configuracion['moneda'] ?? '$' }} {{ number_format($p->total,2) }}</td>
+                                    <td class="ps-4 fw-medium text-muted">{{ $p->producto }}</td>
+                                    <td class="text-body"><span class="badge bg-primary bg-opacity-10 text-primary rounded-pill border border-primary border-opacity-25">{{ number_format($p->cantidad) }}</span></td>
+                                    <td class="text-end pe-4 fw-bold text-body">{{ $configuracion['moneda'] ?? '$' }} {{ number_format($p->total,2) }}</td>
                                 </tr>
                                 @empty
-                                <tr><td colspan="3" class="text-center py-3 text-white-50">Sin datos</td></tr>
+                                <tr><td colspan="3" class="text-center py-3 text-muted">Sin datos</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -193,12 +193,12 @@
 
     <div class="glass-card mb-4 overflow-hidden">
         <div class="card-header bg-primary bg-opacity-10 border-bottom border-light border-opacity-10 py-3">
-            <h6 class="m-0 fw-bold text-white"><i class="bi bi-list-check me-2"></i>Detalle de Ventas (Rango Seleccionado)</h6>
+            <h6 class="m-0 fw-bold text-body"><i class="bi bi-list-check me-2"></i>Detalle de Ventas (Rango Seleccionado)</h6>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 text-white">
-                    <thead class="bg-primary bg-opacity-10 text-white">
+                <table class="table table-hover align-middle mb-0 text-body">
+                    <thead class="bg-primary bg-opacity-10 text-body">
                         <tr>
                             <th class="ps-4 py-3 border-0">ID</th>
                             <th class="py-3 border-0">Fecha</th>
@@ -211,11 +211,11 @@
                     <tbody class="border-top-0">
                         @forelse($ventasList as $v)
                         <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                            <td class="ps-4 fw-bold text-white-50">#{{ $v->id_venta }}</td>
-                            <td class="text-white-50">{{ \Carbon\Carbon::parse($v->fecha)->format('d/m/Y H:i') }}</td>
-                            <td class="text-white">{{ $v->cliente->nombre ?? '-' }}</td>
-                            <td class="text-white-50">{{ $v->usuario->nombre ?? '-' }}</td>
-                            <td class="fw-bold text-white">{{ $configuracion['moneda'] ?? '$' }} {{ number_format($v->total,2) }}</td>
+                            <td class="ps-4 fw-bold text-muted">#{{ $v->id_venta }}</td>
+                            <td class="text-muted">{{ \Carbon\Carbon::parse($v->fecha)->format('d/m/Y H:i') }}</td>
+                            <td class="text-body">{{ $v->cliente->nombre ?? '-' }}</td>
+                            <td class="text-muted">{{ $v->usuario->nombre ?? '-' }}</td>
+                            <td class="fw-bold text-body">{{ $configuracion['moneda'] ?? '$' }} {{ number_format($v->total,2) }}</td>
                             <td>
                                 <span class="badge rounded-pill bg-{{ $v->estado=='completada'?'success':($v->estado=='pendiente'?'warning':'danger') }} bg-opacity-10 text-{{ $v->estado=='completada'?'success':($v->estado=='pendiente'?'warning':'danger') }} px-3 border border-{{ $v->estado=='completada'?'success':($v->estado=='pendiente'?'warning':'danger') }} border-opacity-25">
                                     {{ ucfirst($v->estado) }}
@@ -223,7 +223,7 @@
                             </td>
                         </tr>
                         @empty
-                        <tr><td colspan="6" class="text-center py-4 text-white-50">No se encontraron ventas en este rango.</td></tr>
+                        <tr><td colspan="6" class="text-center py-4 text-muted">No se encontraron ventas en este rango.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -233,8 +233,8 @@
 
     <div class="d-flex justify-content-between align-items-center mt-4 p-4 glass-card">
         <div>
-            <h6 class="fw-bold mb-1 text-white"><i class="bi bi-arrow-repeat me-2 text-primary"></i>Sincronización de Inventario</h6>
-            <p class="text-white-50 small mb-0">Administra y ejecuta sincronizaciones con sistemas externos</p>
+            <h6 class="fw-bold mb-1 text-body"><i class="bi bi-arrow-repeat me-2 text-primary"></i>Sincronización de Inventario</h6>
+            <p class="text-muted small mb-0">Administra y ejecuta sincronizaciones con sistemas externos</p>
         </div>
         <a href="{{ route('reportes.sync') }}" class="btn btn-outline-primary rounded-pill px-4 transform-hover hover-scale">
             Ver Sync de Inventario <i class="bi bi-arrow-right ms-2"></i>

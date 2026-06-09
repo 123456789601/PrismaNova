@@ -5,13 +5,31 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
+/**
+ * Class StoreUsuarioRequest
+ * 
+ * Validación de datos para el almacenamiento de un nuevo usuario del sistema.
+ * Asegura la integridad de los datos, incluyendo contraseña fuerte y unicidad de credenciales.
+ */
 class StoreUsuarioRequest extends FormRequest
 {
+    /**
+     * Determina si el usuario está autorizado para hacer esta solicitud.
+     *
+     * @return bool
+     */
     public function authorize()
     {
         return true;
     }
 
+    /**
+     * Obtiene las reglas de validación que se aplican a la solicitud.
+     * 
+     * Valida formato de nombres, documento (solo números), email único y contraseña segura.
+     *
+     * @return array
+     */
     public function rules()
     {
         return [
@@ -25,6 +43,11 @@ class StoreUsuarioRequest extends FormRequest
         ];
     }
 
+    /**
+     * Obtiene los mensajes de error de validación personalizados.
+     *
+     * @return array
+     */
     public function messages()
     {
         return [
@@ -40,6 +63,11 @@ class StoreUsuarioRequest extends FormRequest
         ];
     }
 
+    /**
+     * Prepara los datos para la validación.
+     * 
+     * Sanea las entradas para evitar XSS y estandariza el formato.
+     */
     protected function prepareForValidation()
     {
         $this->merge([

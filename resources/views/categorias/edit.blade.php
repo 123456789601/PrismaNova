@@ -6,8 +6,8 @@
         <div class="col-md-8">
             <div class="glass-card overflow-hidden">
                 <div class="card-header bg-transparent border-bottom border-light border-opacity-25 py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-bold text-white"><i class="bi bi-pencil-square me-2"></i>Editar Categoría</h5>
-                    <a href="{{ route('categorias.index') }}" class="btn btn-sm btn-light bg-opacity-10 text-white border-0 rounded-pill px-3 shadow-sm">
+                    <h5 class="mb-0 fw-bold text-body"><i class="bi bi-pencil-square me-2"></i>Editar Categoría</h5>
+                    <a href="{{ route('categorias.index') }}" class="btn btn-sm btn-light bg-opacity-10 text-body border-0 rounded-pill px-3 shadow-sm">
                         <i class="bi bi-arrow-left me-1"></i>Volver
                     </a>
                 </div>
@@ -17,8 +17,8 @@
                         @method('PUT')
                         
                         <div class="col-md-12">
-                            <label for="nombre" class="form-label fw-bold small text-white-50">Nombre <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="nombre" id="nombre" value="{{ old('nombre', $categoria->nombre) }}" required>
+                            <label for="nombre" class="form-label fw-bold small text-muted">Nombre <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="nombre" id="nombre" value="{{ old('nombre', $categoria->nombre) }}" required>
                             @error('nombre')
                                 <div class="text-danger small ms-2 mt-1">{{ $message }}</div>
                             @enderror
@@ -28,16 +28,16 @@
                         </div>
 
                         <div class="col-md-12">
-                            <label for="descripcion" class="form-label fw-bold small text-white-50">Descripción</label>
-                            <textarea class="form-control rounded-4 bg-secondary bg-opacity-10 border-0 text-white" name="descripcion" id="descripcion" rows="3">{{ old('descripcion', $categoria->descripcion) }}</textarea>
+                            <label for="descripcion" class="form-label fw-bold small text-muted">Descripción</label>
+                            <textarea class="form-control rounded-4 bg-secondary bg-opacity-10 border-0 text-body" name="descripcion" id="descripcion" rows="3">{{ old('descripcion', $categoria->descripcion) }}</textarea>
                             @error('descripcion')
                                 <div class="text-danger small ms-2 mt-1">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <div class="col-md-12">
-                            <label for="estado" class="form-label fw-bold small text-white-50">Estado <span class="text-danger">*</span></label>
-                            <select name="estado" id="estado" class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-white shadow-none" required>
+                            <label for="estado" class="form-label fw-bold small text-muted">Estado <span class="text-danger">*</span></label>
+                            <select name="estado" id="estado" class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-body shadow-none" required>
                                 <option value="activo" {{ old('estado', $categoria->estado) == 'activo' ? 'selected' : '' }} class="bg-dark">Activo</option>
                                 <option value="inactivo" {{ old('estado', $categoria->estado) == 'inactivo' ? 'selected' : '' }} class="bg-dark">Inactivo</option>
                             </select>
@@ -53,6 +53,10 @@
                     </form>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+@endsection
 
 @section('scripts')
 <script>
@@ -72,8 +76,4 @@
         }
     })()
 </script>
-@endsection
-        </div>
-    </div>
-</div>
 @endsection

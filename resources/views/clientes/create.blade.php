@@ -3,7 +3,7 @@
 @section('content')
 <div class="container-fluid">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-        <h1 class="h3 mb-0 text-white">Nuevo Cliente</h1>
+        <h1 class="h3 mb-0 text-body">Nuevo Cliente</h1>
         <a href="{{ route('clientes.index') }}" class="btn btn-outline-light btn-sm rounded-pill px-3 w-100 w-md-auto text-center">
             <i class="bi bi-arrow-left me-1"></i>Volver
         </a>
@@ -11,7 +11,7 @@
 
     <div class="glass-card">
         <div class="card-header bg-transparent border-bottom border-light border-opacity-10 py-3">
-            <h5 class="mb-0 fw-bold text-white">
+            <h5 class="mb-0 fw-bold text-body">
                 <i class="bi bi-person-plus me-2"></i>Información del Cliente
             </h5>
         </div>
@@ -19,42 +19,42 @@
             <form method="POST" action="{{ route('clientes.store') }}" id="formCliente" novalidate class="row g-3">
                 @csrf
                 <div class="col-md-6">
-                    <label class="form-label fw-bold small text-white-50">Nombre <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="nombre" id="nombre" value="{{ old('nombre') }}" required pattern="[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+" title="Solo letras y espacios">
+                    <label class="form-label fw-bold small text-muted">Nombre <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="nombre" id="nombre" value="{{ old('nombre') }}" required pattern="[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+" title="Solo letras y espacios">
                     @error('nombre')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
                     <div class="invalid-feedback">Por favor ingrese un nombre válido (solo letras).</div>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-bold small text-white-50">Apellido <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="apellido" id="apellido" value="{{ old('apellido') }}" required pattern="[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+" title="Solo letras y espacios">
+                    <label class="form-label fw-bold small text-muted">Apellido <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="apellido" id="apellido" value="{{ old('apellido') }}" required pattern="[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+" title="Solo letras y espacios">
                     @error('apellido')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
                     <div class="invalid-feedback">Por favor ingrese un apellido válido (solo letras).</div>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-bold small text-white-50">Documento <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="documento" id="documento" value="{{ old('documento') }}" required pattern="[0-9.\-\s]+" title="Solo números, puntos, guiones y espacios">
+                    <label class="form-label fw-bold small text-muted">Documento <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="documento" id="documento" value="{{ old('documento') }}" required pattern="[0-9.\-\s]+" title="Solo números, puntos, guiones y espacios">
                     @error('documento')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
                     <div class="invalid-feedback">Documento requerido (solo números, puntos, guiones y espacios).</div>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-bold small text-white-50">Teléfono</label>
-                    <input type="tel" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="telefono" id="telefono" value="{{ old('telefono') }}" pattern="[0-9+\-\s]+" title="Solo números, espacios, + y -">
+                    <label class="form-label fw-bold small text-muted">Teléfono</label>
+                    <input type="tel" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="telefono" id="telefono" value="{{ old('telefono') }}" pattern="[0-9+\-\s]+" title="Solo números, espacios, + y -">
                     @error('telefono')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-bold small text-white-50">Dirección</label>
-                    <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="direccion" id="direccion" value="{{ old('direccion') }}" maxlength="200">
+                    <label class="form-label fw-bold small text-muted">Dirección</label>
+                    <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="direccion" id="direccion" value="{{ old('direccion') }}" maxlength="200">
                     @error('direccion')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-bold small text-white-50">Email</label>
-                    <input type="email" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="email" id="email" value="{{ old('email') }}">
+                    <label class="form-label fw-bold small text-muted">Email</label>
+                    <input type="email" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="email" id="email" value="{{ old('email') }}">
                     @error('email')<div class="text-danger small ms-2 mt-1">{{ $message }}</div>@enderror
                     <div class="invalid-feedback">Por favor ingrese un email válido.</div>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-bold small text-white-50">Estado <span class="text-danger">*</span></label>
-                    <select class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="estado" required>
+                    <label class="form-label fw-bold small text-muted">Estado <span class="text-danger">*</span></label>
+                    <select class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="estado" required>
                         <option value="activo" class="text-dark">Activo</option>
                         <option value="inactivo" class="text-dark">Inactivo</option>
                     </select>

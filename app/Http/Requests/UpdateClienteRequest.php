@@ -4,13 +4,32 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class UpdateClienteRequest
+ * 
+ * Validación de datos para la actualización de un cliente existente.
+ * Asegura la integridad de los datos, permitiendo el mismo documento o email
+ * solo si pertenece al cliente que se está actualizando.
+ */
 class UpdateClienteRequest extends FormRequest
 {
+    /**
+     * Determina si el usuario está autorizado para hacer esta solicitud.
+     *
+     * @return bool
+     */
     public function authorize()
     {
         return true;
     }
 
+    /**
+     * Obtiene las reglas de validación que se aplican a la solicitud.
+     * 
+     * Excluye el cliente actual de la validación de unicidad de documento y email.
+     *
+     * @return array
+     */
     public function rules()
     {
         $id = $this->route('cliente');
@@ -26,6 +45,11 @@ class UpdateClienteRequest extends FormRequest
         ];
     }
 
+    /**
+     * Obtiene los mensajes de error de validación personalizados.
+     *
+     * @return array
+     */
     public function messages()
     {
         return [
@@ -36,8 +60,9 @@ class UpdateClienteRequest extends FormRequest
     }
 
     /**
-     * Preparar los datos para la validación.
-     * Sanear entradas para evitar XSS y estandarizar formato.
+     * Prepara los datos para la validación.
+     * 
+     * Sanea las entradas para evitar XSS y estandariza el formato.
      */
     protected function prepareForValidation()
     {

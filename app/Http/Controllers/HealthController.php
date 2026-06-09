@@ -8,13 +8,31 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Class HealthController
+ * 
+ * Controlador para el monitoreo de salud del sistema.
+ * Proporciona información sobre el estado del servidor, base de datos, caché y logs.
+ */
 class HealthController extends Controller
 {
+    /**
+     * Muestra el panel de salud del sistema.
+     * 
+     * Recopila información sobre:
+     * - Versión de PHP y Laravel
+     * - Estado de la base de datos y tamaño
+     * - Espacio en disco
+     * - Estado del caché
+     * - Últimas líneas del log
+     *
+     * @return \Illuminate\View\View Vista con información de salud.
+     */
     public function index()
     {
         $health = [];
         
-        // System Info
+        // Información del sistema
         $health['system'] = [
             'php_version' => phpversion(),
             'laravel_version' => app()->version(),
@@ -23,17 +41,17 @@ class HealthController extends Controller
             'timezone' => config('app.timezone'),
         ];
 
-        // Database
+        // Base de datos
         try {
             $pdo = DB::connection()->getPdo();
             $health['database'] = 'OK';
             
-            // Get DB Size (MySQL specific)
+            // Obtener tamaño de BD (específico de MySQL)
             $dbName = DB::connection()->getDatabaseName();
             $size = DB::select("SELECT sum(data_length + index_length) / 1024 / 1024 as size FROM information_schema.TABLES WHERE table_schema = ?", [$dbName]);
             $health['db_size'] = round($size[0]->size ?? 0, 2) . ' MB';
             
-            // Get Table Counts
+            // Obtener conteos de tablas
             $health['counts'] = [
                 'users' => \App\Models\Usuario::count(),
                 'products' => \App\Models\Producto::count(),
@@ -45,7 +63,7 @@ class HealthController extends Controller
             $health['counts'] = ['users' => 0, 'products' => 0, 'sales' => 0];
         }
 
-        // Disk Space
+        // Espacio en disco
         $diskFree = disk_free_space(base_path());
         $diskTotal = disk_total_space(base_path());
         $health['disk'] = [
@@ -54,7 +72,7 @@ class HealthController extends Controller
             'percent' => round((($diskTotal - $diskFree) / $diskTotal) * 100, 2)
         ];
 
-        // Cache
+        // Caché
         try {
             Cache::put('health_check', true, 1);
             $health['cache'] = Cache::get('health_check') ? 'OK' : 'ERROR';
@@ -62,7 +80,7 @@ class HealthController extends Controller
             $health['cache'] = 'ERROR: ' . $e->getMessage();
         }
 
-        // Logs (Last 50 lines)
+        // Logs (últimas 50 líneas)
         $logFile = storage_path('logs/laravel.log');
         $logs = [];
         if (file_exists($logFile)) {
@@ -74,6 +92,14 @@ class HealthController extends Controller
         return view('admin.health', compact('health', 'logs'));
     }
 
+    /**
+     * Optimiza el sistema limpiando la caché.
+     * 
+     * Ejecuta el comando artisan optimize:clear para limpiar
+     * caché de configuración, rutas, vistas, etc.
+     *
+     * @return \Illuminate\Http\RedirectResponse Redirección con mensaje de resultado.
+     */
     public function optimize()
     {
         try {
@@ -84,6 +110,13 @@ class HealthController extends Controller
         }
     }
 
+    /**
+     * Formatea bytes a una unidad legible (KB, MB, GB, etc).
+     *
+     * @param  int  $bytes Cantidad de bytes.
+     * @param  int  $precision Número de decimales.
+     * @return string Valor formateado con unidad.
+     */
     private function formatBytes($bytes, $precision = 2) { 
         $units = array('B', 'KB', 'MB', 'GB', 'TB'); 
     

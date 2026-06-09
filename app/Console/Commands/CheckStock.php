@@ -6,16 +6,46 @@ use Illuminate\Console\Command;
 use App\Models\Producto;
 use Illuminate\Support\Facades\Mail;
 
+/**
+ * Class CheckStock
+ * 
+ * Comando de consola para verificar el stock de productos.
+ * Identifica productos con stock bajo y envía una notificación por correo electrónico.
+ */
 class CheckStock extends Command
 {
+    /**
+     * Firma del comando para ejecución en consola.
+     *
+     * @var string
+     */
     protected $signature = 'stock:check';
+
+    /**
+     * Descripción del comando.
+     *
+     * @var string
+     */
     protected $description = 'Verifica el stock de los productos y notifica si es bajo';
 
+    /**
+     * Crea una nueva instancia del comando.
+     *
+     * @return void
+     */
     public function __construct()
     {
         parent::__construct();
     }
 
+    /**
+     * Ejecuta el comando de verificación de stock.
+     * 
+     * Busca productos cuyo stock actual sea menor o igual al stock mínimo
+     * y envía una notificación por correo si se encuentran productos con stock bajo.
+     *
+     * @return int Código de salida (0 = éxito).
+     */
     public function handle()
     {
         $lowStockProducts = Producto::whereColumn('stock', '<=', 'stock_minimo')->get();

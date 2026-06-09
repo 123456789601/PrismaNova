@@ -29,7 +29,7 @@
 <!-- Modal de Detalles del Producto -->
 <div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content bg-dark border border-light border-opacity-10 text-white shadow-lg" style="background: rgba(33, 37, 41, 0.95); backdrop-filter: blur(10px);">
+        <div class="modal-content bg-dark border border-light border-opacity-10 text-body shadow-lg" style="background: rgba(33, 37, 41, 0.95); backdrop-filter: blur(10px);">
             <div class="modal-header border-bottom border-light border-opacity-10">
                 <h5 class="modal-title fw-bold text-primary" id="modalProductName"></h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -40,7 +40,7 @@
                         <div class="position-relative overflow-hidden rounded-4 shadow-sm">
                             <img id="modalProductImage" src="" class="img-fluid w-100 object-fit-cover" style="max-height: 400px; min-height: 300px;" alt="Producto">
                             <div class="position-absolute top-0 end-0 p-3">
-                                <span id="modalProductStockBadge" class="badge bg-dark bg-opacity-75 backdrop-blur text-white border border-light border-opacity-25 rounded-pill px-3 py-2">
+                                <span id="modalProductStockBadge" class="badge bg-dark bg-opacity-75 backdrop-blur text-body border border-light border-opacity-25 rounded-pill px-3 py-2">
                                     <i class="bi bi-box-seam me-1"></i> Stock: <span id="modalProductStock"></span>
                                 </span>
                             </div>
@@ -50,13 +50,13 @@
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div>
                                 <h2 id="modalProductPrice" class="fw-bold text-success mb-0 display-6"></h2>
-                                <small class="text-white-50">Precio unitario</small>
+                                <small class="text-muted">Precio unitario</small>
                             </div>
                         </div>
                         
                         <div class="bg-secondary bg-opacity-10 rounded-4 p-3 mb-4 flex-grow-1 border border-light border-opacity-10">
                             <h6 class="text-uppercase text-primary small fw-bold mb-2">Descripción</h6>
-                            <p id="modalProductDescription" class="text-white-50 mb-0" style="white-space: pre-wrap; line-height: 1.6;"></p>
+                            <p id="modalProductDescription" class="text-muted mb-0" style="white-space: pre-wrap; line-height: 1.6;"></p>
                         </div>
                         
                         <div class="mt-auto">
@@ -207,7 +207,7 @@ async function addToCart(id, fromModal = false){
         toast.className = 'position-fixed bottom-0 end-0 p-3';
         toast.style.zIndex = '1100';
         toast.innerHTML = `
-            <div class="toast show align-items-center text-white bg-success border-0 shadow-lg rounded-4" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast show align-items-center text-body bg-success border-0 shadow-lg rounded-4" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="d-flex">
                     <div class="toast-body">
                         <i class="bi bi-check-circle-fill me-2"></i>Producto agregado al carrito
@@ -268,17 +268,17 @@ async function load(page=1,q=''){
                              style="height: 200px; transition: transform 0.3s ease;"
                              onerror="this.onerror=null;this.src='${IMG_PLACEHOLDER}';">
                         <div class="position-absolute top-0 end-0 p-2">
-                            <span class="badge bg-primary text-white rounded-pill px-3 py-2 fw-bold shadow-sm">
+                            <span class="badge bg-primary text-body rounded-pill px-3 py-2 fw-bold shadow-sm">
                                 {{ $configuracion['moneda'] ?? '$' }} ${precio}
                             </span>
                         </div>
                     </div>
                     <div class="p-4 d-flex flex-column flex-grow-1">
-                        <h5 class="fw-bold text-white mb-2 text-truncate" title="${p.nombre}">${p.nombre}</h5>
-                        <p class="text-white-50 small flex-grow-1 mb-3 line-clamp-2">${p.descripcion || 'Sin descripción disponible'}</p>
+                        <h5 class="fw-bold text-body mb-2 text-truncate" title="${p.nombre}">${p.nombre}</h5>
+                        <p class="text-muted small flex-grow-1 mb-3 line-clamp-2">${p.descripcion || 'Sin descripción disponible'}</p>
                         
                         <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top border-light border-opacity-10">
-                            <span class="text-white-50 small"><i class="bi bi-box-seam me-1"></i>Stock: ${p.stock ?? 0}</span>
+                            <span class="text-muted small"><i class="bi bi-box-seam me-1"></i>Stock: ${p.stock ?? 0}</span>
                             <button onclick="event.stopPropagation(); addToCart(${p.id_producto})" class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm d-flex align-items-center hover-scale">
                                 <i class="bi bi-cart-plus me-1"></i>Agregar
                             </button>
@@ -308,7 +308,7 @@ async function load(page=1,q=''){
                 let errorDetails = error.message;
                 // Try to see if we can get more info if it's a parsing error
                 if (error.message.includes('JSON')) {
-                     errorDetails += '<br><small class="text-white-50">Posible redirección o error de servidor (HTML recibido).</small>';
+                     errorDetails += '<br><small class="text-muted">Posible redirección o error de servidor (HTML recibido).</small>';
                 }
 
                 grid.innerHTML = `
@@ -316,8 +316,8 @@ async function load(page=1,q=''){
                         <div class="text-danger mb-3">
                             <i class="bi bi-exclamation-triangle display-1"></i>
                         </div>
-                        <h4 class="text-white">Error al cargar productos</h4>
-                        <p class="text-white-50">Detalle: ${errorDetails}</p>
+                        <h4 class="text-body">Error al cargar productos</h4>
+                        <p class="text-muted">Detalle: ${errorDetails}</p>
                         <button onclick="load()" class="btn btn-outline-light mt-2">Reintentar</button>
                     </div>
                 `;

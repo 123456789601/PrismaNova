@@ -7,7 +7,7 @@
     <!-- Navbar -->
     <nav class="d-flex justify-content-between align-items-center w-100 py-4 mb-auto fade-in-up">
         <a href="/" class="d-flex align-items-center gap-2 text-decoration-none">
-            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center w-40-px h-40-px shadow-sm">
+            <div class="rounded-circle bg-primary text-body d-flex align-items-center justify-content-center w-40-px h-40-px shadow-sm">
                 <i class="bi bi-prism-fill fs-5"></i>
             </div>
             <span class="fw-bold fs-4 text-body">PrismaNova</span>
@@ -31,8 +31,8 @@
     <div class="row align-items-center flex-grow-1 py-5">
         <div class="col-lg-6 mb-5 mb-lg-0">
             <div class="pe-lg-5">
-                <h1 class="display-3 fw-bolder mb-4 fade-in-up delay-200 text-gradient">
-                    Haz tu mercado fácil con <span id="typing-text" class="text-primary"></span><span class="cursor-blink">|</span>
+                <h1 class="display-3 fw-bolder mb-4 text-gradient">
+                    Haz tu mercado fácil con <span class="text-primary">PrismaNova</span>
                 </h1>
                 <p class="lead text-muted mb-5 fade-in-up delay-300 fs-4">
                     Todo lo que necesitas para tu hogar en un solo lugar. 
@@ -159,7 +159,7 @@
         <div class="row gy-4 mb-4">
             <div class="col-lg-4 col-md-6">
                 <a href="/" class="d-flex align-items-center gap-2 text-decoration-none mb-3">
-                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center w-30-px h-30-px shadow-sm">
+                    <div class="rounded-circle bg-primary text-body d-flex align-items-center justify-content-center w-30-px h-30-px shadow-sm">
                         <i class="bi bi-prism-fill fs-6"></i>
                     </div>
                     <span class="fw-bold fs-5 text-body">PrismaNova</span>
@@ -208,42 +208,6 @@
 
 @section('scripts')
 <script>
-    // Efecto Typing en el Título
-    const typingTextElement = document.getElementById('typing-text');
-    const words = ["Frescura", "Calidad", "Rapidez", "Hogar"];
-    let wordIndex = 0;
-    let charIndex = 0;
-    let isDeleting = false;
-    let typeSpeed = 100;
-
-    function typeEffect() {
-        const currentWord = words[wordIndex];
-        
-        if (isDeleting) {
-            typingTextElement.textContent = currentWord.substring(0, charIndex - 1);
-            charIndex--;
-            typeSpeed = 50;
-        } else {
-            typingTextElement.textContent = currentWord.substring(0, charIndex + 1);
-            charIndex++;
-            typeSpeed = 150;
-        }
-
-        if (!isDeleting && charIndex === currentWord.length) {
-            isDeleting = true;
-            typeSpeed = 2000; // Pausa al completar la palabra
-        } else if (isDeleting && charIndex === 0) {
-            isDeleting = false;
-            wordIndex = (wordIndex + 1) % words.length;
-            typeSpeed = 500; // Pausa antes de escribir la siguiente
-        }
-
-        setTimeout(typeEffect, typeSpeed);
-    }
-
-    // Iniciar efecto typing
-    document.addEventListener('DOMContentLoaded', typeEffect);
-
     // Animación de Contadores
     const counters = document.querySelectorAll('.counter');
     const speed = 200; // Cuanto más bajo, más lento

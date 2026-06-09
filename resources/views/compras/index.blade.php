@@ -15,8 +15,8 @@
     <div class="glass-card overflow-hidden">
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 text-white">
-                    <thead class="bg-primary bg-opacity-10 text-white">
+                <table class="table table-hover align-middle mb-0 text-body">
+                    <thead class="bg-primary bg-opacity-10 text-body">
                         <tr>
                             <th class="ps-4 py-3 border-0">ID</th>
                             <th class="py-3 border-0">Proveedor</th>
@@ -29,20 +29,20 @@
                     <tbody class="border-top-0">
                         @foreach($compras as $c)
                         <tr class="hover-bg-white-10 border-bottom border-light border-opacity-10">
-                            <td class="ps-4 fw-bold text-white-50">#{{ $c->id_compra }}</td>
+                            <td class="ps-4 fw-bold text-muted">#{{ $c->id_compra }}</td>
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div class="avatar-initial rounded-circle bg-primary bg-opacity-10 text-primary fw-bold me-3 d-flex justify-content-center align-items-center shadow-sm" style="width: 36px; height: 36px;">
                                         <i class="bi bi-building"></i>
                                     </div>
-                                    <span class="fw-bold text-white">{{ $c->proveedor->nombre_empresa ?? '-' }}</span>
+                                    <span class="fw-bold text-body">{{ $c->proveedor->nombre_empresa ?? '-' }}</span>
                                 </div>
                             </td>
                             <td>
-                                <div class="small text-white-50 fw-medium"><i class="bi bi-calendar3 me-1"></i>{{ \Carbon\Carbon::parse($c->fecha)->format('d/m/Y') }}</div>
-                                <div class="small text-white-50 opacity-75">{{ \Carbon\Carbon::parse($c->fecha)->format('H:i') }}</div>
+                                <div class="small text-muted fw-medium"><i class="bi bi-calendar3 me-1"></i>{{ \Carbon\Carbon::parse($c->fecha)->format('d/m/Y') }}</div>
+                                <div class="small text-muted opacity-75">{{ \Carbon\Carbon::parse($c->fecha)->format('H:i') }}</div>
                             </td>
-                            <td class="fw-bold text-white">{{ $configuracion['moneda'] ?? '$' }} {{ number_format($c->total,2) }}</td>
+                            <td class="fw-bold text-body">{{ $configuracion['moneda'] ?? '$' }} {{ number_format($c->total,2) }}</td>
                             <td>
                                 @php
                                     $statusClasses = [

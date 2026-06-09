@@ -7,14 +7,23 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class RedirectIfAuthenticated
+ * 
+ * Middleware para redirigir usuarios ya autenticados.
+ * Evita que usuarios logueados accedan a páginas de login o registro.
+ */
 class RedirectIfAuthenticated
 {
     /**
-     * Manejar una solicitud entrante.
+     * Maneja una solicitud entrante.
+     * 
+     * Verifica si el usuario está autenticado en alguno de los guards especificados.
+     * Si está autenticado, lo redirige a la página principal (HOME).
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
-     * @param  string|null  ...$guards
+     * @param  \Illuminate\Http\Request  $request Solicitud HTTP entrante.
+     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next Siguiente middleware en la cadena.
+     * @param  string|null  ...$guards Guards de autenticación a verificar (web, api, etc).
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function handle(Request $request, Closure $next, ...$guards)

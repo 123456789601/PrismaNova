@@ -6,10 +6,18 @@ use Illuminate\Http\Request;
 use App\Models\VentaSuspendida;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class VentaSuspendidaController
+ * 
+ * Gestiona las ventas suspendidas (en espera) del usuario actual.
+ * Permite poner ventas en pausa y recuperarlas posteriormente.
+ */
 class VentaSuspendidaController extends Controller
 {
     /**
-     * List current user's suspended sales.
+     * Lista las ventas suspendidas del usuario actual.
+     *
+     * @return \Illuminate\Http\JsonResponse Lista de ventas en espera.
      */
     public function index()
     {
@@ -22,7 +30,13 @@ class VentaSuspendidaController extends Controller
     }
 
     /**
-     * Store a suspended sale.
+     * Almacena una nueva venta suspendida.
+     * 
+     * Guarda el contenido del carrito, total y cliente asociado
+     * para poder recuperarla posteriormente.
+     *
+     * @param  \Illuminate\Http\Request  $request Solicitud con contenido, total y cliente.
+     * @return \Illuminate\Http\JsonResponse Respuesta con la venta creada.
      */
     public function store(Request $request)
     {
@@ -49,7 +63,12 @@ class VentaSuspendidaController extends Controller
     }
 
     /**
-     * Delete a suspended sale (e.g., when resumed).
+     * Elimina una venta suspendida (ej. cuando se recupera).
+     * 
+     * Solo permite eliminar ventas del usuario autenticado.
+     *
+     * @param  int  $id ID de la venta suspendida.
+     * @return \Illuminate\Http\JsonResponse Respuesta de éxito.
      */
     public function destroy($id)
     {

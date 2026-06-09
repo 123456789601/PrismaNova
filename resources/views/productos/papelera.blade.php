@@ -30,8 +30,8 @@
     <div class="glass-card overflow-hidden">
         <div class="card-body p-0">
             <div class="table-responsive overflow-hidden">
-                <table class="table align-middle mb-0 text-white">
-                    <thead class="bg-primary bg-opacity-10 text-white fw-bold text-uppercase small">
+                <table class="table align-middle mb-0 text-body">
+                    <thead class="bg-primary bg-opacity-10 text-body fw-bold text-uppercase small">
                         <tr>
                             <th class="ps-4 py-3 border-bottom border-light border-opacity-10">Imagen</th>
                             <th class="py-3 border-bottom border-light border-opacity-10">Nombre / Código</th>
@@ -47,14 +47,14 @@
                                  @if($p->imagen_url)
                                     <img src="{{ $p->imagen_url }}" alt="{{ $p->nombre }}" style="width:48px;height:48px;object-fit:cover" class="rounded-3 shadow-sm img-thumb-48">
                                 @else
-                                    <div class="bg-secondary bg-opacity-25 rounded-3 d-flex align-items-center justify-content-center text-white-50 small shadow-sm" style="width:48px;height:48px">
+                                    <div class="bg-secondary bg-opacity-25 rounded-3 d-flex align-items-center justify-content-center text-muted small shadow-sm" style="width:48px;height:48px">
                                         <i class="bi bi-image"></i>
                                     </div>
                                 @endif
                             </td>
                             <td class="border-bottom border-light border-opacity-10">
-                                <div class="fw-bold text-white">{{ $p->nombre }}</div>
-                                <small class="text-white-50"><i class="bi bi-upc me-1"></i>{{ $p->codigo_barras }}</small>
+                                <div class="fw-bold text-body">{{ $p->nombre }}</div>
+                                <small class="text-muted"><i class="bi bi-upc me-1"></i>{{ $p->codigo_barras }}</small>
                             </td>
                             <td class="border-bottom border-light border-opacity-10">
                                 <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill px-3">
@@ -62,7 +62,7 @@
                                 </span>
                             </td>
                             <td class="border-bottom border-light border-opacity-10">
-                                <div class="d-flex align-items-center text-white-50">
+                                <div class="d-flex align-items-center text-muted">
                                     <i class="bi bi-calendar-x me-2"></i>
                                     <div>
                                         <span class="d-block">{{ $p->deleted_at->format('d/m/Y') }}</span>
@@ -94,7 +94,7 @@
                         <tr>
                             <td colspan="5" class="text-center py-5">
                                 <div class="mb-3">
-                                    <div class="avatar-xxl rounded-circle bg-secondary bg-opacity-10 text-white-50 d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                    <div class="avatar-xxl rounded-circle bg-secondary bg-opacity-10 text-muted d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
                                         <i class="bi bi-recycle fs-1"></i>
                                     </div>
                                 </div>

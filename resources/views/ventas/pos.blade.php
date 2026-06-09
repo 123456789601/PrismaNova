@@ -35,11 +35,11 @@
                         <div class="col-md-8">
                             <div class="input-group">
                                 <span class="input-group-text bg-transparent border-primary text-primary"><i class="bi bi-search"></i></span>
-                                <input type="text" id="searchProduct" class="form-control border-primary bg-transparent text-white" placeholder="Buscar producto por nombre o código..." autocomplete="off" autofocus>
+                                <input type="text" id="searchProduct" class="form-control border-primary bg-transparent text-body" placeholder="Buscar producto por nombre o código..." autocomplete="off" autofocus>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <select id="categoryFilter" class="form-select bg-transparent text-white border-secondary">
+                            <select id="categoryFilter" class="form-select bg-transparent text-body border-secondary">
                                 <option value="all">Todas las Categorías</option>
                                 @foreach($categorias as $cat)
                                     <option value="{{ $cat->id_categoria }}">{{ $cat->nombre }}</option>
@@ -60,13 +60,13 @@
                                             @if($p->imagen)
                                                 <img src="{{ asset('storage/' . $p->imagen) }}" alt="{{ $p->nombre }}" class="img-fluid rounded" style="max-height: 100%;">
                                             @else
-                                                <i class="bi bi-box-seam display-4 text-white-50"></i>
+                                                <i class="bi bi-box-seam display-4 text-muted"></i>
                                             @endif
                                         </div>
-                                        <h6 class="card-title text-white small mb-1 text-truncate" title="{{ $p->nombre }}">{{ $p->nombre }}</h6>
+                                        <h6 class="card-title text-body small mb-1 text-truncate" title="{{ $p->nombre }}">{{ $p->nombre }}</h6>
                                         <div class="d-flex justify-content-between align-items-center mt-2">
                                             <span class="badge bg-primary rounded-pill">{{ $configuracion['moneda'] ?? '$' }} {{ number_format($p->precio_venta, 2) }}</span>
-                                            <small class="text-white-50 stock-badge" data-stock="{{ $p->stock }}">Stock: {{ $p->stock }}</small>
+                                            <small class="text-muted stock-badge" data-stock="{{ $p->stock }}">Stock: {{ $p->stock }}</small>
                                         </div>
                                     </div>
                                 </div>
@@ -74,8 +74,8 @@
                         @endforeach
                     </div>
                     <div id="noResults" class="text-center py-5 d-none">
-                        <i class="bi bi-search display-1 text-white-50 mb-3"></i>
-                        <h4 class="text-white-50">No se encontraron productos</h4>
+                        <i class="bi bi-search display-1 text-muted mb-3"></i>
+                        <h4 class="text-muted">No se encontraron productos</h4>
                     </div>
                 </div>
             </div>
@@ -84,16 +84,16 @@
         <!-- Right Panel: Cart -->
         <div class="col-md-4 col-lg-4 p-0 bg-secondary bg-opacity-25 d-flex flex-column h-100 border-start border-light border-opacity-10">
             <!-- Header -->
-            <div class="p-3 bg-primary text-white d-flex justify-content-between align-items-center">
+            <div class="p-3 bg-primary text-body d-flex justify-content-between align-items-center">
                 <h5 class="mb-0"><i class="bi bi-cart3 me-2"></i>Carrito de Compras</h5>
                 <span class="badge bg-white text-primary rounded-pill" id="cartCount">0 items</span>
             </div>
 
             <!-- Client Selection -->
             <div class="p-3 border-bottom border-light border-opacity-10">
-                <label class="small text-white-50 mb-1">Cliente</label>
+                <label class="small text-muted mb-1">Cliente</label>
                 <div class="input-group">
-                    <select class="form-select bg-transparent text-white border-secondary" id="clientSelect">
+                    <select class="form-select bg-transparent text-body border-secondary" id="clientSelect">
                         @foreach($clientes as $c)
                             <option value="{{ $c->id_cliente }}">{{ $c->nombre }} {{ $c->apellido }} ({{ $c->documento }})</option>
                         @endforeach
@@ -104,33 +104,33 @@
 
             <!-- Cart Items -->
             <div class="flex-grow-1 overflow-auto p-0" style="height: 0px;">
-                <table class="table table-hover table-borderless text-white mb-0 align-middle">
+                <table class="table table-hover table-borderless text-body mb-0 align-middle">
                     <tbody id="cartItems">
                         <!-- Items injected by JS -->
                     </tbody>
                 </table>
                 <div id="emptyCart" class="text-center py-5">
-                    <i class="bi bi-basket display-1 text-white-50 mb-3"></i>
-                    <p class="text-white-50">El carrito está vacío</p>
+                    <i class="bi bi-basket display-1 text-muted mb-3"></i>
+                    <p class="text-muted">El carrito está vacío</p>
                 </div>
             </div>
 
             <!-- Summary -->
             <div class="p-3 bg-dark bg-opacity-50 border-top border-light border-opacity-10">
-                <div class="d-flex justify-content-between mb-1 text-white-50 small">
+                <div class="d-flex justify-content-between mb-1 text-muted small">
                     <span>Subtotal:</span>
                     <span>{{ $configuracion['moneda'] ?? '$' }} <span id="summarySubtotal">0.00</span></span>
                 </div>
-                <div class="d-flex justify-content-between mb-1 text-white-50 small align-items-center">
-                    <span>Descuento: <button class="btn btn-sm btn-link text-white-50 p-0 ms-1 text-decoration-none" onclick="setDiscount()" title="Aplicar descuento manual"><i class="bi bi-pencil-square"></i></button></span>
+                <div class="d-flex justify-content-between mb-1 text-muted small align-items-center">
+                    <span>Descuento: <button class="btn btn-sm btn-link text-muted p-0 ms-1 text-decoration-none" onclick="setDiscount()" title="Aplicar descuento manual"><i class="bi bi-pencil-square"></i></button></span>
                     <span class="text-success">- {{ $configuracion['moneda'] ?? '$' }} <span id="summaryDiscount">0.00</span></span>
                 </div>
-                <div class="d-flex justify-content-between mb-1 text-white-50 small">
+                <div class="d-flex justify-content-between mb-1 text-muted small">
                     <span>Impuesto (18%):</span>
                     <span>{{ $configuracion['moneda'] ?? '$' }} <span id="summaryTax">0.00</span></span>
                 </div>
                 <div class="d-flex justify-content-between mb-3 pt-2 border-top border-light border-opacity-25">
-                    <span class="fs-4 fw-bold text-white">Total:</span>
+                    <span class="fs-4 fw-bold text-body">Total:</span>
                     <span class="fs-4 fw-bold text-primary">{{ $configuracion['moneda'] ?? '$' }} <span id="summaryTotal">0.00</span></span>
                 </div>
                 <button class="btn btn-success w-100 py-3 fw-bold shadow-lg hover-scale" id="btnCheckout" onclick="openCheckoutModal()" disabled>
@@ -146,7 +146,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content glass-card border-0">
             <div class="modal-header border-bottom border-light border-opacity-10">
-                <h5 class="modal-title text-white"><i class="bi bi-wallet2 me-2"></i>Finalizar Venta</h5>
+                <h5 class="modal-title text-body"><i class="bi bi-wallet2 me-2"></i>Finalizar Venta</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
@@ -158,12 +158,12 @@
                     <!-- Products JSON will be appended here -->
                     
                     <div class="text-center mb-4">
-                        <h6 class="text-white-50 uppercase tracking-wider">Total a Pagar</h6>
+                        <h6 class="text-muted uppercase tracking-wider">Total a Pagar</h6>
                         <h1 class="text-primary fw-bold display-4">{{ $configuracion['moneda'] ?? '$' }} <span id="modalTotal">0.00</span></h1>
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label text-white fw-bold">Método de Pago</label>
+                        <label class="form-label text-body fw-bold">Método de Pago</label>
                         <div class="row g-2">
                             @foreach($metodos as $m)
                                 <div class="col-6">
@@ -182,10 +182,10 @@
                     <!-- Cash Fields -->
                     <div id="cashFields" class="payment-section">
                         <div class="mb-3">
-                            <label class="form-label text-white">Monto Recibido</label>
+                            <label class="form-label text-body">Monto Recibido</label>
                             <div class="input-group">
-                                <span class="input-group-text bg-secondary bg-opacity-25 border-0 text-white">{{ $configuracion['moneda'] ?? '$' }} </span>
-                                <input type="number" step="0.01" class="form-control bg-secondary bg-opacity-25 border-0 text-white fs-5" name="monto_recibido" id="montoRecibido" oninput="calculateChange()">
+                                <span class="input-group-text bg-secondary bg-opacity-25 border-0 text-body">{{ $configuracion['moneda'] ?? '$' }} </span>
+                                <input type="number" step="0.01" class="form-control bg-secondary bg-opacity-25 border-0 text-body fs-5" name="monto_recibido" id="montoRecibido" oninput="calculateChange()">
                             </div>
                         </div>
                         <div class="alert alert-success d-flex justify-content-between align-items-center mb-0">
@@ -198,29 +198,29 @@
                     <!-- Card Fields -->
                     <div id="cardFields" class="payment-section d-none">
                         <div class="mb-3">
-                            <label class="form-label text-white">Referencia / Nro. Operación</label>
-                            <input type="text" class="form-control bg-secondary bg-opacity-25 border-0 text-white" name="referencia_pago" id="pos_referencia_tarjeta" placeholder="Ej: 00123456" disabled>
+                            <label class="form-label text-body">Referencia / Nro. Operación</label>
+                            <input type="text" class="form-control bg-secondary bg-opacity-25 border-0 text-body" name="referencia_pago" id="pos_referencia_tarjeta" placeholder="Ej: 00123456" disabled>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label text-white">Últimos 4 dígitos</label>
-                            <input type="text" class="form-control bg-secondary bg-opacity-25 border-0 text-white" name="ultimos_digitos" id="pos_ultimos_digitos" maxlength="4" placeholder="Ej: 4242" disabled>
+                            <label class="form-label text-body">Últimos 4 dígitos</label>
+                            <input type="text" class="form-control bg-secondary bg-opacity-25 border-0 text-body" name="ultimos_digitos" id="pos_ultimos_digitos" maxlength="4" placeholder="Ej: 4242" disabled>
                         </div>
                     </div>
 
                     <!-- Transfer Fields -->
                     <div id="transferFields" class="payment-section d-none">
                         <div class="mb-3">
-                            <div class="text-white-50 small">Banco destino: <span class="text-white">{{ $configuracion['banco_nombre'] ?? 'Bancolombia' }}</span></div>
-                            <div class="text-white-50 small">Tipo: <span class="text-white">{{ $configuracion['banco_tipo_cuenta'] ?? 'Ahorros' }}</span></div>
-                            <div class="text-white-50 small">Cuenta: <span class="text-white">{{ $configuracion['banco_numero_cuenta'] ?? '00000000000' }}</span></div>
-                            <div class="text-white-50 small">Titular: <span class="text-white">{{ $configuracion['banco_titular'] ?? 'PrismaNova' }}</span></div>
+                            <div class="text-muted small">Banco destino: <span class="text-body">{{ $configuracion['banco_nombre'] ?? 'Bancolombia' }}</span></div>
+                            <div class="text-muted small">Tipo: <span class="text-body">{{ $configuracion['banco_tipo_cuenta'] ?? 'Ahorros' }}</span></div>
+                            <div class="text-muted small">Cuenta: <span class="text-body">{{ $configuracion['banco_numero_cuenta'] ?? '00000000000' }}</span></div>
+                            <div class="text-muted small">Titular: <span class="text-body">{{ $configuracion['banco_titular'] ?? 'PrismaNova' }}</span></div>
                             @if(!empty($configuracion['banco_nit']))
-                                <div class="text-white-50 small">NIT: <span class="text-white">{{ $configuracion['banco_nit'] }}</span></div>
+                                <div class="text-muted small">NIT: <span class="text-body">{{ $configuracion['banco_nit'] }}</span></div>
                             @endif
                         </div>
                         <div class="mb-3">
-                            <label class="form-label text-white">Referencia / Comprobante</label>
-                            <input type="text" class="form-control bg-secondary bg-opacity-25 border-0 text-white" name="referencia_pago" id="pos_referencia_transferencia" placeholder="Ej: 00123456" disabled>
+                            <label class="form-label text-body">Referencia / Comprobante</label>
+                            <input type="text" class="form-control bg-secondary bg-opacity-25 border-0 text-body" name="referencia_pago" id="pos_referencia_transferencia" placeholder="Ej: 00123456" disabled>
                         </div>
                     </div>
 
@@ -249,7 +249,7 @@
 <!-- Sale Success Modal -->
 <div class="modal fade" id="saleSuccessModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-dark text-white border-success border-2">
+        <div class="modal-content bg-dark text-body border-success border-2">
             <div class="modal-body text-center p-5">
                 <div class="mb-4">
                     <i class="bi bi-check-circle-fill text-success display-1"></i>
@@ -258,7 +258,7 @@
                 
                 <div class="card bg-secondary bg-opacity-10 border-light border-opacity-10 mb-4">
                     <div class="card-body">
-                        <h5 class="text-white-50 mb-2">Su cambio / vuelto es:</h5>
+                        <h5 class="text-muted mb-2">Su cambio / vuelto es:</h5>
                         <h1 class="text-warning fw-bold display-3">{{ $configuracion['moneda'] ?? '$' }} <span id="successChange">0.00</span></h1>
                     </div>
                 </div>
@@ -279,7 +279,7 @@
 <!-- New Client Modal -->
 <div class="modal fade" id="newClientModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content bg-dark text-white border-secondary">
+        <div class="modal-content bg-dark text-body border-secondary">
             <div class="modal-header border-secondary">
                 <h5 class="modal-title">Nuevo Cliente</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -288,27 +288,27 @@
                 <form id="newClientForm">
                     <div class="mb-3">
                         <label class="form-label">Nombre *</label>
-                        <input type="text" name="nombre" class="form-control bg-secondary bg-opacity-10 text-white border-secondary" required pattern="[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+" title="Solo letras y espacios" oninput="this.value = this.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '')">
+                        <input type="text" name="nombre" class="form-control bg-secondary bg-opacity-10 text-body border-secondary" required pattern="[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+" title="Solo letras y espacios" oninput="this.value = this.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '')">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Apellido *</label>
-                        <input type="text" name="apellido" class="form-control bg-secondary bg-opacity-10 text-white border-secondary" required pattern="[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+" title="Solo letras y espacios" oninput="this.value = this.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '')">
+                        <input type="text" name="apellido" class="form-control bg-secondary bg-opacity-10 text-body border-secondary" required pattern="[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+" title="Solo letras y espacios" oninput="this.value = this.value.replace(/[^a-zA-ZñÑáéíóúÁÉÍÓÚ\s]/g, '')">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Documento *</label>
-                        <input type="text" name="documento" class="form-control bg-secondary bg-opacity-10 text-white border-secondary" required pattern="\d+" title="Solo números" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        <input type="text" name="documento" class="form-control bg-secondary bg-opacity-10 text-body border-secondary" required pattern="\d+" title="Solo números" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control bg-secondary bg-opacity-10 text-white border-secondary">
+                        <input type="email" name="email" class="form-control bg-secondary bg-opacity-10 text-body border-secondary">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Teléfono</label>
-                        <input type="text" name="telefono" class="form-control bg-secondary bg-opacity-10 text-white border-secondary">
+                        <input type="text" name="telefono" class="form-control bg-secondary bg-opacity-10 text-body border-secondary">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Dirección</label>
-                        <input type="text" name="direccion" class="form-control bg-secondary bg-opacity-10 text-white border-secondary">
+                        <input type="text" name="direccion" class="form-control bg-secondary bg-opacity-10 text-body border-secondary">
                     </div>
                 </form>
             </div>
@@ -323,7 +323,7 @@
 <!-- Recent Sales Modal -->
 <div class="modal fade" id="recentSalesModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content bg-dark text-white border-secondary">
+        <div class="modal-content bg-dark text-body border-secondary">
             <div class="modal-header border-secondary">
                 <h5 class="modal-title"><i class="bi bi-clock-history me-2"></i>Ventas Recientes</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -350,7 +350,7 @@
 <!-- Suspended Sales Modal -->
 <div class="modal fade" id="suspendedSalesModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content bg-dark text-white border-secondary">
+        <div class="modal-content bg-dark text-body border-secondary">
             <div class="modal-header border-secondary">
                 <h5 class="modal-title"><i class="bi bi-pause-circle me-2"></i>Ventas en Espera</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -369,7 +369,7 @@
                     <tbody id="suspendedSalesTable"></tbody>
                 </table>
                 <div id="noSuspended" class="text-center py-4 d-none">
-                    <p class="text-white-50">No hay ventas en espera</p>
+                    <p class="text-muted">No hay ventas en espera</p>
                 </div>
             </div>
         </div>
@@ -379,7 +379,7 @@
 <!-- Cash Register Modal -->
 <div class="modal fade" id="cashRegisterModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content bg-dark text-white border-secondary">
+        <div class="modal-content bg-dark text-body border-secondary">
             <div class="modal-header border-secondary">
                 <h5 class="modal-title"><i class="bi bi-cash-stack me-2"></i>Estado de Caja</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -406,7 +406,7 @@
 <!-- Movements Modal -->
 <div class="modal fade" id="movementsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content bg-dark text-white border-secondary">
+        <div class="modal-content bg-dark text-body border-secondary">
             <div class="modal-header border-secondary">
                 <h5 class="modal-title"><i class="bi bi-arrow-left-right me-2"></i>Registrar Movimiento</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -415,7 +415,7 @@
                 <form id="movementForm">
                     <div class="mb-3">
                         <label class="form-label">Tipo de Movimiento</label>
-                        <select name="tipo" class="form-select bg-secondary bg-opacity-10 text-white border-secondary" required>
+                        <select name="tipo" class="form-select bg-secondary bg-opacity-10 text-body border-secondary" required>
                             <option value="ingreso">Ingreso (Entrada de dinero)</option>
                             <option value="egreso">Egreso (Salida de dinero)</option>
                         </select>
@@ -423,13 +423,13 @@
                     <div class="mb-3">
                         <label class="form-label">Monto</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-secondary bg-opacity-10 text-white border-secondary">{{ $configuracion['moneda'] ?? '$' }} </span>
-                            <input type="number" step="0.01" name="monto" class="form-control bg-secondary bg-opacity-10 text-white border-secondary" required>
+                            <span class="input-group-text bg-secondary bg-opacity-10 text-body border-secondary">{{ $configuracion['moneda'] ?? '$' }} </span>
+                            <input type="number" step="0.01" name="monto" class="form-control bg-secondary bg-opacity-10 text-body border-secondary" required>
                         </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Descripción / Motivo</label>
-                        <textarea name="descripcion" class="form-control bg-secondary bg-opacity-10 text-white border-secondary" rows="3" required placeholder="Ej: Pago a proveedor, Cambio inicial, etc."></textarea>
+                        <textarea name="descripcion" class="form-control bg-secondary bg-opacity-10 text-body border-secondary" rows="3" required placeholder="Ej: Pago a proveedor, Cambio inicial, etc."></textarea>
                     </div>
                 </form>
             </div>
@@ -762,49 +762,49 @@
                 } else {
                     body.innerHTML = `
                         <ul class="list-group list-group-flush bg-transparent mb-3">
-                            <li class="list-group-item bg-transparent text-white d-flex justify-content-between">
+                            <li class="list-group-item bg-transparent text-body d-flex justify-content-between">
                                 <span>Monto Inicial:</span>
                                 <strong>{{ $configuracion['moneda'] ?? '$' }} ${parseFloat(data.monto_inicial).toFixed(2)}</strong>
                             </li>
-                            <li class="list-group-item bg-transparent text-white d-flex justify-content-between">
+                            <li class="list-group-item bg-transparent text-body d-flex justify-content-between">
                                 <span>Ventas Efectivo:</span>
                                 <strong class="text-success">+ {{ $configuracion['moneda'] ?? '$' }} ${parseFloat(data.ventas_efectivo).toFixed(2)}</strong>
                             </li>
-                            <li class="list-group-item bg-transparent text-white d-flex justify-content-between">
+                            <li class="list-group-item bg-transparent text-body d-flex justify-content-between">
                                 <span>Ingresos Manuales:</span>
                                 <strong class="text-success">+ {{ $configuracion['moneda'] ?? '$' }} ${parseFloat(data.ingresos).toFixed(2)}</strong>
                             </li>
-                            <li class="list-group-item bg-transparent text-white d-flex justify-content-between">
+                            <li class="list-group-item bg-transparent text-body d-flex justify-content-between">
                                 <span>Egresos Manuales:</span>
                                 <strong class="text-danger">- {{ $configuracion['moneda'] ?? '$' }} ${parseFloat(data.egresos).toFixed(2)}</strong>
                             </li>
-                            <li class="list-group-item bg-transparent text-white d-flex justify-content-between border-top border-light mt-2 pt-2">
+                            <li class="list-group-item bg-transparent text-body d-flex justify-content-between border-top border-light mt-2 pt-2">
                                 <span class="fs-5">Total en Caja:</span>
                                 <span class="fs-5 fw-bold text-warning">{{ $configuracion['moneda'] ?? '$' }} ${parseFloat(data.saldo_esperado).toFixed(2)}</span>
                             </li>
                         </ul>
                         
                         <div class="card bg-secondary bg-opacity-10 border-light border-opacity-10 mb-3">
-                            <div class="card-header bg-transparent border-light border-opacity-10 text-white small fw-bold">
+                            <div class="card-header bg-transparent border-light border-opacity-10 text-body small fw-bold">
                                 Registrar Movimiento
                             </div>
                             <div class="card-body">
                                 <form id="movementForm" onsubmit="registrarMovimiento(event, ${data.id_caja})">
                                     <div class="row g-2">
                                         <div class="col-4">
-                                            <select class="form-select form-select-sm bg-dark text-white border-secondary" name="tipo" required>
+                                            <select class="form-select form-select-sm bg-dark text-body border-secondary" name="tipo" required>
                                                 <option value="ingreso">Ingreso</option>
                                                 <option value="egreso">Egreso</option>
                                             </select>
                                         </div>
                                         <div class="col-4">
-                                            <input type="number" step="0.01" class="form-control form-control-sm bg-dark text-white border-secondary" name="monto" placeholder="Monto" required>
+                                            <input type="number" step="0.01" class="form-control form-control-sm bg-dark text-body border-secondary" name="monto" placeholder="Monto" required>
                                         </div>
                                         <div class="col-4">
                                             <button type="submit" class="btn btn-sm btn-primary w-100">Registrar</button>
                                         </div>
                                         <div class="col-12">
-                                            <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary" name="descripcion" placeholder="Motivo (opcional)">
+                                            <input type="text" class="form-control form-control-sm bg-dark text-body border-secondary" name="descripcion" placeholder="Motivo (opcional)">
                                         </div>
                                     </div>
                                 </form>
@@ -812,28 +812,28 @@
                         </div>
 
                         <div class="mt-2 text-center">
-                            <small class="text-white-50">Ventas Tarjeta: {{ $configuracion['moneda'] ?? '$' }} ${parseFloat(data.ventas_tarjeta).toFixed(2)}</small>
+                            <small class="text-muted">Ventas Tarjeta: {{ $configuracion['moneda'] ?? '$' }} ${parseFloat(data.ventas_tarjeta).toFixed(2)}</small>
                         </div>
 
                         <div class="mt-3">
-                            <h6 class="text-white border-bottom border-light border-opacity-10 pb-2">Últimos Movimientos</h6>
+                            <h6 class="text-body border-bottom border-light border-opacity-10 pb-2">Últimos Movimientos</h6>
                             <ul class="list-group list-group-flush bg-transparent" style="max-height: 200px; overflow-y: auto;">
                                 ${data.movimientos && data.movimientos.length > 0 ? 
                                     data.movimientos.map(m => `
-                                        <li class="list-group-item bg-transparent text-white d-flex justify-content-between align-items-center px-0 py-2 border-light border-opacity-10">
+                                        <li class="list-group-item bg-transparent text-body d-flex justify-content-between align-items-center px-0 py-2 border-light border-opacity-10">
                                             <div>
                                                 <div class="d-flex align-items-center">
                                                     <span class="badge ${m.tipo === 'ingreso' ? 'bg-success' : 'bg-danger'} me-2">${m.tipo === 'ingreso' ? '+' : '-'}</span>
                                                     <small>${m.descripcion || 'Sin descripción'}</small>
                                                 </div>
-                                                <small class="text-white-50" style="font-size: 0.75rem;">${m.hora}</small>
+                                                <small class="text-muted" style="font-size: 0.75rem;">${m.hora}</small>
                                             </div>
                                             <span class="${m.tipo === 'ingreso' ? 'text-success' : 'text-danger'} fw-bold">
                                                 {{ $configuracion['moneda'] ?? '$' }} ${parseFloat(m.monto).toFixed(2)}
                                             </span>
                                         </li>
                                     `).join('') 
-                                    : '<li class="list-group-item bg-transparent text-white-50 text-center">No hay movimientos registrados</li>'
+                                    : '<li class="list-group-item bg-transparent text-muted text-center">No hay movimientos registrados</li>'
                                 }
                             </ul>
                         </div>
@@ -995,15 +995,15 @@
             tr.innerHTML = `
                 <td style="width: 35%;">
                     <div class="fw-bold text-truncate" style="max-width: 130px;" title="${item.nombre}">${item.nombre}</div>
-                    <div class="small text-white-50">{{ $configuracion['moneda'] ?? '$' }} ${item.precio.toFixed(2)}</div>
+                    <div class="small text-muted">{{ $configuracion['moneda'] ?? '$' }} ${item.precio.toFixed(2)}</div>
                 </td>
                 <td style="width: 35%;">
                     <div class="input-group input-group-sm">
-                        <button class="btn btn-outline-secondary text-white border-secondary" type="button" onclick="decreaseQuantity(${index})"><i class="bi bi-dash"></i></button>
-                        <input type="number" class="form-control bg-secondary bg-opacity-25 text-white border-secondary text-center px-1" 
+                        <button class="btn btn-outline-secondary text-body border-secondary" type="button" onclick="decreaseQuantity(${index})"><i class="bi bi-dash"></i></button>
+                        <input type="number" class="form-control bg-secondary bg-opacity-25 text-body border-secondary text-center px-1" 
                                value="${item.cantidad}" min="0" max="${item.stock}" 
                                onchange="updateQuantity(${index}, this.value)">
-                        <button class="btn btn-outline-secondary text-white border-secondary" type="button" onclick="increaseQuantity(${index})"><i class="bi bi-plus"></i></button>
+                        <button class="btn btn-outline-secondary text-body border-secondary" type="button" onclick="increaseQuantity(${index})"><i class="bi bi-plus"></i></button>
                     </div>
                 </td>
                 <td class="text-end" style="width: 20%;">{{ $configuracion['moneda'] ?? '$' }} ${itemTotal.toFixed(2)}</td>

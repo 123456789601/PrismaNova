@@ -4,13 +4,31 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class StoreProveedorRequest
+ * 
+ * Validación de datos para el almacenamiento de un nuevo proveedor.
+ * Asegura la integridad de los datos, incluyendo unicidad de NIT y email.
+ */
 class StoreProveedorRequest extends FormRequest
 {
+    /**
+     * Determina si el usuario está autorizado para hacer esta solicitud.
+     *
+     * @return bool
+     */
     public function authorize()
     {
         return true;
     }
 
+    /**
+     * Obtiene las reglas de validación que se aplican a la solicitud.
+     * 
+     * Valida unicidad de NIT y email, así como formato de campos.
+     *
+     * @return array
+     */
     public function rules()
     {
         return [
@@ -25,8 +43,9 @@ class StoreProveedorRequest extends FormRequest
     }
 
     /**
-     * Preparar los datos para la validación.
-     * Sanear entradas para evitar XSS y estandarizar formato.
+     * Prepara los datos para la validación.
+     * 
+     * Sanea las entradas para evitar XSS y estandariza el formato.
      */
     protected function prepareForValidation()
     {

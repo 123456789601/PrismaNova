@@ -5,7 +5,7 @@
 @section('content')
 <div class="d-flex flex-column align-items-center justify-content-center min-vh-100 py-5">
     <a href="/" class="d-flex align-items-center gap-2 text-decoration-none mb-4">
-        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center shadow-lg logo-icon">
+        <div class="rounded-circle bg-primary text-body d-flex align-items-center justify-content-center shadow-lg logo-icon">
             <i class="bi bi-prism-fill fs-4"></i>
         </div>
         <span class="fw-bold fs-3 text-body">PrismaNova</span>

@@ -9,10 +9,19 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
+/**
+ * Class ResetPasswordController
+ * 
+ * Gestiona el proceso de restablecimiento de contraseña.
+ * Permite a los usuarios establecer una nueva contraseña usando el token enviado por correo.
+ */
 class ResetPasswordController extends Controller
 {
     /**
-     * Create a new controller instance.
+     * Crea una nueva instancia del controlador.
+     * 
+     * Aplica el middleware 'guest' para asegurar que solo usuarios no autenticados
+     * puedan acceder a las rutas de restablecimiento de contraseña.
      *
      * @return void
      */
@@ -22,11 +31,11 @@ class ResetPasswordController extends Controller
     }
 
     /**
-     * Display the password reset view for the given token.
+     * Muestra el formulario de restablecimiento de contraseña para el token dado.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  string|null  $token
-     * @return \Illuminate\View\View
+     * @param  \Illuminate\Http\Request  $request Solicitud con el correo del usuario.
+     * @param  string|null  $token Token de restablecimiento enviado por correo.
+     * @return \Illuminate\View\View Vista del formulario de nueva contraseña.
      */
     public function showResetForm(Request $request, $token = null)
     {
@@ -36,10 +45,14 @@ class ResetPasswordController extends Controller
     }
 
     /**
-     * Restablecer la contraseña del usuario dado.
+     * Restablece la contraseña del usuario.
+     * 
+     * Valida el token, correo y nueva contraseña, luego actualiza la contraseña
+     * del usuario usando el broker de contraseñas de Laravel configurado para el modelo Usuario.
+     * También regenera el token de "remember me" y dispara el evento de restablecimiento.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     * @param  \Illuminate\Http\Request  $request Solicitud con token, email y nueva contraseña.
+     * @return \Illuminate\Http\RedirectResponse Redirección al login con mensaje de éxito o error.
      */
     public function reset(Request $request)
     {

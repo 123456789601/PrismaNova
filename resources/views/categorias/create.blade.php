@@ -6,8 +6,8 @@
         <div class="col-md-8">
             <div class="glass-card overflow-hidden">
                 <div class="card-header bg-transparent border-bottom border-light border-opacity-25 py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-bold text-white"><i class="bi bi-tag me-2"></i>Nueva Categoría</h5>
-                    <a href="{{ route('categorias.index') }}" class="btn btn-sm btn-light bg-opacity-10 text-white border-0 rounded-pill px-3 shadow-sm">
+                    <h5 class="mb-0 fw-bold text-body"><i class="bi bi-tag me-2"></i>Nueva Categoría</h5>
+                    <a href="{{ route('categorias.index') }}" class="btn btn-sm btn-light bg-opacity-10 text-body border-0 rounded-pill px-3 shadow-sm">
                         <i class="bi bi-arrow-left me-1"></i>Volver
                     </a>
                 </div>
@@ -16,8 +16,8 @@
                         @csrf
                         
                         <div class="col-md-12">
-                            <label for="nombre" class="form-label fw-bold small text-white-50">Nombre <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" name="nombre" id="nombre" value="{{ old('nombre') }}" required placeholder="Ej. Bebidas, Snacks...">
+                            <label for="nombre" class="form-label fw-bold small text-muted">Nombre <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body" name="nombre" id="nombre" value="{{ old('nombre') }}" required placeholder="Ej. Bebidas, Snacks...">
                             @error('nombre')
                                 <div class="text-danger small ms-2 mt-1">{{ $message }}</div>
                             @enderror
@@ -27,8 +27,8 @@
                         </div>
 
                         <div class="col-md-12">
-                            <label for="descripcion" class="form-label fw-bold small text-white-50">Descripción</label>
-                            <textarea class="form-control rounded-4 bg-secondary bg-opacity-10 border-0 text-white" name="descripcion" id="descripcion" rows="3" placeholder="Descripción opcional...">{{ old('descripcion') }}</textarea>
+                            <label for="descripcion" class="form-label fw-bold small text-muted">Descripción</label>
+                            <textarea class="form-control rounded-4 bg-secondary bg-opacity-10 border-0 text-body" name="descripcion" id="descripcion" rows="3" placeholder="Descripción opcional...">{{ old('descripcion') }}</textarea>
                             @error('descripcion')
                                 <div class="text-danger small ms-2 mt-1">{{ $message }}</div>
                             @enderror

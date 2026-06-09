@@ -6,12 +6,12 @@
         <div class="col-12">
             <div class="glass-card overflow-hidden">
                 <div class="card-header bg-transparent border-bottom border-light border-opacity-10 py-3 d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0 fw-bold text-white"><i class="bi bi-inbox me-2 text-primary"></i>Mensajes de Contacto</h4>
+                    <h4 class="mb-0 fw-bold text-body"><i class="bi bi-inbox me-2 text-primary"></i>Mensajes de Contacto</h4>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0 text-white">
-                            <thead class="bg-secondary bg-opacity-25 text-white-50 text-uppercase small">
+                        <table class="table table-hover align-middle mb-0 text-body">
+                            <thead class="bg-secondary bg-opacity-25 text-muted text-uppercase small">
                                 <tr>
                                     <th class="px-4 py-3 border-0">Fecha</th>
                                     <th class="px-4 py-3 border-0">Nombre</th>
@@ -23,10 +23,10 @@
                             <tbody class="border-top-0">
                                 @forelse($mensajes as $mensaje)
                                 <tr class="border-bottom border-light border-opacity-10">
-                                    <td class="px-4 py-3 text-white-50">{{ $mensaje->created_at->format('d/m/Y H:i') }}</td>
+                                    <td class="px-4 py-3 text-muted">{{ $mensaje->created_at->format('d/m/Y H:i') }}</td>
                                     <td class="px-4 py-3 fw-bold">{{ $mensaje->nombre }}</td>
-                                    <td class="px-4 py-3 text-white-50">{{ $mensaje->email }}</td>
-                                    <td class="px-4 py-3 text-white-50" style="max-width: 400px; white-space: normal;">
+                                    <td class="px-4 py-3 text-muted">{{ $mensaje->email }}</td>
+                                    <td class="px-4 py-3 text-muted" style="max-width: 400px; white-space: normal;">
                                         {{ Str::limit($mensaje->mensaje, 100) }}
                                     </td>
                                     <td class="px-4 py-3 text-end">
@@ -37,7 +37,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="5" class="text-center py-5 text-white-50">
+                                    <td colspan="5" class="text-center py-5 text-muted">
                                         <i class="bi bi-inbox fs-1 d-block mb-3 opacity-50"></i>
                                         No hay mensajes de contacto recibidos.
                                     </td>
@@ -61,7 +61,7 @@
 <!-- Modal -->
 <div class="modal fade text-start" id="msgModal{{ $mensaje->id }}" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content bg-dark border border-light border-opacity-10 text-white shadow-lg">
+        <div class="modal-content bg-dark border border-light border-opacity-10 text-body shadow-lg">
             <div class="modal-header border-bottom border-light border-opacity-10">
                 <h5 class="modal-title">
                     <i class="bi bi-envelope-open me-2 text-primary"></i>
@@ -72,8 +72,8 @@
             <div class="modal-body p-4">
                 <div class="row g-4 mb-4">
                     <div class="col-12">
-                        <label class="text-white-50 small text-uppercase mb-1">Remitente</label>
-                        <div class="fs-4 fw-bold text-white d-flex align-items-center">
+                        <label class="text-muted small text-uppercase mb-1">Remitente</label>
+                        <div class="fs-4 fw-bold text-body d-flex align-items-center">
                             <i class="bi bi-person-circle me-2 text-secondary"></i>
                             {{ $mensaje->nombre }}
                         </div>
@@ -81,7 +81,7 @@
                     
                     <div class="col-12">
                          <div class="p-3 rounded-3 border border-light border-opacity-10 bg-dark bg-opacity-50">
-                            <label class="text-white-50 small text-uppercase mb-1 d-block">Correo Electrónico (Responder a)</label>
+                            <label class="text-muted small text-uppercase mb-1 d-block">Correo Electrónico (Responder a)</label>
                             <div class="d-flex align-items-center flex-wrap gap-2">
                                 <i class="bi bi-envelope-at fs-4 text-info"></i>
                                 <a href="mailto:{{ $mensaje->email }}?subject=RE: Mensaje de contacto - PrismaNova" class="fs-5 text-info text-decoration-none fw-bold me-auto" id="email-text-{{ $mensaje->id }}">{{ $mensaje->email }}</a>
@@ -93,8 +93,8 @@
                     </div>
 
                     <div class="col-12">
-                        <label class="text-white-50 small text-uppercase mb-1">Fecha de Recepción</label>
-                        <div class="fs-6 text-white-50">
+                        <label class="text-muted small text-uppercase mb-1">Fecha de Recepción</label>
+                        <div class="fs-6 text-muted">
                             <i class="bi bi-calendar3 me-2"></i>{{ $mensaje->created_at->format('d \d\e F \d\e Y, h:i A') }}
                         </div>
                     </div>

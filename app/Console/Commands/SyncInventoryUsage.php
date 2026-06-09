@@ -8,11 +8,37 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Producto;
 use App\Models\InventoryUsageSync;
 
+/**
+ * Class SyncInventoryUsage
+ * 
+ * Comando de consola para sincronizar consumos de inventario desde una API externa.
+ * Actualiza el stock de productos basándose en los consumos registrados en sistemas externos.
+ */
 class SyncInventoryUsage extends Command
 {
+    /**
+     * Firma del comando para ejecución en consola.
+     * 
+     * @var string
+     */
     protected $signature = 'inventory:sync-usage {--url=} {--token=}';
+
+    /**
+     * Descripción del comando.
+     *
+     * @var string
+     */
     protected $description = 'Sincroniza consumos de productos desde API externa y actualiza stock';
 
+    /**
+     * Ejecuta el comando de sincronización de inventario.
+     * 
+     * Obtiene consumos desde una API externa, actualiza el stock de productos
+     * y registra los consumos procesados para evitar duplicados.
+     * Usa transacciones de base de datos para asegurar consistencia.
+     *
+     * @return int Código de salida (SUCCESS = 0, FAILURE = 1).
+     */
     public function handle(): int
     {
         $url = $this->option('url') ?: env('INVENTORY_USAGE_API_URL');

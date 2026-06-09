@@ -97,7 +97,17 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/admin/health/optimize', [HealthController::class, 'optimize'])->name('admin.health.optimize');
         Route::get('/admin/backup/download', [BackupController::class, 'download'])->name('admin.backup.download');
         Route::resource('usuarios', UsuarioController::class);
-        Route::resource('cupones', \App\Http\Controllers\CuponController::class);
+        
+        // Rutas explícitas para cupones (evitar problema de pluralización)
+        Route::get('cupones', [\App\Http\Controllers\CuponController::class, 'index'])->name('cupones.index');
+        Route::get('cupones/create', [\App\Http\Controllers\CuponController::class, 'create'])->name('cupones.create');
+        Route::post('cupones', [\App\Http\Controllers\CuponController::class, 'store'])->name('cupones.store');
+        Route::get('cupones/{cupon}', [\App\Http\Controllers\CuponController::class, 'show'])->name('cupones.show');
+        Route::get('cupones/{cupon}/edit', [\App\Http\Controllers\CuponController::class, 'edit'])->name('cupones.edit');
+        Route::put('cupones/{cupon}', [\App\Http\Controllers\CuponController::class, 'update'])->name('cupones.update');
+        Route::patch('cupones/{cupon}', [\App\Http\Controllers\CuponController::class, 'update']);
+        Route::delete('cupones/{cupon}', [\App\Http\Controllers\CuponController::class, 'destroy'])->name('cupones.destroy');
+        
         Route::get('bitacora', [\App\Http\Controllers\BitacoraController::class, 'index'])->name('bitacora.index');
         
         // Configuración del sistema
@@ -111,7 +121,16 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('clientes', ClienteController::class);
     });
     Route::middleware(['role:admin,bodeguero'])->group(function () {
-        Route::resource('proveedores', ProveedorController::class);
+        // Rutas explícitas para proveedores (evitar problema de pluralización)
+        Route::get('proveedores', [ProveedorController::class, 'index'])->name('proveedores.index');
+        Route::get('proveedores/create', [ProveedorController::class, 'create'])->name('proveedores.create');
+        Route::post('proveedores', [ProveedorController::class, 'store'])->name('proveedores.store');
+        Route::get('proveedores/{proveedor}', [ProveedorController::class, 'show'])->name('proveedores.show');
+        Route::get('proveedores/{proveedor}/edit', [ProveedorController::class, 'edit'])->name('proveedores.edit');
+        Route::put('proveedores/{proveedor}', [ProveedorController::class, 'update'])->name('proveedores.update');
+        Route::patch('proveedores/{proveedor}', [ProveedorController::class, 'update']);
+        Route::delete('proveedores/{proveedor}', [ProveedorController::class, 'destroy'])->name('proveedores.destroy');
+        
         Route::resource('categorias', CategoriaController::class);
         
         // Rutas de papelera para productos (Eliminación suave)

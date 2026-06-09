@@ -71,4 +71,14 @@ class Cupon extends Model
         if ($this->uso_maximo !== null && $this->usos >= $this->uso_maximo) return false;
         return true;
     }
+
+    /**
+     * Obtener el nombre de la clave de ruta para el binding implícito.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return $this->primaryKey;
+    }
 }

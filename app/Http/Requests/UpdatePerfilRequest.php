@@ -6,13 +6,33 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
 
+/**
+ * Class UpdatePerfilRequest
+ * 
+ * Validación de datos para la actualización del perfil del usuario autenticado.
+ * Permite actualizar información personal, contraseña y preferencias de tema.
+ */
 class UpdatePerfilRequest extends FormRequest
 {
+    /**
+     * Determina si el usuario está autorizado para hacer esta solicitud.
+     * Solo usuarios autenticados pueden actualizar su perfil.
+     *
+     * @return bool
+     */
     public function authorize()
     {
         return Auth::check();
     }
 
+    /**
+     * Obtiene las reglas de validación que se aplican a la solicitud.
+     * 
+     * Excluye el usuario actual de la validación de unicidad de documento y email.
+     * La contraseña es opcional en actualizaciones de perfil.
+     *
+     * @return array
+     */
     public function rules()
     {
         $id = Auth::user()->id_usuario ?? 0;
@@ -28,6 +48,11 @@ class UpdatePerfilRequest extends FormRequest
         ];
     }
 
+    /**
+     * Obtiene los mensajes de error de validación personalizados.
+     *
+     * @return array
+     */
     public function messages()
     {
         return [

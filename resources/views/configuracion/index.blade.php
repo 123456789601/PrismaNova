@@ -8,7 +8,7 @@
         <div class="col-lg-10">
             <div class="glass-card overflow-hidden">
                 <div class="card-header bg-transparent border-bottom border-light border-opacity-10 py-3">
-                    <h5 class="mb-0 fw-bold text-white"><i class="bi bi-gear-fill me-2 text-primary"></i>Configuración del Sistema</h5>
+                    <h5 class="mb-0 fw-bold text-body"><i class="bi bi-gear-fill me-2 text-primary"></i>Configuración del Sistema</h5>
                 </div>
                 <div class="card-body p-4">
                     <div class="row g-4">
@@ -19,22 +19,22 @@
                                 
                                 <div class="mb-3">
                                     <div class="p-0">
-                                        <h6 class="fw-bold text-white-50 mb-4 text-uppercase small"><i class="bi bi-sliders me-2"></i>Variables Globales</h6>
+                                        <h6 class="fw-bold text-muted mb-4 text-uppercase small"><i class="bi bi-sliders me-2"></i>Variables Globales</h6>
                                         @foreach($configuraciones as $config)
                                         <div class="mb-4">
-                                            <label for="{{ $config->clave }}" class="form-label fw-bold small text-white-50 text-uppercase">
+                                            <label for="{{ $config->clave }}" class="form-label fw-bold small text-muted text-uppercase">
                                                 {{ ucfirst(str_replace('_', ' ', $config->clave)) }}
                                             </label>
                                             @if($config->tipo == 'number')
-                                                <input type="number" step="0.01" class="form-control bg-secondary bg-opacity-10 border-0 text-white rounded-3 p-3" id="{{ $config->clave }}" name="{{ $config->clave }}" value="{{ $config->valor }}">
+                                                <input type="number" step="0.01" class="form-control bg-secondary bg-opacity-10 border-0 text-body rounded-3 p-3" id="{{ $config->clave }}" name="{{ $config->clave }}" value="{{ $config->valor }}">
                                             @elseif($config->tipo == 'email')
-                                                <input type="email" class="form-control bg-secondary bg-opacity-10 border-0 text-white rounded-3 p-3" id="{{ $config->clave }}" name="{{ $config->clave }}" value="{{ $config->valor }}">
+                                                <input type="email" class="form-control bg-secondary bg-opacity-10 border-0 text-body rounded-3 p-3" id="{{ $config->clave }}" name="{{ $config->clave }}" value="{{ $config->valor }}">
                                             @else
-                                                <input type="text" class="form-control bg-secondary bg-opacity-10 border-0 text-white rounded-3 p-3" id="{{ $config->clave }}" name="{{ $config->clave }}" value="{{ $config->valor }}">
+                                                <input type="text" class="form-control bg-secondary bg-opacity-10 border-0 text-body rounded-3 p-3" id="{{ $config->clave }}" name="{{ $config->clave }}" value="{{ $config->valor }}">
                                             @endif
                                             
                                             @if($config->descripcion)
-                                                <div class="form-text mt-2 text-white-50"><i class="bi bi-info-circle me-1"></i>{{ $config->descripcion }}</div>
+                                                <div class="form-text mt-2 text-muted"><i class="bi bi-info-circle me-1"></i>{{ $config->descripcion }}</div>
                                             @endif
                                         </div>
                                         @endforeach
@@ -53,13 +53,13 @@
                             <div class="glass-card h-100 border-0 bg-primary bg-opacity-10 shadow-none">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center mb-3">
-                                        <div class="bg-primary text-white rounded-circle p-2 me-2 shadow-sm">
+                                        <div class="bg-primary text-body rounded-circle p-2 me-2 shadow-sm">
                                             <i class="bi bi-info-lg"></i>
                                         </div>
-                                        <h6 class="fw-bold text-white mb-0">Información Importante</h6>
+                                        <h6 class="fw-bold text-body mb-0">Información Importante</h6>
                                     </div>
-                                    <p class="small text-white-50 mb-3">Estas variables afectan el comportamiento global del sistema. Tenga cuidado al modificarlas.</p>
-                                    <ul class="list-unstyled small text-white-50">
+                                    <p class="small text-muted mb-3">Estas variables afectan el comportamiento global del sistema. Tenga cuidado al modificarlas.</p>
+                                    <ul class="list-unstyled small text-muted">
                                         <li class="mb-2 d-flex align-items-start">
                                             <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
                                             <div><strong>Moneda:</strong> Símbolo usado en todos los reportes, vistas y tickets.</div>

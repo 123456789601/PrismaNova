@@ -13,7 +13,7 @@
 
     <div class="glass-card overflow-hidden">
         <div class="card-header bg-transparent border-bottom border-light border-opacity-10 py-3">
-            <h5 class="mb-0 fw-bold text-white">
+            <h5 class="mb-0 fw-bold text-body">
                 <i class="bi bi-search me-2 text-primary"></i>Filtros de Búsqueda
             </h5>
         </div>
@@ -21,8 +21,8 @@
             <!-- Filtros -->
             <form action="{{ route('bitacora.index') }}" method="GET" class="row g-3 mb-4">
                 <div class="col-md-3">
-                    <label for="usuario_id" class="form-label small text-white-50 fw-bold text-uppercase">Usuario</label>
-                    <select name="usuario_id" id="usuario_id" class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-white">
+                    <label for="usuario_id" class="form-label small text-muted fw-bold text-uppercase">Usuario</label>
+                    <select name="usuario_id" id="usuario_id" class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-body">
                         <option value="" class="text-dark">Todos</option>
                         @foreach($usuarios as $u)
                             <option value="{{ $u->id_usuario }}" {{ request('usuario_id') == $u->id_usuario ? 'selected' : '' }} class="text-dark">
@@ -32,8 +32,8 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label for="accion" class="form-label small text-white-50 fw-bold text-uppercase">Acción</label>
-                    <select name="accion" id="accion" class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-white">
+                    <label for="accion" class="form-label small text-muted fw-bold text-uppercase">Acción</label>
+                    <select name="accion" id="accion" class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-body">
                         <option value="" class="text-dark">Todas</option>
                         <option value="LOGIN" {{ request('accion') == 'LOGIN' ? 'selected' : '' }} class="text-dark">LOGIN</option>
                         <option value="CREATE" {{ request('accion') == 'CREATE' ? 'selected' : '' }} class="text-dark">CREATE</option>
@@ -42,8 +42,8 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label for="fecha" class="form-label small text-white-50 fw-bold text-uppercase">Fecha</label>
-                    <input type="date" name="fecha" id="fecha" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white" value="{{ request('fecha') }}">
+                    <label for="fecha" class="form-label small text-muted fw-bold text-uppercase">Fecha</label>
+                    <input type="date" name="fecha" id="fecha" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body" value="{{ request('fecha') }}">
                 </div>
                 <div class="col-md-3 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100 rounded-pill shadow-sm transform-hover">
@@ -53,8 +53,8 @@
             </form>
 
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 text-white">
-                    <thead class="bg-primary bg-opacity-10 text-white">
+                <table class="table table-hover align-middle mb-0 text-body">
+                    <thead class="bg-primary bg-opacity-10 text-body">
                         <tr>
                             <th class="ps-3 py-3 border-0">Fecha/Hora</th>
                             <th class="py-3 border-0">Usuario</th>
@@ -67,7 +67,7 @@
                     <tbody class="border-top-0">
                         @forelse($registros as $registro)
                             <tr class="hover-bg-white-10">
-                                <td class="ps-3 text-white-50 small border-bottom border-light border-opacity-10">{{ $registro->created_at->format('d/m/Y H:i:s') }}</td>
+                                <td class="ps-3 text-muted small border-bottom border-light border-opacity-10">{{ $registro->created_at->format('d/m/Y H:i:s') }}</td>
                                 <td class="border-bottom border-light border-opacity-10">
                                     @if($registro->usuario)
                                         <div class="d-flex align-items-center">
@@ -75,12 +75,12 @@
                                                 {{ substr($registro->usuario->nombre, 0, 1) }}
                                             </div>
                                             <div>
-                                                <span class="d-block fw-bold text-white" style="font-size: 0.9rem;">{{ $registro->usuario->nombre }} {{ $registro->usuario->apellido }}</span>
-                                                <small class="text-white-50" style="font-size: 0.75rem;">{{ $registro->usuario->rol->nombre ?? 'N/A' }}</small>
+                                                <span class="d-block fw-bold text-body" style="font-size: 0.9rem;">{{ $registro->usuario->nombre }} {{ $registro->usuario->apellido }}</span>
+                                                <small class="text-muted" style="font-size: 0.75rem;">{{ $registro->usuario->rol->nombre ?? 'N/A' }}</small>
                                             </div>
                                         </div>
                                     @else
-                                        <span class="text-white-50 fst-italic">Sistema / Eliminado</span>
+                                        <span class="text-muted fst-italic">Sistema / Eliminado</span>
                                     @endif
                                 </td>
                                 <td class="border-bottom border-light border-opacity-10">
@@ -93,9 +93,9 @@
                                         {{ $registro->accion }}
                                     </span>
                                 </td>
-                                <td class="border-bottom border-light border-opacity-10"><span class="badge bg-secondary bg-opacity-10 text-white-50 border border-secondary border-opacity-25">{{ $registro->tabla ?? '-' }}</span></td>
-                                <td class="text-white-50 small border-bottom border-light border-opacity-10">{{Str::limit($registro->descripcion, 80)}}</td>
-                                <td class="pe-3 text-white-50 small border-bottom border-light border-opacity-10">{{ $registro->ip }}</td>
+                                <td class="border-bottom border-light border-opacity-10"><span class="badge bg-secondary bg-opacity-10 text-muted border border-secondary border-opacity-25">{{ $registro->tabla ?? '-' }}</span></td>
+                                <td class="text-muted small border-bottom border-light border-opacity-10">{{Str::limit($registro->descripcion, 80)}}</td>
+                                <td class="pe-3 text-muted small border-bottom border-light border-opacity-10">{{ $registro->ip }}</td>
                             </tr>
                         @empty
                             <tr>

@@ -11,7 +11,7 @@
 
 <nav class="sidebar glass-card d-flex flex-column m-0 m-md-3 sidebar-sticky" id="sidebar">
     <a href="/" class="d-flex align-items-center mb-4 text-decoration-none text-body px-2">
-        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2 shadow-sm w-36-px h-36-px">
+        <div class="rounded-circle bg-primary text-body d-flex align-items-center justify-content-center me-2 shadow-sm w-36-px h-36-px">
             <i class="bi bi-prism-fill"></i>
         </div>
         <span class="fs-4 fw-bold tracking-tight">PrismaNova</span>
@@ -137,7 +137,7 @@
             <hr class="text-muted">
             <a href="{{ route('perfil') }}" class="nav-link {{ request()->routeIs('perfil') ? 'active' : '' }}">
                 <div class="d-flex align-items-center">
-                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2 w-32-px h-32-px">
+                    <div class="rounded-circle bg-secondary text-body d-flex align-items-center justify-content-center me-2 w-32-px h-32-px">
                         {{ substr(auth()->user()->nombre ?? 'U', 0, 1) }}
                     </div>
                     <div>

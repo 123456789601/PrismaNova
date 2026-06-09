@@ -4,13 +4,13 @@
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h4 class="fw-bold mb-1 text-white"><i class="bi bi-ticket-perforated me-2 text-primary"></i>Cupones</h4>
-            <p class="text-white-50 small mb-0">Gestión de códigos de descuento</p>
+            <h4 class="fw-bold mb-1 text-body"><i class="bi bi-ticket-perforated me-2 text-primary"></i>Cupones</h4>
+            <p class="text-muted small mb-0">Gestión de códigos de descuento</p>
         </div>
         <div class="d-flex gap-2">
             <form class="d-flex" method="GET" action="{{ route('cupones.index') }}" style="max-width:300px;">
                 <div class="input-group shadow-sm rounded-pill overflow-hidden border border-light border-opacity-10">
-                    <input type="text" name="q" value="{{ request('q') }}" class="form-control border-0 bg-secondary bg-opacity-10 text-white placeholder-white-50" placeholder="Buscar código...">
+                    <input type="text" name="q" value="{{ request('q') }}" class="form-control border-0 bg-secondary bg-opacity-10 text-body placeholder-white-50" placeholder="Buscar código...">
                     <button class="btn bg-secondary bg-opacity-10 text-primary border-0"><i class="bi bi-search"></i></button>
                 </div>
             </form>
@@ -23,8 +23,8 @@
     <div class="glass-card overflow-hidden">
         <div class="card-body p-4">
             <div class="table-responsive rounded-4 shadow-sm border border-light border-opacity-10 overflow-hidden">
-                <table class="table table-hover align-middle mb-0 text-white">
-                    <thead class="bg-primary bg-opacity-10 text-white">
+                <table class="table table-hover align-middle mb-0 text-body">
+                    <thead class="bg-primary bg-opacity-10 text-body">
                             <tr>
                                 <th class="ps-4 py-3 border-0">ID</th>
                                 <th class="py-3 border-0">Código</th>
@@ -39,14 +39,14 @@
                     <tbody class="border-top-0">
                         @foreach($cupones as $c)
                         <tr class="hover-bg-white-10 transition-base">
-                            <td class="ps-4 fw-bold text-white-50 border-bottom border-light border-opacity-10">#{{ $c->id_cupon }}</td>
+                            <td class="ps-4 fw-bold text-muted border-bottom border-light border-opacity-10">#{{ $c->id_cupon }}</td>
                             <td class="border-bottom border-light border-opacity-10">
                                 <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2">
                                     <i class="bi bi-upc-scan me-1"></i>{{ $c->codigo }}
                                 </span>
                             </td>
-                            <td class="border-bottom border-light border-opacity-10"><span class="text-white-50 small fw-bold text-uppercase">{{ $c->tipo }}</span></td>
-                            <td class="fw-bold text-white border-bottom border-light border-opacity-10">
+                            <td class="border-bottom border-light border-opacity-10"><span class="text-muted small fw-bold text-uppercase">{{ $c->tipo }}</span></td>
+                            <td class="fw-bold text-body border-bottom border-light border-opacity-10">
                                 @if($c->tipo == 'porcentaje')
                                     {{ $c->valor }}%
                                 @else
@@ -69,7 +69,7 @@
                                     <div class="progress flex-grow-1 me-2 bg-white bg-opacity-10" style="height: 6px; width: 60px;">
                                         <div class="progress-bar rounded-pill bg-primary" role="progressbar" style="width: {{ $c->uso_maximo ? ($c->usos / $c->uso_maximo * 100) : 0 }}%"></div>
                                     </div>
-                                    <span class="small text-white-50">{{ $c->usos }} @if($c->uso_maximo) / {{ $c->uso_maximo }} @endif</span>
+                                    <span class="small text-muted">{{ $c->usos }} @if($c->uso_maximo) / {{ $c->uso_maximo }} @endif</span>
                                 </div>
                             </td>
                             <td class="text-end pe-4 border-bottom border-light border-opacity-10">

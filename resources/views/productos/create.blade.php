@@ -6,7 +6,7 @@
         <div class="col-xl-10">
             <div class="glass-card overflow-hidden">
                 <div class="card-header bg-transparent border-bottom border-light border-opacity-10 py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-bold text-white"><i class="bi bi-box-seam me-2 text-primary"></i>Nuevo Producto</h5>
+                    <h5 class="mb-0 fw-bold text-body"><i class="bi bi-box-seam me-2 text-primary"></i>Nuevo Producto</h5>
                     <a href="{{ route('productos.index') }}" class="btn btn-sm btn-outline-light rounded-pill px-3 hover-scale">
                         <i class="bi bi-arrow-left me-1"></i>Volver
                     </a>
@@ -15,8 +15,8 @@
                     <form method="POST" action="{{ route('productos.store') }}" enctype="multipart/form-data" id="formProducto" novalidate class="row g-3">
                 @csrf
                 <div class="col-md-6">
-                    <label class="form-label fw-bold small text-white-50">Nombre <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white @error('nombre') is-invalid @enderror" name="nombre" id="nombre" value="{{ old('nombre') }}" required>
+                    <label class="form-label fw-bold small text-muted">Nombre <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body @error('nombre') is-invalid @enderror" name="nombre" id="nombre" value="{{ old('nombre') }}" required>
                     @error('nombre')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @else
@@ -24,8 +24,8 @@
                     @enderror
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-bold small text-white-50">Código de barras</label>
-                    <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white @error('codigo_barras') is-invalid @enderror" name="codigo_barras" id="codigo_barras" value="{{ old('codigo_barras') }}" pattern="[a-zA-Z0-9]+" title="Solo letras y números">
+                    <label class="form-label fw-bold small text-muted">Código de barras</label>
+                    <input type="text" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body @error('codigo_barras') is-invalid @enderror" name="codigo_barras" id="codigo_barras" value="{{ old('codigo_barras') }}" pattern="[a-zA-Z0-9]+" title="Solo letras y números">
                     @error('codigo_barras')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @else
@@ -33,22 +33,22 @@
                     @enderror
                 </div>
                 <div class="col-md-12">
-                    <label class="form-label fw-bold small text-white-50">Descripción</label>
-                    <textarea class="form-control rounded-4 bg-secondary bg-opacity-10 border-0 text-white @error('descripcion') is-invalid @enderror" name="descripcion" id="descripcion" rows="3">{{ old('descripcion') }}</textarea>
+                    <label class="form-label fw-bold small text-muted">Descripción</label>
+                    <textarea class="form-control rounded-4 bg-secondary bg-opacity-10 border-0 text-body @error('descripcion') is-invalid @enderror" name="descripcion" id="descripcion" rows="3">{{ old('descripcion') }}</textarea>
                     @error('descripcion')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-bold small text-white-50">Imagen</label>
-                    <input type="file" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white @error('imagen') is-invalid @enderror" name="imagen" accept="image/*">
+                    <label class="form-label fw-bold small text-muted">Imagen</label>
+                    <input type="file" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body @error('imagen') is-invalid @enderror" name="imagen" accept="image/*">
                     @error('imagen')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-bold small text-white-50">Categoría <span class="text-danger">*</span></label>
-                    <select class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-white @error('id_categoria') is-invalid @enderror" name="id_categoria" required>
+                    <label class="form-label fw-bold small text-muted">Categoría <span class="text-danger">*</span></label>
+                    <select class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-body @error('id_categoria') is-invalid @enderror" name="id_categoria" required>
                         <option value="" class="text-dark">Seleccione</option>
                         @foreach($categorias as $c)
                             <option value="{{ $c->id_categoria }}" {{ old('id_categoria') == $c->id_categoria ? 'selected' : '' }} class="text-dark">{{ $c->nombre }}</option>
@@ -61,8 +61,8 @@
                     @enderror
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-bold small text-white-50">Proveedor</label>
-                    <select class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-white @error('id_proveedor') is-invalid @enderror" name="id_proveedor">
+                    <label class="form-label fw-bold small text-muted">Proveedor</label>
+                    <select class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-body @error('id_proveedor') is-invalid @enderror" name="id_proveedor">
                         <option value="" class="text-dark">Sin proveedor</option>
                         @foreach($proveedores as $p)
                             <option value="{{ $p->id_proveedor }}" {{ old('id_proveedor') == $p->id_proveedor ? 'selected' : '' }} class="text-dark">{{ $p->nombre_empresa }}</option>
@@ -73,49 +73,49 @@
                     @enderror
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label fw-bold small text-white-50">Precio compra <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold small text-muted">Precio compra <span class="text-danger">*</span></label>
                     <div class="input-group">
-                        <span class="input-group-text rounded-start-pill bg-secondary bg-opacity-10 border-0 text-white">{{ $configuracion['moneda'] ?? '$' }} </span>
-                        <input type="number" step="0.01" min="0" class="form-control rounded-end-pill bg-secondary bg-opacity-10 border-0 text-white @error('precio_compra') is-invalid @enderror" name="precio_compra" value="{{ old('precio_compra') }}" required>
+                        <span class="input-group-text rounded-start-pill bg-secondary bg-opacity-10 border-0 text-body">{{ $configuracion['moneda'] ?? '$' }} </span>
+                        <input type="number" step="0.01" min="0" class="form-control rounded-end-pill bg-secondary bg-opacity-10 border-0 text-body @error('precio_compra') is-invalid @enderror" name="precio_compra" value="{{ old('precio_compra') }}" required>
                         @error('precio_compra')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label fw-bold small text-white-50">Precio venta <span class="text-danger">*</span></label>
+                    <label class="form-label fw-bold small text-muted">Precio venta <span class="text-danger">*</span></label>
                     <div class="input-group">
-                        <span class="input-group-text rounded-start-pill bg-secondary bg-opacity-10 border-0 text-white">{{ $configuracion['moneda'] ?? '$' }} </span>
-                        <input type="number" step="0.01" min="0" class="form-control rounded-end-pill bg-secondary bg-opacity-10 border-0 text-white @error('precio_venta') is-invalid @enderror" name="precio_venta" value="{{ old('precio_venta') }}" required>
+                        <span class="input-group-text rounded-start-pill bg-secondary bg-opacity-10 border-0 text-body">{{ $configuracion['moneda'] ?? '$' }} </span>
+                        <input type="number" step="0.01" min="0" class="form-control rounded-end-pill bg-secondary bg-opacity-10 border-0 text-body @error('precio_venta') is-invalid @enderror" name="precio_venta" value="{{ old('precio_venta') }}" required>
                         @error('precio_venta')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label fw-bold small text-white-50">Stock <span class="text-danger">*</span></label>
-                    <input type="number" min="0" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white @error('stock') is-invalid @enderror" name="stock" value="{{ old('stock',0) }}" required>
+                    <label class="form-label fw-bold small text-muted">Stock <span class="text-danger">*</span></label>
+                    <input type="number" min="0" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body @error('stock') is-invalid @enderror" name="stock" value="{{ old('stock',0) }}" required>
                     @error('stock')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label fw-bold small text-white-50">Stock mínimo</label>
-                    <input type="number" min="0" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white @error('stock_minimo') is-invalid @enderror" name="stock_minimo" value="{{ old('stock_minimo',0) }}">
+                    <label class="form-label fw-bold small text-muted">Stock mínimo</label>
+                    <input type="number" min="0" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body @error('stock_minimo') is-invalid @enderror" name="stock_minimo" value="{{ old('stock_minimo',0) }}">
                     @error('stock_minimo')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label fw-bold small text-white-50">Fecha vencimiento</label>
-                    <input type="date" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-white @error('fecha_vencimiento') is-invalid @enderror" name="fecha_vencimiento" value="{{ old('fecha_vencimiento') }}">
+                    <label class="form-label fw-bold small text-muted">Fecha vencimiento</label>
+                    <input type="date" class="form-control rounded-pill bg-secondary bg-opacity-10 border-0 text-body @error('fecha_vencimiento') is-invalid @enderror" name="fecha_vencimiento" value="{{ old('fecha_vencimiento') }}">
                     @error('fecha_vencimiento')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label fw-bold small text-white-50">Estado <span class="text-danger">*</span></label>
-                    <select class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-white @error('estado') is-invalid @enderror" name="estado" required>
+                    <label class="form-label fw-bold small text-muted">Estado <span class="text-danger">*</span></label>
+                    <select class="form-select rounded-pill bg-secondary bg-opacity-10 border-0 text-body @error('estado') is-invalid @enderror" name="estado" required>
                         <option value="activo" {{ old('estado') == 'activo' ? 'selected' : '' }} class="text-dark">Activo</option>
                         <option value="inactivo" {{ old('estado') == 'inactivo' ? 'selected' : '' }} class="text-dark">Inactivo</option>
                     </select>
